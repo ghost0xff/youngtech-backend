@@ -1,6 +1,6 @@
-package com.youngtechcr.www.backend.repositories;
+package com.youngtechcr.www.repositories;
 
-import com.youngtechcr.www.backend.domain.Invoice;
+import com.youngtechcr.www.domain.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

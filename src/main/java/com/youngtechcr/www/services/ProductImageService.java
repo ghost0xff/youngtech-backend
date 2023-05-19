@@ -1,4 +1,4 @@
-package com.youngtechcr.www.backend.services;
+package com.youngtechcr.www.services;
 
 import org.springframework.stereotype.Service;
 

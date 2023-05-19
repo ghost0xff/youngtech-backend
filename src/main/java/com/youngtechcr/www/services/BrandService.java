@@ -1,8 +1,8 @@
-package com.youngtechcr.www.backend.services;
+package com.youngtechcr.www.services;
 
-import com.youngtechcr.www.backend.domain.Brand;
-import com.youngtechcr.www.backend.exceptions.custom.EmptyRepositoryException;
-import com.youngtechcr.www.backend.repositories.BrandRepository;
+import com.youngtechcr.www.domain.Brand;
+import com.youngtechcr.www.exceptions.custom.EmptyRepositoryException;
+import com.youngtechcr.www.repositories.BrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

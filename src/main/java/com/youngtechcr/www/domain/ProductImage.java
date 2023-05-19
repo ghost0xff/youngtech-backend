@@ -1,4 +1,4 @@
-package com.youngtechcr.www.backend.domain;
+package com.youngtechcr.www.domain;
 
 
 import jakarta.persistence.*;

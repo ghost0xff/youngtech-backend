@@ -1,6 +1,6 @@
-package com.youngtechcr.www.backend.repositories;
+package com.youngtechcr.www.repositories;
 
-import com.youngtechcr.www.backend.domain.Brand;
+import com.youngtechcr.www.domain.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BrandRepository extends JpaRepository<Brand, Integer> {

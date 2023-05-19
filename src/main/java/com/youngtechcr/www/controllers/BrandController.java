@@ -1,17 +1,14 @@
-package com.youngtechcr.www.backend.controllers;
+package com.youngtechcr.www.controllers;
 
-import com.youngtechcr.www.backend.domain.Brand;
-import com.youngtechcr.www.backend.services.BrandService;
+import com.youngtechcr.www.domain.Brand;
+import com.youngtechcr.www.services.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.print.attribute.standard.Media;
 import java.util.List;
 
 @RestController

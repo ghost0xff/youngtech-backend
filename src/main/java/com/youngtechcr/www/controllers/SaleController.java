@@ -1,7 +1,7 @@
-package com.youngtechcr.www.backend.controllers;
+package com.youngtechcr.www.controllers;
 
-import com.youngtechcr.www.backend.domain.Sale;
-import com.youngtechcr.www.backend.services.SaleService;
+import com.youngtechcr.www.domain.Sale;
+import com.youngtechcr.www.services.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

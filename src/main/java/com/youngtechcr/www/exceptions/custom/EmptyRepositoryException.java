@@ -1,4 +1,4 @@
-package com.youngtechcr.www.backend.exceptions.custom;
+package com.youngtechcr.www.exceptions.custom;
 
 public class EmptyRepositoryException extends RuntimeException{
 

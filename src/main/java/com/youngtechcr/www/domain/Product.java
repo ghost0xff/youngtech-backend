@@ -1,8 +1,7 @@
-package com.youngtechcr.www.backend.domain;
+package com.youngtechcr.www.domain;
 
 
 import jakarta.persistence.*;
-import org.hibernate.mapping.Join;
 
 import java.util.Objects;
 

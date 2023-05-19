@@ -1,14 +1,11 @@
-package com.youngtechcr.www.backend.controllers;
+package com.youngtechcr.www.controllers;
 
-import com.youngtechcr.www.backend.domain.Product;
-import com.youngtechcr.www.backend.services.ProductService;
+import com.youngtechcr.www.domain.Product;
+import com.youngtechcr.www.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,8 +22,8 @@ public class ProductController {
         return ResponseEntity.ok().body(productList);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateProduct(){
+    @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateProduct(@RequestBody Product product) {
         return null;
     }
 

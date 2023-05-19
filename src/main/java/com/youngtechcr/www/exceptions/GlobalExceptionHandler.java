@@ -1,6 +1,6 @@
-package com.youngtechcr.www.backend.exceptions;
+package com.youngtechcr.www.exceptions;
 
-import com.youngtechcr.www.backend.exceptions.custom.EmptyRepositoryException;
+import com.youngtechcr.www.exceptions.custom.EmptyRepositoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
