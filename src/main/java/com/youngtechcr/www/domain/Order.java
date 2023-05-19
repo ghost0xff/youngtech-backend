@@ -6,11 +6,11 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tbl_invoice")
-public class Invoice {
+@Table(name = "tbl_order")
+public class Order {
 
     @Id
-    @Column(name = "id_invoice")
+    @Column(name = "id_order")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idInvoice;
     @OneToOne(cascade = CascadeType.ALL)
@@ -27,14 +27,14 @@ public class Invoice {
     private Date deliveryDate;
 
 
-    public Invoice() {
+    public Order() {
     }
 
-    public Invoice(Integer idInvoice) {
+    public Order(Integer idInvoice) {
         this.idInvoice = idInvoice;
     }
 
-    public Invoice(Integer idInvoice, float total, float subtotal, int iva, Date orderDate, Date deliveryDate, Sale sale) {
+    public Order(Integer idInvoice, float total, float subtotal, int iva, Date orderDate, Date deliveryDate, Sale sale) {
         this.idInvoice = idInvoice;
         this.total = total;
         this.subtotal = subtotal;
@@ -104,7 +104,7 @@ public class Invoice {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Invoice invoice = (Invoice) o;
+        Order invoice = (Order) o;
         return Float.compare(invoice.total, total) == 0 && Float.compare(invoice.subtotal, subtotal) == 0 && iva == invoice.iva && Objects.equals(idInvoice, invoice.idInvoice) && Objects.equals(orderDate, invoice.orderDate) && Objects.equals(deliveryDate, invoice.deliveryDate) && Objects.equals(sale, invoice.sale);
     }
 
