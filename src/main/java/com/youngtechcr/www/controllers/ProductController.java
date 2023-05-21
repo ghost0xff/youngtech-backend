@@ -21,13 +21,5 @@ import java.security.Principal;
 @RequestMapping(path = "/api/products")
 public class ProductController {
 
-    @Autowired
-    private ProductImageStorageService productImageStorageService;
-
-    @PostMapping
-        public ResponseEntity<?> uploadProductImage(@Validated @RequestPart(name = "product-image") MultipartFile multipartFile) {
-        this.productImageStorageService.processAndSave(multipartFile);
-        return ResponseEntity.ok(multipartFile.getOriginalFilename());
-    }
 
 }
