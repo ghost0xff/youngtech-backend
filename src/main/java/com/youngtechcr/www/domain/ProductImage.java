@@ -10,7 +10,7 @@ import java.util.Objects;
 public class ProductImage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_product_image")
     private Integer idProductImage;
 

@@ -5,13 +5,12 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name =
-        "tbl_sale")
+@Table(name = "tbl_sale")
 public class Sale {
 
     @Id
     @Column(name = "id_sale")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idSale;
 
     @OneToOne(cascade = CascadeType.ALL)

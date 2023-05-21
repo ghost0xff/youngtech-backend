@@ -11,8 +11,8 @@ public class Order {
 
     @Id
     @Column(name = "id_order")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idInvoice;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer idOrder;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_sale", referencedColumnName = "id_sale")
     private Sale sale;
@@ -26,16 +26,17 @@ public class Order {
     @Column(name = "delivery_date")
     private Date deliveryDate;
 
+    private boolean delivered;
 
     public Order() {
     }
 
     public Order(Integer idInvoice) {
-        this.idInvoice = idInvoice;
+        this.idOrder = idInvoice;
     }
 
     public Order(Integer idInvoice, float total, float subtotal, int iva, Date orderDate, Date deliveryDate, Sale sale) {
-        this.idInvoice = idInvoice;
+        this.idOrder = idInvoice;
         this.total = total;
         this.subtotal = subtotal;
         this.iva = iva;
@@ -44,12 +45,12 @@ public class Order {
         this.sale = sale;
     }
 
-    public Integer getIdInvoice() {
-        return idInvoice;
+    public Integer getIdOrder() {
+        return idOrder;
     }
 
-    public void setIdInvoice(Integer idInvoice) {
-        this.idInvoice = idInvoice;
+    public void setIdOrder(Integer idOrder) {
+        this.idOrder = idOrder;
     }
 
     public float getTotal() {
@@ -105,18 +106,18 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order invoice = (Order) o;
-        return Float.compare(invoice.total, total) == 0 && Float.compare(invoice.subtotal, subtotal) == 0 && iva == invoice.iva && Objects.equals(idInvoice, invoice.idInvoice) && Objects.equals(orderDate, invoice.orderDate) && Objects.equals(deliveryDate, invoice.deliveryDate) && Objects.equals(sale, invoice.sale);
+        return Float.compare(invoice.total, total) == 0 && Float.compare(invoice.subtotal, subtotal) == 0 && iva == invoice.iva && Objects.equals(idOrder, invoice.idOrder) && Objects.equals(orderDate, invoice.orderDate) && Objects.equals(deliveryDate, invoice.deliveryDate) && Objects.equals(sale, invoice.sale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idInvoice, total, subtotal, iva, orderDate, deliveryDate, sale);
+        return Objects.hash(idOrder, total, subtotal, iva, orderDate, deliveryDate, sale);
     }
 
     @Override
     public String toString() {
         return "Invoice{" +
-                "idInvoice=" + idInvoice +
+                "idInvoice=" + idOrder +
                 ", total=" + total +
                 ", subtotal=" + subtotal +
                 ", iva=" + iva +
