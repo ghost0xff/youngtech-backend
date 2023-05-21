@@ -25,7 +25,7 @@ public class ProductController {
     private ProductImageStorageService productImageStorageService;
 
     @PostMapping
-        public ResponseEntity<?> uploadProductFile(@Validated @RequestPart(name = "product-image") MultipartFile multipartFile) {
+        public ResponseEntity<?> uploadProductImage(@Validated @RequestPart(name = "product-image") MultipartFile multipartFile) {
         this.productImageStorageService.processAndSave(multipartFile);
         return ResponseEntity.ok(multipartFile.getOriginalFilename());
     }
