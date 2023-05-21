@@ -14,7 +14,12 @@ public class ProductImage {
     @Column(name = "id_product_image")
     private Integer idProductImage;
 
-    private String name;
+    @Column(name = "server_name")
+    private String serverName;
+
+    @Column(name = "original_name")
+    private String originalName;
+
     private String path;
 
     public ProductImage() {
@@ -24,9 +29,10 @@ public class ProductImage {
         this.idProductImage = idProductImage;
     }
 
-    public ProductImage(Integer idProductImage, String name, String path) {
+    public ProductImage(Integer idProductImage, String serverName, String originalName, String path) {
         this.idProductImage = idProductImage;
-        this.name = name;
+        this.serverName = serverName;
+        this.originalName = originalName;
         this.path = path;
     }
 
@@ -38,12 +44,20 @@ public class ProductImage {
         this.idProductImage = idProductImage;
     }
 
-    public String getName() {
-        return name;
+    public String getServerName() {
+        return serverName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public String getOriginalName() {
+        return originalName;
+    }
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
     }
 
     public String getPath() {
@@ -56,24 +70,23 @@ public class ProductImage {
 
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductImage that = (ProductImage) o;
-        return Objects.equals(idProductImage, that.idProductImage) && Objects.equals(name, that.name) && Objects.equals(path, that.path);
+        return Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverName, that.serverName) && Objects.equals(originalName, that.originalName) && Objects.equals(path, that.path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idProductImage, name, path);
+        return Objects.hash(idProductImage, serverName, originalName, path);
     }
-
 
     @Override
     public String toString() {
         return "ProductImage{" +
                 "idProductImage=" + idProductImage +
-                ", name='" + name + '\'' +
+                ", serverName='" + serverName + '\'' +
+                ", originalName='" + originalName + '\'' +
                 ", path='" + path + '\'' +
                 '}';
     }
