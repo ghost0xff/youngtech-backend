@@ -5,11 +5,11 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tbl_user")
-public class User {
+public class User  {
 
     @Id
     @Column(name = "id_user")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idUser;
 
     private String username;

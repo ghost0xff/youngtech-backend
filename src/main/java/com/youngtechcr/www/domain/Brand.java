@@ -10,7 +10,7 @@ public class Brand {
 
     @Id
     @Column(name = "id_brand")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idBrand;
     private String name;
 
