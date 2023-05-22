@@ -2,11 +2,9 @@ package com.youngtechcr.www.domain;
 
 
 import com.youngtechcr.www.domain.storage.ProductAndProductImageRelationship;
-import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product")
@@ -15,7 +13,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_product")
-    private Integer idProduct;
+    private Integer productId;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_brand", referencedColumnName = "id_brand")
@@ -23,7 +21,7 @@ public class Product {
 
 
     @OneToMany(mappedBy = "product")
-    private List<ProductAndProductImageRelationship> productImageList;
+    private List<ProductAndProductImageRelationship> productAndProductImageRelationshipList;
 
     @OneToMany(mappedBy = "product")
     private List<Sale> saleList;
@@ -39,16 +37,16 @@ public class Product {
     }
 
     public Product(Integer idProduct) {
-        this.idProduct = idProduct;
+        this.productId = idProduct;
     }
 
 
-    public int getIdProduct() {
-        return idProduct;
+    public int getProductId() {
+        return productId;
     }
 
-    public void setIdProduct(Integer idProduct) {
-        this.idProduct = idProduct;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public Brand getBrand() {
@@ -108,4 +106,11 @@ public class Product {
     }
 
 
+    public List<ProductAndProductImageRelationship> getProductAndProductImageRelationshipList() {
+        return productAndProductImageRelationshipList;
+    }
+
+    public void setProductAndProductImageRelationshipList(List<ProductAndProductImageRelationship> productAndProductImageRelationshipList) {
+        this.productAndProductImageRelationshipList = productAndProductImageRelationshipList;
+    }
 }

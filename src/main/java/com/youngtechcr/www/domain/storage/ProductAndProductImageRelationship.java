@@ -22,6 +22,9 @@ public class ProductAndProductImageRelationship {
     @JoinColumn(name = "id_product_image", referencedColumnName = "id_product_image")
     private ProductImageFileData productImageFileData;
 
+    @Column(name = "is_main")
+    private boolean isMainImage;
+
     public Integer getProductAndProductImageRelationshipId() {
         return productAndProductImageRelationshipId;
     }
@@ -46,17 +49,25 @@ public class ProductAndProductImageRelationship {
         this.productImageFileData = productImageFileData;
     }
 
+    public boolean isMainImage() {
+        return isMainImage;
+    }
+
+    public void setMainImage(boolean mainImage) {
+        isMainImage = mainImage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductAndProductImageRelationship that = (ProductAndProductImageRelationship) o;
-        return Objects.equals(productAndProductImageRelationshipId, that.productAndProductImageRelationshipId) && Objects.equals(product, that.product) && Objects.equals(productImageFileData, that.productImageFileData);
+        return isMainImage == that.isMainImage && Objects.equals(productAndProductImageRelationshipId, that.productAndProductImageRelationshipId) && Objects.equals(product, that.product) && Objects.equals(productImageFileData, that.productImageFileData);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productAndProductImageRelationshipId, product, productImageFileData);
+        return Objects.hash(productAndProductImageRelationshipId, product, productImageFileData, isMainImage);
     }
 
     @Override
@@ -65,6 +76,7 @@ public class ProductAndProductImageRelationship {
                 "productAndProductImageRelationshipId=" + productAndProductImageRelationshipId +
                 ", product=" + product +
                 ", productImageFileData=" + productImageFileData +
+                ", isMainImage=" + isMainImage +
                 '}';
     }
 }

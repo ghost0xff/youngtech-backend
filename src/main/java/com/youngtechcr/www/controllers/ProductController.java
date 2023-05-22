@@ -7,10 +7,7 @@ import com.youngtechcr.www.services.storage.ProductImageFileDataStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -21,12 +18,13 @@ public class ProductController {
     @Autowired
     private ProductImageFileDataStorageService productImageStorageService;
 
-    @PostMapping(path = "/image")
+    @PostMapping(path = "/{id}/images/")
     public ResponseEntity<?> uploadProductImageByProduct(
-            @Validated @RequestPart(name = "product-meta-data") ProductImageFileData selectedProductImage,
+            @Validated @PathVariable(name = "id") Integer productId,
+            @Validated @RequestPart(name = "product-meta-data") Product product,
             @Validated @RequestPart(name = "product-image") MultipartFile uploadedImage
     ){
-
+        productImageStorageService.processUpload(productId, uploadedImage);
         return null;
     }
 

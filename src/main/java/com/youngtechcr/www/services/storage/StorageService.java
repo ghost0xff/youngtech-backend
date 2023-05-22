@@ -4,9 +4,11 @@ import com.youngtechcr.www.domain.storage.FileData;
 import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+
 public interface StorageService {
 
-    public void saveToFileSystem(MultipartFile multipartFile);
+    public void saveToFileSystem(Path path, MultipartFile multipartFile);
 
     public String generateServerFileName(String originalName);
 
