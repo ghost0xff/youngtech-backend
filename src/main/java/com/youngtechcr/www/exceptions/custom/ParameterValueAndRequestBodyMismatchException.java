@@ -4,32 +4,29 @@ import com.youngtechcr.www.exceptions.ErrorCode;
 import com.youngtechcr.www.exceptions.ICustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
+public class ParameterValueAndRequestBodyMismatchException extends RuntimeException implements ICustomRuntimeException {
 
-public class EmptyRepositoryException extends RuntimeException implements ICustomRuntimeException {
+    private String title = "Bad request parameters exception";
+    private HttpStatus status = HttpStatus.BAD_REQUEST;
+    private ErrorCode errorCode = ErrorCode.getCode(4);
 
-    private String defaultTitle = "No entities available";
-    private HttpStatus defaultStatus = HttpStatus.NOT_FOUND;
-    private ErrorCode customErrorCode = ErrorCode.getCode(1);
-
-
-    public EmptyRepositoryException(String detail) {
+    public ParameterValueAndRequestBodyMismatchException(String detail) {
         super(detail);
     }
 
-
     @Override
     public String getDefaultTitle() {
-        return this.defaultTitle;
+        return this.title;
     }
 
     @Override
     public ErrorCode getCustomErrorCode() {
-        return this.customErrorCode;
+        return this.errorCode;
     }
 
     @Override
     public HttpStatus getDefaultHttpStatus() {
-        return this.defaultStatus;
+        return this.status;
     }
 
     @Override

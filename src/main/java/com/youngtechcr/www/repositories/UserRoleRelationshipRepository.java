@@ -1,7 +1,7 @@
 package com.youngtechcr.www.repositories;
 
-import com.youngtechcr.www.domain.UserRoleRelationship;
+import com.youngtechcr.www.domain.UserAndRoleRelationship;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRoleRelationshipRepository extends JpaRepository<UserRoleRelationship, Integer> {
+public interface UserRoleRelationshipRepository extends JpaRepository<UserAndRoleRelationship, Integer> {
 }

@@ -3,6 +3,7 @@ package com.youngtechcr.www.domain;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -13,9 +14,8 @@ public class Order {
     @Column(name = "id_order")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idOrder;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_sale", referencedColumnName = "id_sale")
-    private Sale sale;
+    @OneToMany(mappedBy = "order")
+    private List<OrderAndSaleRelationship> sales;
 
     private float total;
     private float subtotal;
@@ -33,16 +33,6 @@ public class Order {
 
     public Order(Integer idInvoice) {
         this.idOrder = idInvoice;
-    }
-
-    public Order(Integer idInvoice, float total, float subtotal, int iva, Date orderDate, Date deliveryDate, Sale sale) {
-        this.idOrder = idInvoice;
-        this.total = total;
-        this.subtotal = subtotal;
-        this.iva = iva;
-        this.orderDate = orderDate;
-        this.deliveryDate = deliveryDate;
-        this.sale = sale;
     }
 
     public Integer getIdOrder() {
@@ -93,37 +83,45 @@ public class Order {
         this.deliveryDate = deliveryDate;
     }
 
-    public Sale getSale() {
-        return sale;
+    public List<OrderAndSaleRelationship> getSales() {
+        return sales;
     }
 
-    public void setSale(Sale sale) {
-        this.sale = sale;
+    public void setSales(List<OrderAndSaleRelationship> sales) {
+        this.sales = sales;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Order invoice = (Order) o;
-        return Float.compare(invoice.total, total) == 0 && Float.compare(invoice.subtotal, subtotal) == 0 && iva == invoice.iva && Objects.equals(idOrder, invoice.idOrder) && Objects.equals(orderDate, invoice.orderDate) && Objects.equals(deliveryDate, invoice.deliveryDate) && Objects.equals(sale, invoice.sale);
+        Order order = (Order) o;
+        return Float.compare(order.total, total) == 0 && Float.compare(order.subtotal, subtotal) == 0 && iva == order.iva && delivered == order.delivered && Objects.equals(idOrder, order.idOrder) && Objects.equals(sales, order.sales) && Objects.equals(orderDate, order.orderDate) && Objects.equals(deliveryDate, order.deliveryDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idOrder, total, subtotal, iva, orderDate, deliveryDate, sale);
+        return Objects.hash(idOrder, sales, total, subtotal, iva, orderDate, deliveryDate, delivered);
     }
 
     @Override
     public String toString() {
-        return "Invoice{" +
-                "idInvoice=" + idOrder +
+        return "Order{" +
+                "idOrder=" + idOrder +
                 ", total=" + total +
                 ", subtotal=" + subtotal +
                 ", iva=" + iva +
                 ", orderDate=" + orderDate +
                 ", deliveryDate=" + deliveryDate +
-                ", sale=" + sale +
+                ", delivered=" + delivered +
                 '}';
     }
 }

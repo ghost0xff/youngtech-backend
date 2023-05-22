@@ -6,7 +6,7 @@ spring:
     password: PapasFritas22@
   jpa:
 #    hibernate.ddl-auto: update
-#    generate-ddl: true
+#    generate-ddl: false
     show-sql: true
   output:
     ansi:

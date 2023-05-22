@@ -1,13 +1,14 @@
-package com.youngtechcr.www.domain;
+package com.youngtechcr.www.domain.storage;
 
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product_image")
-public class ProductImage {
+public class ProductImageFileData implements FileData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,14 +23,17 @@ public class ProductImage {
 
     private String path;
 
-    public ProductImage() {
+    @OneToMany(mappedBy = "productImageFileData")
+    List<ProductAndProductImageRelationship> productList;
+
+    public ProductImageFileData() {
     }
 
-    public ProductImage(Integer idProductImage) {
+    public ProductImageFileData(Integer idProductImage) {
         this.idProductImage = idProductImage;
     }
 
-    public ProductImage(Integer idProductImage, String serverName, String originalName, String path) {
+    public ProductImageFileData(Integer idProductImage, String serverName, String originalName, String path) {
         this.idProductImage = idProductImage;
         this.serverName = serverName;
         this.originalName = originalName;
@@ -44,15 +48,17 @@ public class ProductImage {
         this.idProductImage = idProductImage;
     }
 
-    public String getServerName() {
-        return serverName;
+    @Override
+    public String getServerFileName(){
+        return this.serverName;
     }
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
 
-    public String getOriginalName() {
+    @Override
+    public String getOriginalFileName() {
         return originalName;
     }
 
@@ -60,8 +66,9 @@ public class ProductImage {
         this.originalName = originalName;
     }
 
-    public String getPath() {
-        return path;
+    @Override
+    public String getRelativeFilePath(){
+        return this.path;
     }
 
     public void setPath(String path) {
@@ -72,7 +79,7 @@ public class ProductImage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductImage that = (ProductImage) o;
+        ProductImageFileData that = (ProductImageFileData) o;
         return Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverName, that.serverName) && Objects.equals(originalName, that.originalName) && Objects.equals(path, that.path);
     }
 

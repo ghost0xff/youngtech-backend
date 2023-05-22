@@ -2,6 +2,7 @@ package com.youngtechcr.www.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -11,23 +12,27 @@ public class Brand {
     @Id
     @Column(name = "id_brand")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer idBrand;
+    private Integer brandId;
     private String name;
 
     public Brand() {
     }
 
-    public Brand(Integer idBrand, String name) {
-        this.idBrand = idBrand;
+    public Brand(Integer brandId){
+        this.brandId = brandId;
+    }
+
+    public Brand(Integer brandId, String name) {
+        this.brandId = brandId;
         this.name = name;
     }
 
-    public Integer getIdBrand() {
-        return idBrand;
+    public Integer getBrandId() {
+        return brandId;
     }
 
-    public void setIdBrand(Integer idBrand) {
-        this.idBrand = idBrand;
+    public void setBrandId(Integer brandId) {
+        this.brandId = brandId;
     }
 
     public String getName() {
@@ -43,18 +48,18 @@ public class Brand {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Brand brand = (Brand) o;
-        return Objects.equals(idBrand, brand.idBrand) && Objects.equals(name, brand.name);
+        return Objects.equals(brandId, brand.brandId) && Objects.equals(name, brand.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idBrand, name);
+        return Objects.hash(brandId, name);
     }
 
     @Override
     public String toString() {
         return "Brand{" +
-                "idBrand=" + idBrand +
+                "idBrand=" + brandId +
                 ", name='" + name + '\'' +
                 '}';
     }
