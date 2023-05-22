@@ -1,8 +1,11 @@
 package com.youngtechcr.www.domain;
 
 
+import com.youngtechcr.www.domain.storage.ProductAndProductImageRelationship;
+import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,12 +17,17 @@ public class Product {
     @Column(name = "id_product")
     private Integer idProduct;
 
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_brand", referencedColumnName = "id_brand")
-    @OneToOne(cascade = CascadeType.ALL)
     private Brand brand;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_product_image", referencedColumnName = "id_product_image")
-    private ProductImage productImage;
+
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductAndProductImageRelationship> productImageList;
+
+    @OneToMany(mappedBy = "product")
+    private List<Sale> saleList;
+
     private String name;
     private Integer stock;
     private String description;
@@ -30,20 +38,10 @@ public class Product {
     public Product() {
     }
 
-    public Product(int idProduct) {
+    public Product(Integer idProduct) {
         this.idProduct = idProduct;
     }
 
-    public Product(Integer idProduct, Brand brand, String name, Integer stock, String description, float price, ProductImage productImage, float discount) {
-        this.idProduct = idProduct;
-        this.brand = brand;
-        this.name = name;
-        this.stock = stock;
-        this.description = description;
-        this.price = price;
-        this.productImage = productImage;
-        this.discount = discount;
-    }
 
     public int getIdProduct() {
         return idProduct;
@@ -93,14 +91,6 @@ public class Product {
         this.price = price;
     }
 
-    public ProductImage getProductImage() {
-        return productImage;
-    }
-
-    public void setProductImage(ProductImage productImage) {
-        this.productImage = productImage;
-    }
-
     public float getDiscount() {
         return discount;
     }
@@ -109,30 +99,13 @@ public class Product {
         this.discount = discount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return idProduct == product.idProduct && Float.compare(product.price, price) == 0 && Float.compare(product.discount, discount) == 0 && Objects.equals(brand, product.brand) && Objects.equals(name, product.name) && Objects.equals(stock, product.stock) && Objects.equals(description, product.description) && Objects.equals(productImage, product.productImage);
+    public List<Sale> getSaleList() {
+        return saleList;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(idProduct, brand, name, stock, description, price, productImage, discount);
+    public void setSaleList(List<Sale> saleList) {
+        this.saleList = saleList;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "idProduct=" + idProduct +
-                ", brand=" + brand +
-                ", name='" + name + '\'' +
-                ", stock=" + stock +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", productImage=" + productImage +
-                ", discount=" + discount +
-                '}';
-    }
+
 }

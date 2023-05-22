@@ -14,6 +14,9 @@ public class Category {
     private Integer idCategory;
     private String name;
 
+
+
+
     public Category() {}
 
     public Category(Integer idCategory) {

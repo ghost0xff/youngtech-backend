@@ -3,6 +3,7 @@ package com.youngtechcr.www.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,7 +18,11 @@ public class Role {
     @Column(name = "name")
     private String roleName;
 
-    public Role(){}
+    @OneToMany(mappedBy = "role")
+    List<UserAndRoleRelationship> userRoleRelationshipList;
+
+    public Role() {
+    }
 
     public Role(Integer roleId, String roleName) {
         this.roleId = roleId;
@@ -40,21 +45,32 @@ public class Role {
         this.roleName = roleName;
     }
 
+    public List<UserAndRoleRelationship> getUserRoleRelationshipList() {
+        return userRoleRelationshipList;
+    }
+
+    public void setUserRoleRelationshipList(List<UserAndRoleRelationship> userRoleRelationshipList) {
+        this.userRoleRelationshipList = userRoleRelationshipList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName);
+        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(userRoleRelationshipList, role.userRoleRelationshipList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, roleName);
+        return Objects.hash(roleId, roleName, userRoleRelationshipList);
     }
 
     @Override
     public String toString() {
-        return this.roleName;
+        return "Role{" +
+                "roleId=" + roleId +
+                ", roleName='" + roleName + '\'' +
+                '}';
     }
 }

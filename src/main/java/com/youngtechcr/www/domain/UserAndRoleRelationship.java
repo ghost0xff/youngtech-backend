@@ -5,25 +5,25 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tbl_user_role")
-public class UserRoleRelationship {
+@Table(name = "tbl_user_and_role")
+public class UserAndRoleRelationship {
 
     @Id
-    @Column(name = "id_user_role")
+    @Column(name = "id_user_and_role")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer userRoleRelationshipId;
 
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "id_user", referencedColumnName = "id_user")
     private User user;
 
-    @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "id_role", referencedColumnName = "id_role")
     private Role role;
 
-    public UserRoleRelationship() {}
+    public UserAndRoleRelationship() {}
 
-    public UserRoleRelationship(Integer userRoleRelationshipId, User user, Role role) {
+    public UserAndRoleRelationship(Integer userRoleRelationshipId, User user, Role role) {
         this.userRoleRelationshipId = userRoleRelationshipId;
         this.user = user;
         this.role = role;
@@ -57,7 +57,7 @@ public class UserRoleRelationship {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserRoleRelationship that = (UserRoleRelationship) o;
+        UserAndRoleRelationship that = (UserAndRoleRelationship) o;
         return Objects.equals(userRoleRelationshipId, that.userRoleRelationshipId) && Objects.equals(user, that.user) && Objects.equals(role, that.role);
     }
 

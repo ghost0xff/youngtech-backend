@@ -2,6 +2,7 @@ package com.youngtechcr.www.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -13,9 +14,16 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idSale;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "id_product", referencedColumnName = "id_product")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "id_user", referencedColumnName = "id_user")
+    private User user;
+
+    @OneToMany(mappedBy = "sale")
+    List<OrderAndSaleRelationship> orders;
 
     public Sale() {
     }
