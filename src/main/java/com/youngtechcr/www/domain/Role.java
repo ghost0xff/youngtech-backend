@@ -1,32 +1,56 @@
 package com.youngtechcr.www.domain;
 
 
+import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_role")
-public class Role {
+public class Role implements TimeStamped {
 
     @Id
     @Column(name = "id_role")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer roleId;
-
     @Column(name = "name")
     private String roleName;
-
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "role")
-    List<UserAndRoleRelationship> userRoleRelationshipList;
+    private List<User> userList;
 
     public Role() {
     }
 
-    public Role(Integer roleId, String roleName) {
+    public Role(Integer roleId) {
         this.roleId = roleId;
-        this.roleName = roleName;
+    }
+
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    @Override
+    public void setCreatedAt(LocalDateTime timestamp) {
+        this.createdAt = timestamp;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime timestamp) {
+        this.updatedAt = timestamp;
     }
 
     public Integer getRoleId() {
@@ -45,12 +69,12 @@ public class Role {
         this.roleName = roleName;
     }
 
-    public List<UserAndRoleRelationship> getUserRoleRelationshipList() {
-        return userRoleRelationshipList;
+    public List<User> getUserList() {
+        return userList;
     }
 
-    public void setUserRoleRelationshipList(List<UserAndRoleRelationship> userRoleRelationshipList) {
-        this.userRoleRelationshipList = userRoleRelationshipList;
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 
     @Override
@@ -58,12 +82,12 @@ public class Role {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(userRoleRelationshipList, role.userRoleRelationshipList);
+        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt) && Objects.equals(userList, role.userList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, roleName, userRoleRelationshipList);
+        return Objects.hash(roleId, roleName, createdAt, updatedAt, userList);
     }
 
     @Override
@@ -71,6 +95,9 @@ public class Role {
         return "Role{" +
                 "roleId=" + roleId +
                 ", roleName='" + roleName + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+//                ", userList=" + userList +
                 '}';
     }
 }

@@ -13,34 +13,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EmptyRepositoryException.class)
     public ProblemDetail handleEmptyRepositoryException(EmptyRepositoryException exception) {
-        CustomProblemDetail custom = CustomProblemDetail.of(
-                exception.getDefaultTitle(),
-                exception.getDetail(),
-                exception.getDefaultHttpStatus(),
-                exception.getCustomErrorCode());
-        return custom;
+        return ExceptionUtils.handle(exception);
     }
 
     @ExceptionHandler(NoDataForRequestedObjectFoundException.class)
     public ProblemDetail handleNoDataForRequestedIdFoundException(NoDataForRequestedObjectFoundException exception) {
-        CustomProblemDetail customProblemDetail =
-        CustomProblemDetail.of(
-                exception.getDefaultTitle(),
-                exception.getDetail(),
-                exception.getDefaultHttpStatus(),
-                exception.getCustomErrorCode());
-        return customProblemDetail;
+        return ExceptionUtils.handle(exception);
     }
 
     @ExceptionHandler(ParameterValueAndRequestBodyMismatchException.class)
     public ProblemDetail handleParameterValueAndRequestBodyMismatchException(ParameterValueAndRequestBodyMismatchException exception) {
-        CustomProblemDetail customProblemDetail =
-        CustomProblemDetail.of(
-                exception.getDefaultTitle(),
-                exception.getDetail(),
-                exception.getDefaultHttpStatus(),
-                exception.getCustomErrorCode());
-        return customProblemDetail;
+        return ExceptionUtils.handle(exception);
     }
 
 }

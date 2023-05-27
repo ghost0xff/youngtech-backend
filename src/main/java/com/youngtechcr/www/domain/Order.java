@@ -1,46 +1,75 @@
 package com.youngtechcr.www.domain;
 
+import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_order")
-public class Order {
+public class Order implements TimeStamped {
 
     @Id
     @Column(name = "id_order")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer idOrder;
-    @OneToMany(mappedBy = "order")
-    private List<OrderAndSaleRelationship> sales;
-
-    private float total;
+    private Integer orderId;
+    private float total; // total = subtotal + iva
     private float subtotal;
-    private int iva;
+    @Column(name = "iva_percentage")
+    private int ivaPercentage;
+    @Column(name = "is_delivered")
+    private boolean isDelivered;
+    @Column(name = "is_canceled")
+    private boolean isCanceled;
     @Column(name = "order_date")
-    private Date orderDate;
-
+    private LocalDateTime orderDate;
     @Column(name = "delivery_date")
-    private Date deliveryDate;
-
-    private boolean delivered;
+    private LocalDateTime deliveryDate;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "fk_user_id", referencedColumnName = "id_user")
+    private User user;
+    @OneToMany(mappedBy = "order")
+    List<OrderedProducts> orderedProductsList;
 
     public Order() {
     }
 
-    public Order(Integer idInvoice) {
-        this.idOrder = idInvoice;
+    public Order(Integer orderId) {
+        this.orderId = orderId;
     }
 
-    public Integer getIdOrder() {
-        return idOrder;
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
-    public void setIdOrder(Integer idOrder) {
-        this.idOrder = idOrder;
+    @Override
+    public void setCreatedAt(LocalDateTime timestamp) {
+        this.createdAt = timestamp;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime timestamp) {
+        this.updatedAt = timestamp;
+    }
+
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
     }
 
     public float getTotal() {
@@ -59,44 +88,60 @@ public class Order {
         this.subtotal = subtotal;
     }
 
-    public int getIva() {
-        return iva;
+    public int getIvaPercentage() {
+        return ivaPercentage;
     }
 
-    public void setIva(int iva) {
-        this.iva = iva;
-    }
-
-    public Date getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public Date getDeliveryDate() {
-        return deliveryDate;
-    }
-
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
-    }
-
-    public List<OrderAndSaleRelationship> getSales() {
-        return sales;
-    }
-
-    public void setSales(List<OrderAndSaleRelationship> sales) {
-        this.sales = sales;
+    public void setIvaPercentage(int ivaPercentage) {
+        this.ivaPercentage = ivaPercentage;
     }
 
     public boolean isDelivered() {
-        return delivered;
+        return isDelivered;
     }
 
     public void setDelivered(boolean delivered) {
-        this.delivered = delivered;
+        isDelivered = delivered;
+    }
+
+    public boolean isCanceled() {
+        return isCanceled;
+    }
+
+    public void setCanceled(boolean canceled) {
+        isCanceled = canceled;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public LocalDateTime getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(LocalDateTime deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<OrderedProducts> getOrderedProductsList() {
+        return orderedProductsList;
+    }
+
+    public void setOrderedProductsList(List<OrderedProducts> orderedProductsList) {
+        this.orderedProductsList = orderedProductsList;
     }
 
     @Override
@@ -104,24 +149,29 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Float.compare(order.total, total) == 0 && Float.compare(order.subtotal, subtotal) == 0 && iva == order.iva && delivered == order.delivered && Objects.equals(idOrder, order.idOrder) && Objects.equals(sales, order.sales) && Objects.equals(orderDate, order.orderDate) && Objects.equals(deliveryDate, order.deliveryDate);
+        return Float.compare(order.total, total) == 0 && Float.compare(order.subtotal, subtotal) == 0 && ivaPercentage == order.ivaPercentage && isDelivered == order.isDelivered && isCanceled == order.isCanceled && Objects.equals(orderId, order.orderId) && Objects.equals(orderDate, order.orderDate) && Objects.equals(deliveryDate, order.deliveryDate) && Objects.equals(createdAt, order.createdAt) && Objects.equals(updatedAt, order.updatedAt) && Objects.equals(user, order.user) && Objects.equals(orderedProductsList, order.orderedProductsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idOrder, sales, total, subtotal, iva, orderDate, deliveryDate, delivered);
+        return Objects.hash(orderId, total, subtotal, ivaPercentage, isDelivered, isCanceled, orderDate, deliveryDate, createdAt, updatedAt, user, orderedProductsList);
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "idOrder=" + idOrder +
+                "orderId=" + orderId +
                 ", total=" + total +
                 ", subtotal=" + subtotal +
-                ", iva=" + iva +
+                ", ivaPercentage=" + ivaPercentage +
+                ", isDelivered=" + isDelivered +
+                ", isCanceled=" + isCanceled +
                 ", orderDate=" + orderDate +
                 ", deliveryDate=" + deliveryDate +
-                ", delivered=" + delivered +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", user=" + user +
+//                ", orderedProductsList=" + orderedProductsList +
                 '}';
     }
 }

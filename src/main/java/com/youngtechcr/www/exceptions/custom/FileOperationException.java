@@ -4,19 +4,19 @@ import com.youngtechcr.www.exceptions.ErrorCode;
 import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class ParameterValueAndRequestBodyMismatchException extends RuntimeException implements CustomRuntimeException {
+public class FileOperationException extends RuntimeException implements CustomRuntimeException {
 
-    private String title = "Bad request parameters exception";
-    private HttpStatus status = HttpStatus.BAD_REQUEST;
-    private ErrorCode errorCode = ErrorCode.getCode(4);
+    private String defaultTitle = "Can't process file";
+    private HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+    private ErrorCode errorCode = ErrorCode.getCode(5);
 
-    public ParameterValueAndRequestBodyMismatchException(String detail) {
+    public FileOperationException(String detail) {
         super(detail);
     }
 
     @Override
     public String getDefaultTitle() {
-        return this.title;
+        return this.defaultTitle;
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.youngtechcr.www.exceptions.custom;
 
 import com.youngtechcr.www.exceptions.ErrorCode;
-import com.youngtechcr.www.exceptions.ICustomRuntimeException;
+import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
 
-public class EmptyRepositoryException extends RuntimeException implements ICustomRuntimeException {
+public class EmptyRepositoryException extends RuntimeException implements CustomRuntimeException {
 
     private String defaultTitle = "No entities available";
     private HttpStatus defaultStatus = HttpStatus.NOT_FOUND;
