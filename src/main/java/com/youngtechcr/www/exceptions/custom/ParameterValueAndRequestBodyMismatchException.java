@@ -1,10 +1,10 @@
 package com.youngtechcr.www.exceptions.custom;
 
 import com.youngtechcr.www.exceptions.ErrorCode;
-import com.youngtechcr.www.exceptions.ICustomRuntimeException;
+import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class ParameterValueAndRequestBodyMismatchException extends RuntimeException implements ICustomRuntimeException {
+public class ParameterValueAndRequestBodyMismatchException extends RuntimeException implements CustomRuntimeException {
 
     private String title = "Bad request parameters exception";
     private HttpStatus status = HttpStatus.BAD_REQUEST;

@@ -1,30 +1,36 @@
 package com.youngtechcr.www.domain.storage;
 
 
+import com.youngtechcr.www.domain.Product;
+import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product_image")
-public class ProductImageFileData implements FileData {
+public class ProductImageFileData implements FileData, TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_product_image")
     private Integer idProductImage;
-
     @Column(name = "server_name")
-    private String serverName;
-
+    private String serverFileName;
     @Column(name = "original_name")
-    private String originalName;
-
-    private String path;
-
-    @OneToMany(mappedBy = "productImageFileData")
-    List<ProductAndProductImageRelationship> productList;
+    private String originalFileName;
+    @Column(name = "relative_path")
+    private String relativePath;
+    @Column(name = "is_main_image")
+    private boolean isMainImage;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "fk_id_product", referencedColumnName = "id_product")
+    private Product product;
 
     public ProductImageFileData() {
     }
@@ -33,11 +39,55 @@ public class ProductImageFileData implements FileData {
         this.idProductImage = idProductImage;
     }
 
-    public ProductImageFileData(Integer idProductImage, String serverName, String originalName, String path) {
-        this.idProductImage = idProductImage;
-        this.serverName = serverName;
-        this.originalName = originalName;
-        this.path = path;
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    @Override
+    public void setCreatedAt(LocalDateTime timestamp) {
+        this.createdAt = timestamp;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime timestamp) {
+        this.updatedAt = timestamp;
+    }
+
+    @Override
+    public String getOriginalFileName() {
+        return this.originalFileName;
+    }
+
+    @Override
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
+    @Override
+    public String getServerFileName() {
+        return this.serverFileName;
+    }
+
+    @Override
+    public void getServerFileName(String serverFileName) {
+        this.serverFileName = serverFileName;
+    }
+
+    @Override
+    public String getRelativePath() {
+        return this.relativePath;
+    }
+
+    @Override
+    public void setRelativePath(String relativePath) {
+        this.relativePath = relativePath;
     }
 
     public Integer getIdProductImage() {
@@ -48,31 +98,24 @@ public class ProductImageFileData implements FileData {
         this.idProductImage = idProductImage;
     }
 
-    @Override
-    public String getServerFileName(){
-        return this.serverName;
+    public void setServerFileName(String serverFileName) {
+        this.serverFileName = serverFileName;
     }
 
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
+    public boolean isMainImage() {
+        return isMainImage;
     }
 
-    @Override
-    public String getOriginalFileName() {
-        return originalName;
+    public void setMainImage(boolean mainImage) {
+        isMainImage = mainImage;
     }
 
-    public void setOriginalName(String originalName) {
-        this.originalName = originalName;
+    public Product getProduct() {
+        return product;
     }
 
-    @Override
-    public String getRelativeFilePath(){
-        return this.path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     @Override
@@ -80,21 +123,25 @@ public class ProductImageFileData implements FileData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductImageFileData that = (ProductImageFileData) o;
-        return Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverName, that.serverName) && Objects.equals(originalName, that.originalName) && Objects.equals(path, that.path);
+        return isMainImage == that.isMainImage && Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idProductImage, serverName, originalName, path);
+        return Objects.hash(idProductImage, serverFileName, originalFileName, relativePath, isMainImage, createdAt, updatedAt, product);
     }
 
     @Override
     public String toString() {
-        return "ProductImage{" +
+        return "ProductImageFileData{" +
                 "idProductImage=" + idProductImage +
-                ", serverName='" + serverName + '\'' +
-                ", originalName='" + originalName + '\'' +
-                ", path='" + path + '\'' +
+                ", serverFileName='" + serverFileName + '\'' +
+                ", originalFileName='" + originalFileName + '\'' +
+                ", relativePath='" + relativePath + '\'' +
+                ", isMainImage=" + isMainImage +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", product=" + product +
                 '}';
     }
 }

@@ -1,10 +1,10 @@
 package com.youngtechcr.www.exceptions.custom;
 
 import com.youngtechcr.www.exceptions.ErrorCode;
-import com.youngtechcr.www.exceptions.ICustomRuntimeException;
+import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class FileOperationException extends RuntimeException implements ICustomRuntimeException {
+public class FileOperationException extends RuntimeException implements CustomRuntimeException {
 
     private String defaultTitle = "Can't process file";
     private HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;

@@ -1,49 +1,69 @@
 package com.youngtechcr.www.domain;
 
 
+import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_user")
-public class User  {
+public class User implements TimeStamped {
 
     @Id
     @Column(name = "id_user")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer idUser;
-
-    @OneToMany(mappedBy = "user")
-    private List<UserAndRoleRelationship> userRoleRelationshipList;
-
-    @OneToMany(mappedBy = "user")
-    private List<Sale> saleList;
-
+    private Integer userId;
     private String username;
     private String password;
     private String email;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
+    private Role role;
+    @OneToMany(mappedBy = "user")
+    private List<Order> orderList;
+    @OneToMany(mappedBy = "user")
+    private List<Sale> saleList;
 
     public User(){}
 
-    public User(Integer idUser) {
-        this.idUser = idUser;
+    public User(Integer userId) {
+        this.userId = userId;
     }
 
-    public User(Integer idUser, String username, String password, String email) {
-        this.idUser = idUser;
-        this.username = username;
-        this.password = password;
-        this.email = email;
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
-    public Integer getIdUser() {
-        return idUser;
+    @Override
+    public void setCreatedAt(LocalDateTime timestamp) {
+        this.createdAt = timestamp;
     }
 
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime timestamp) {
+        this.updatedAt = timestamp;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -70,12 +90,12 @@ public class User  {
         this.email = email;
     }
 
-    public List<UserAndRoleRelationship> getUserRoleRelationshipList() {
-        return userRoleRelationshipList;
+    public Role getRole() {
+        return role;
     }
 
-    public void setUserRoleRelationshipList(List<UserAndRoleRelationship> userRoleRelationshipList) {
-        this.userRoleRelationshipList = userRoleRelationshipList;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public List<Sale> getSaleList() {
@@ -86,26 +106,40 @@ public class User  {
         this.saleList = saleList;
     }
 
+    public List<Order> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<Order> orderList) {
+        this.orderList = orderList;
+    }
+
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(idUser, user.idUser) && Objects.equals(userRoleRelationshipList, user.userRoleRelationshipList) && Objects.equals(saleList, user.saleList) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email);
+        return Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt) && Objects.equals(role, user.role) && Objects.equals(orderList, user.orderList) && Objects.equals(saleList, user.saleList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idUser, userRoleRelationshipList, saleList, username, password, email);
+        return Objects.hash(userId, username, password, email, createdAt, updatedAt, role, orderList, saleList);
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "idUser=" + idUser +
+                "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", role=" + role +
+//                ", orderList=" + orderList +
+//                ", saleList=" + saleList +
                 '}';
     }
 }

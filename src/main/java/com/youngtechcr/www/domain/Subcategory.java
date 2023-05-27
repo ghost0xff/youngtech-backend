@@ -8,27 +8,26 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tbl_category")
-public class Category implements TimeStamped {
+@Table(name = "tbl_subcategory")
+public class Subcategory implements TimeStamped {
 
     @Id
-    @Column(name = "id_category")
+    @Column(name = "id_subcategory")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer categoryId;
+    private Integer subcategoryId;
     private String name;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "category")
+    @ManyToOne
+    @JoinColumn(name = "fk_id_category", referencedColumnName = "id_category")
+    private Category category;
+    @OneToMany(mappedBy = "subcategory")
     List<Product> productList;
-    @OneToMany(mappedBy = "category")
-    List<Subcategory> subcategoryList;
 
-    public Category() {}
-    public Category(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
+    public Subcategory(){}
+    public Subcategory(Integer subcategoryId){ this.subcategoryId = subcategoryId; }
 
     @Override
     public LocalDateTime getCreatedAt() {
@@ -50,12 +49,12 @@ public class Category implements TimeStamped {
         this.updatedAt = timestamp;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
+    public Integer getSubcategoryId() {
+        return subcategoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setSubcategoryId(Integer subcategoryId) {
+        this.subcategoryId = subcategoryId;
     }
 
     public String getName() {
@@ -66,6 +65,14 @@ public class Category implements TimeStamped {
         this.name = name;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public List<Product> getProductList() {
         return productList;
     }
@@ -74,36 +81,28 @@ public class Category implements TimeStamped {
         this.productList = productList;
     }
 
-    public List<Subcategory> getSubcategoryList() {
-        return subcategoryList;
-    }
-
-    public void setSubcategoryList(List<Subcategory> subcategoryList) {
-        this.subcategoryList = subcategoryList;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return Objects.equals(categoryId, category.categoryId) && Objects.equals(name, category.name) && Objects.equals(createdAt, category.createdAt) && Objects.equals(updatedAt, category.updatedAt) && Objects.equals(productList, category.productList) && Objects.equals(subcategoryList, category.subcategoryList);
+        Subcategory that = (Subcategory) o;
+        return Objects.equals(subcategoryId, that.subcategoryId) && Objects.equals(name, that.name) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(category, that.category) && Objects.equals(productList, that.productList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryId, name, createdAt, updatedAt, productList, subcategoryList);
+        return Objects.hash(subcategoryId, name, createdAt, updatedAt, category, productList);
     }
 
     @Override
     public String toString() {
-        return "Category{" +
-                "categoryId=" + categoryId +
+        return "Subcategory{" +
+                "subcategoryId=" + subcategoryId +
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", category=" + category +
 //                ", productList=" + productList +
-//                ", subcategoryList=" + subcategoryList +
                 '}';
     }
 }

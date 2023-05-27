@@ -1,7 +1,6 @@
 package com.youngtechcr.www.services.storage;
 
 import com.youngtechcr.www.domain.storage.FileData;
-import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -12,8 +11,10 @@ public interface StorageService {
 
     public String generateServerFileName(String originalName);
 
-    public FileData saveRecordToDataBase(FileData fileData);
+    public FileData saveToDataBase(FileData fileData);
+    public FileData saveToFileSystem(FileData fileData);
 
     public FileData retrieveFromFileSystem(FileData fileData);
+    public FileData retrieveFromDataBase(FileData fileData);
 
 }

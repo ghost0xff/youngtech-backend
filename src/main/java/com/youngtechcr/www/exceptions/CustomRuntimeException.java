@@ -2,7 +2,7 @@ package com.youngtechcr.www.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public interface ICustomRuntimeException {
+public interface CustomRuntimeException {
 
     public String getDefaultTitle();
 

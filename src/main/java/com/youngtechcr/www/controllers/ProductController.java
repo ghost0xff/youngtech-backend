@@ -24,7 +24,6 @@ public class ProductController {
             @Validated @RequestPart(name = "product-meta-data") Product product,
             @Validated @RequestPart(name = "product-image") MultipartFile uploadedImage
     ){
-        productImageStorageService.processUpload(productId, uploadedImage);
         return null;
     }
 
