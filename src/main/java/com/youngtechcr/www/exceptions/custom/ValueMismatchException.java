@@ -4,13 +4,13 @@ import com.youngtechcr.www.exceptions.ErrorCode;
 import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class ParameterValueAndRequestBodyMismatchException extends RuntimeException implements CustomRuntimeException {
+public class ValueMismatchException extends RuntimeException implements CustomRuntimeException {
 
     private String title = "Bad request parameters exception";
     private HttpStatus status = HttpStatus.BAD_REQUEST;
-    private ErrorCode errorCode = ErrorCode.getCode(4);
+    private ErrorCode errorCode = ErrorCode.from(4);
 
-    public ParameterValueAndRequestBodyMismatchException(String detail) {
+    public ValueMismatchException(String detail) {
         super(detail);
     }
 

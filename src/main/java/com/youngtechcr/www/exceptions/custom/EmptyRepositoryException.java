@@ -9,7 +9,7 @@ public class EmptyRepositoryException extends RuntimeException implements Custom
 
     private String defaultTitle = "No entities available";
     private HttpStatus defaultStatus = HttpStatus.NOT_FOUND;
-    private ErrorCode customErrorCode = ErrorCode.getCode(1);
+    private ErrorCode customErrorCode = ErrorCode.from(1);
 
 
     public EmptyRepositoryException(String detail) {

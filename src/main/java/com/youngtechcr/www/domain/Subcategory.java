@@ -1,5 +1,6 @@
 package com.youngtechcr.www.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -13,7 +14,7 @@ public class Subcategory implements TimeStamped {
 
     @Id
     @Column(name = "id_subcategory")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer subcategoryId;
     private String name;
     @Column(name = "created_at")
@@ -65,6 +66,7 @@ public class Subcategory implements TimeStamped {
         this.name = name;
     }
 
+    @JsonBackReference
     public Category getCategory() {
         return category;
     }

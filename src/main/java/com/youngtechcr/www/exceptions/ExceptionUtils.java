@@ -7,7 +7,8 @@ public class ExceptionUtils {
                 exception.getDefaultTitle(),
                 exception.getDetail(),
                 exception.getDefaultHttpStatus(),
-                exception.getCustomErrorCode());
+                exception.getCustomErrorCode()
+        );
         return customProblemDetail;
     }
 

@@ -1,5 +1,7 @@
 package com.youngtechcr.www.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -13,7 +15,7 @@ public class Category implements TimeStamped {
 
     @Id
     @Column(name = "id_category")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
     private String name;
     @Column(name = "created_at")
@@ -74,10 +76,10 @@ public class Category implements TimeStamped {
         this.productList = productList;
     }
 
+    @JsonManagedReference
     public List<Subcategory> getSubcategoryList() {
         return subcategoryList;
     }
-
     public void setSubcategoryList(List<Subcategory> subcategoryList) {
         this.subcategoryList = subcategoryList;
     }

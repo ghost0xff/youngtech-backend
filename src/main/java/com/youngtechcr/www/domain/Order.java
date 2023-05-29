@@ -13,7 +13,7 @@ public class Order implements TimeStamped {
 
     @Id
     @Column(name = "id_order")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
     private float total; // total = subtotal + iva
     private float subtotal;

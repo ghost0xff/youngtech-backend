@@ -14,7 +14,7 @@ import java.util.Objects;
 public class Product implements TimeStamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_product")
     private Integer productId;
     private String name;

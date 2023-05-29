@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ProductImageFileData implements FileData, TimeStamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_product_image")
     private Integer idProductImage;
     @Column(name = "server_name")

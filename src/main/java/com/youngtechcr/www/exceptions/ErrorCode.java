@@ -1,8 +1,6 @@
 package com.youngtechcr.www.exceptions;
 
 
-import org.springframework.stereotype.Component;
-
 public class ErrorCode {
 
     private Integer codeNumber;
@@ -11,9 +9,12 @@ public class ErrorCode {
         this.codeNumber = codeNumber;
     }
 
-    public static ErrorCode getCode(Integer code){
+    public static ErrorCode from(Integer code){
         return new ErrorCode(code);
     }
 
+    public Integer getCodeNumber() {
+        return this.codeNumber;
+    }
 
 }
