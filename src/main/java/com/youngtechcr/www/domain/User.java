@@ -5,6 +5,7 @@ import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ public class User implements TimeStamped {
 
     @Id
     @Column(name = "id_user")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
     private String username;
     private String password;

@@ -12,5 +12,4 @@ public interface TimeStamped {
 
     public void setUpdatedAt(LocalDateTime timestamp);
 
-
 }

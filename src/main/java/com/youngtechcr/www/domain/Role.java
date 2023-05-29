@@ -14,7 +14,7 @@ public class Role implements TimeStamped {
 
     @Id
     @Column(name = "id_role")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
     @Column(name = "name")
     private String roleName;

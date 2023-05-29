@@ -8,7 +8,7 @@ public class FileOperationException extends RuntimeException implements CustomRu
 
     private String defaultTitle = "Can't process file";
     private HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-    private ErrorCode errorCode = ErrorCode.getCode(5);
+    private ErrorCode errorCode = ErrorCode.from(5);
 
     public FileOperationException(String detail) {
         super(detail);

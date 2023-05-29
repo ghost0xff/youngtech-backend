@@ -4,13 +4,13 @@ import com.youngtechcr.www.exceptions.ErrorCode;
 import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
-public class NoDataForRequestedObjectFoundException extends RuntimeException implements CustomRuntimeException {
+public class NoDataFoundException extends RuntimeException implements CustomRuntimeException {
 
     private String defaultTitle = "No entities found";
+    private ErrorCode customErrorCode =  ErrorCode.from(2);
     private HttpStatus defaultStatus = HttpStatus.NOT_FOUND;
-    private ErrorCode customErrorCode =  ErrorCode.getCode(2);
 
-    public NoDataForRequestedObjectFoundException(String detail) {
+    public NoDataFoundException(String detail) {
         super(detail);
     }
 

@@ -10,6 +10,7 @@ public interface CustomRuntimeException {
 
     public HttpStatus getDefaultHttpStatus();
 
+    //  getDetail should should always return the getMessage()
     public String getDetail();
 
 }

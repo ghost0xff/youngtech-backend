@@ -13,7 +13,7 @@ public class Sale implements TimeStamped {
 
     @Id
     @Column(name = "id_sale")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idSale;
     @Column(name = "created_at")
     private LocalDateTime createdAt;

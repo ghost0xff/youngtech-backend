@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 public class AlreadyExistsException extends RuntimeException implements CustomRuntimeException {
 
     private String defaultTitle = "Data already exists and can't be duplicated";
-    private ErrorCode customErrorCode = ErrorCode.getCode(3);
-    private HttpStatus status = HttpStatus.CONFLICT;
+    private ErrorCode customErrorCode = ErrorCode.from(3);
+    private HttpStatus defaultStatus = HttpStatus.CONFLICT;
 
     public AlreadyExistsException(String detail) {
         super(detail);
@@ -16,21 +16,21 @@ public class AlreadyExistsException extends RuntimeException implements CustomRu
 
     @Override
     public String getDefaultTitle() {
-        return null;
+        return this.defaultTitle;
     }
 
     @Override
     public ErrorCode getCustomErrorCode() {
-        return null;
+        return this.customErrorCode;
     }
 
     @Override
     public HttpStatus getDefaultHttpStatus() {
-        return null;
+        return this.defaultStatus;
     }
 
     @Override
     public String getDetail() {
-        return null;
+        return this.getMessage();
     }
 }
