@@ -1,6 +1,7 @@
 package com.youngtechcr.www.services.domain;
 
 import com.youngtechcr.www.domain.Brand;
+import com.youngtechcr.www.domain.Product;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
@@ -15,12 +16,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class BrandService implements BasicCrudService<Brand> {
 
     @Autowired
     private BrandRepository brandRepository;
+    @Autowired
+    private ProductService productService;
+
     private static final Logger log = LoggerFactory.getLogger(BrandService.class);
 
     @Override
@@ -29,11 +34,13 @@ public class BrandService implements BasicCrudService<Brand> {
         return this
                 .brandRepository
                 .findById(brandId)
-                .orElseThrow(() -> new NoDataFoundException(ErrorMessages.PROVIDED_IDS_DONT_MATCH));
+                .orElseThrow(() -> new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
     @Transactional
     public Brand create(Brand brandToBeCreated) {
+        if(this.brandRepository.existsById(brandToBeCreated.getBrandId()))
+            throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_ID);
         if (!this.brandRepository.existsByName(brandToBeCreated.getName())) {
             TimestampUtils.setTimestampsToNow(brandToBeCreated);
             Brand newBrand = this.brandRepository.save(brandToBeCreated);
@@ -67,5 +74,20 @@ public class BrandService implements BasicCrudService<Brand> {
         throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
+    @Transactional(readOnly = true)
+    public List<Product> findAllProductsByBrandId(Integer brandId) {
+        var requestedBrand = this.findById(brandId);
+        return requestedBrand.getProductList();
+    }
+
+    @Transactional(readOnly = true)
+    public Product findProductByBrandId(Integer brandId, Integer productId) {
+        Brand requestedBrand = this.findById(brandId);
+        Product requestedProduct = this.productService.findById(productId);
+        if(requestedProduct.getBrand().equals(requestedBrand)) {
+            return requestedProduct;
+        }
+        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
+    }
 
 }

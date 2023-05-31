@@ -6,15 +6,12 @@ import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.repositories.CategoryRepository;
-import com.youngtechcr.www.services.BasicCrudService;
 import com.youngtechcr.www.utils.ErrorMessages;
 import com.youngtechcr.www.utils.TimestampUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -40,6 +37,8 @@ public class CategoryService {
 
     @Transactional
     public Category createCategory(Category categoryToBeCreated) {
+        if (this.categoryRepository.existsById(categoryToBeCreated.getCategoryId()))
+            throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_ID);
         if (!this.categoryRepository.existsByName(categoryToBeCreated.getName())) {
             TimestampUtils.setTimestampsToNow(categoryToBeCreated);
             Category createdCategory = this.categoryRepository.save(categoryToBeCreated);
@@ -94,10 +93,10 @@ public class CategoryService {
     public Subcategory findSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId) {
         Category categoryToBeConsulted = this.findCategoryById(categoryId);
         Subcategory requetedSubcategory = this.subcategoryService.findById(subcategoryId);
-        if(requetedSubcategory.getCategory() != null || requetedSubcategory.getCategory().equals(categoryToBeConsulted)) {
+        if(requetedSubcategory.getCategory() != null && requetedSubcategory.getCategory().equals(categoryToBeConsulted)) {
             return requetedSubcategory;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_PATH_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
     public Subcategory updateSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
@@ -107,7 +106,7 @@ public class CategoryService {
             log.info("Updated subcategory: " + updatedSubcategory + "in category: " + categoryWhosSubcategoryWillBeModified);
             return updatedSubcategory;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_PATH_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
     @Transactional
@@ -119,6 +118,6 @@ public class CategoryService {
             log.info("Deleted subcategory: " + subcategoryToBeDeleted + " from category " + categoryWhosSubcategotyWillBeDeleted);
             return;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_PATH_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 }
