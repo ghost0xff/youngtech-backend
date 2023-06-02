@@ -7,28 +7,42 @@ import com.youngtechcr.www.domain.Subcategory;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
+import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.repositories.BrandRepository;
 import com.youngtechcr.www.repositories.CategoryRepository;
 import com.youngtechcr.www.repositories.ProductRepository;
 import com.youngtechcr.www.repositories.SubcategoryRepository;
 import com.youngtechcr.www.services.BasicCrudService;
 import com.youngtechcr.www.utils.ErrorMessages;
+import com.youngtechcr.www.utils.TimestampUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class ProductService implements BasicCrudService<Product> {
 
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private BrandRepository brandRepository;
-    @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
     private SubcategoryRepository subcategoryRepository;
 
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
+
+    public ProductService(ProductRepository productRepository,
+                          BrandRepository brandRepository,
+                          CategoryRepository categoryRepository,
+                          SubcategoryRepository subcategoryRepository){
+        this.productRepository = productRepository;
+        this.brandRepository = brandRepository;
+        this.categoryRepository = categoryRepository;
+        this.subcategoryRepository = subcategoryRepository;
+    }
 
     @Override
     public Product findById(Integer productId) {
@@ -41,23 +55,39 @@ public class ProductService implements BasicCrudService<Product> {
     @Override
     @Transactional
     public Product create(Product productToBeCreated) {
-        if(this.productRepository.existsById(productToBeCreated.getProductId()))
-            throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_ID);
-
-        return null;
+        if(this.isValid(productToBeCreated)) {
+            TimestampUtils.setTimestampsToNow(productToBeCreated);
+            var createdProduct = this.productRepository.save(productToBeCreated);
+            log.info("Created new products" + createdProduct);
+            return createdProduct;
+        }
+        throw new InvalidElementException(ErrorMessages.INVALID_PRODUCT);
     }
 
     @Override
-    public Product updateById(Integer id, Product toBeUpdated) {
-        return null;
+    @Transactional
+    public Product updateById(Integer productId, Product productToBeUpdated) {
+        if(productToBeUpdated.getProductId().equals(productId)){
+            LocalDateTime storedCreatedAtTimestamp = this.findById(productId).getCreatedAt();
+            TimestampUtils.updateTimeStamps(productToBeUpdated, storedCreatedAtTimestamp);
+            Product updatedProduct = this.productRepository.save(productToBeUpdated);
+            log.info("Updated product: " + updatedProduct);
+            return updatedProduct;
+        }
+        throw new ValueMismatchException(ErrorMessages.PROVIDED_IDS_DONT_MATCH);
     }
 
     @Override
-    public void deleteById(Integer id) {
-
+    public void deleteById(Integer productId) {
+        if(this.productRepository.existsById(productId)) {
+            this.productRepository.deleteById(productId);
+            log.info("Deleted product with id: " +  productId);
+            return;
+        }
+        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
-    private boolean isValid(Product productToBeValidated) {
+    public boolean isValid(Product productToBeValidated) {
         boolean isValid = true;
         Brand brandOfProductToBeCreated = productToBeValidated.getBrand();
         if(brandOfProductToBeCreated == null || !this.brandRepository.existsById(brandOfProductToBeCreated.getBrandId()))

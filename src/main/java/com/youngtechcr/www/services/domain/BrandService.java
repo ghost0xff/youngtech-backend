@@ -39,8 +39,6 @@ public class BrandService implements BasicCrudService<Brand> {
 
     @Transactional
     public Brand create(Brand brandToBeCreated) {
-        if(this.brandRepository.existsById(brandToBeCreated.getBrandId()))
-            throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_ID);
         if (!this.brandRepository.existsByName(brandToBeCreated.getName())) {
             TimestampUtils.setTimestampsToNow(brandToBeCreated);
             Brand newBrand = this.brandRepository.save(brandToBeCreated);

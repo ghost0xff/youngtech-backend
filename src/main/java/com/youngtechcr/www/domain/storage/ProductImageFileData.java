@@ -1,6 +1,7 @@
 package com.youngtechcr.www.domain.storage;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.youngtechcr.www.domain.Product;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
@@ -110,6 +111,7 @@ public class ProductImageFileData implements FileData, TimeStamped {
         isMainImage = mainImage;
     }
 
+    @JsonBackReference(value = "product-image")
     public Product getProduct() {
         return product;
     }

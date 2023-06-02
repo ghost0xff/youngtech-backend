@@ -37,8 +37,6 @@ public class CategoryService {
 
     @Transactional
     public Category createCategory(Category categoryToBeCreated) {
-        if (this.categoryRepository.existsById(categoryToBeCreated.getCategoryId()))
-            throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_ID);
         if (!this.categoryRepository.existsByName(categoryToBeCreated.getName())) {
             TimestampUtils.setTimestampsToNow(categoryToBeCreated);
             Category createdCategory = this.categoryRepository.save(categoryToBeCreated);
@@ -51,7 +49,7 @@ public class CategoryService {
     @Transactional
     public Category updateCategoryById(Integer categoryId, Category categoryToBeUpdated) {
         if (categoryId.equals(categoryToBeUpdated.getCategoryId())) {
-            LocalDateTime storedCreatedAtTimestamp = this.findCategoryById(categoryId).getCreatedAt();
+                LocalDateTime storedCreatedAtTimestamp = this.findCategoryById(categoryId).getCreatedAt();
             TimestampUtils.updateTimeStamps(categoryToBeUpdated, storedCreatedAtTimestamp);
             Category updatedCategory = this.categoryRepository.save(categoryToBeUpdated);
             log.info("Updated category: " + updatedCategory);
@@ -99,6 +97,7 @@ public class CategoryService {
         throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
+    @Transactional
     public Subcategory updateSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
         Category categoryWhosSubcategoryWillBeModified = this.findCategoryById(categoryId);
         if(subcategoryToBeUpdated.getCategory().getCategoryId().equals(categoryWhosSubcategoryWillBeModified.getCategoryId())) {

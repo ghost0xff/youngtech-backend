@@ -1,6 +1,8 @@
 package com.youngtechcr.www.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -25,6 +27,7 @@ public class Subcategory implements TimeStamped {
     @JoinColumn(name = "fk_id_category", referencedColumnName = "id_category")
     private Category category;
     @OneToMany(mappedBy = "subcategory")
+    @JsonProperty("products")
     List<Product> productList;
 
     public Subcategory(){}
@@ -66,7 +69,7 @@ public class Subcategory implements TimeStamped {
         this.name = name;
     }
 
-    @JsonBackReference
+    @JsonBackReference("category-subcategory")
     public Category getCategory() {
         return category;
     }
@@ -75,6 +78,7 @@ public class Subcategory implements TimeStamped {
         this.category = category;
     }
 
+    @JsonManagedReference(value = "product-subcategory")
     public List<Product> getProductList() {
         return productList;
     }

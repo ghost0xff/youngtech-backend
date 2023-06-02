@@ -32,8 +32,6 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
 
     @Override
     public Subcategory create(Subcategory subcategoryToBeCreated) {
-        if(this.subcategoryRepository.existsById(subcategoryToBeCreated.getSubcategoryId()))
-            throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_ID);
         if(!this.subcategoryRepository.existsByName(subcategoryToBeCreated.getName())) {
             TimestampUtils.setTimestampsToNow(subcategoryToBeCreated);
             Subcategory createdSubcategory = this.subcategoryRepository.save(subcategoryToBeCreated);

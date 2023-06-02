@@ -1,6 +1,9 @@
 package com.youngtechcr.www.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -28,8 +31,10 @@ public class User implements TimeStamped {
     @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
     private Role role;
     @OneToMany(mappedBy = "user")
+    @JsonProperty("orders")
     private List<Order> orderList;
     @OneToMany(mappedBy = "user")
+    @JsonProperty("sales")
     private List<Sale> saleList;
 
     public User(){}
@@ -91,6 +96,7 @@ public class User implements TimeStamped {
         this.email = email;
     }
 
+    @JsonBackReference(value = "user-role")
     public Role getRole() {
         return role;
     }
@@ -99,6 +105,7 @@ public class User implements TimeStamped {
         this.role = role;
     }
 
+    @JsonManagedReference(value = "user-sale")
     public List<Sale> getSaleList() {
         return saleList;
     }
@@ -107,6 +114,7 @@ public class User implements TimeStamped {
         this.saleList = saleList;
     }
 
+    @JsonManagedReference(value = "user-order")
     public List<Order> getOrderList() {
         return orderList;
     }

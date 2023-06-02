@@ -1,10 +1,12 @@
 package com.youngtechcr.www.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -37,17 +39,22 @@ public class Product implements TimeStamped {
     @JoinColumn(name = "fk_id_subcategory", referencedColumnName = "id_subcategory")
     private Subcategory subcategory;
     @OneToMany(mappedBy = "product")
-    List<ProductImageFileData> productImageFileDataList;
+    @JsonProperty("images")
+    private List<ProductImageFileData> productImageFileDataList;
     @OneToMany(mappedBy = "product")
+    @JsonProperty("sales")
     private List<Sale> saleList;
+
+    @OneToMany(mappedBy = "product")
+    @JsonProperty("orderedProducts")
+    private List<OrderedProduct> orderedProductsList;
 
     public Product() {
     }
 
-    public Product(Integer idProduct) {
-        this.productId = idProduct;
+    public Product(Integer productId) {
+        this.productId = productId;
     }
-
 
     @Override
     public LocalDateTime getCreatedAt() {
@@ -117,6 +124,7 @@ public class Product implements TimeStamped {
         this.discountPercentage = discountPercentage;
     }
 
+    @JsonBackReference(value = "product-brand")
     public Brand getBrand() {
         return brand;
     }
@@ -125,6 +133,7 @@ public class Product implements TimeStamped {
         this.brand = brand;
     }
 
+    @JsonBackReference(value = "product-category")
     public Category getCategory() {
         return category;
     }
@@ -133,6 +142,7 @@ public class Product implements TimeStamped {
         this.category = category;
     }
 
+    @JsonBackReference(value = "product-subcategory")
     public Subcategory getSubcategory() {
         return subcategory;
     }
@@ -141,14 +151,15 @@ public class Product implements TimeStamped {
         this.subcategory = subcategory;
     }
 
+    @JsonManagedReference(value = "product-image")
     public List<ProductImageFileData> getProductImageFileDataList() {
         return productImageFileDataList;
     }
-
     public void setProductImageFileDataList(List<ProductImageFileData> productImageFileDataList) {
         this.productImageFileDataList = productImageFileDataList;
     }
 
+    @JsonManagedReference(value = "product-sale")
     public List<Sale> getSaleList() {
         return saleList;
     }
@@ -157,17 +168,25 @@ public class Product implements TimeStamped {
         this.saleList = saleList;
     }
 
+    @JsonManagedReference(value = "product-ordered_products")
+    public List<OrderedProduct> getOrderedProductsList() {
+        return orderedProductsList;
+    }
+    public void setOrderedProductsList(List<OrderedProduct> orderedProductsList) {
+        this.orderedProductsList = orderedProductsList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return stock == product.stock && Float.compare(product.price, price) == 0 && Float.compare(product.discountPercentage, discountPercentage) == 0 && Objects.equals(productId, product.productId) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(productImageFileDataList, product.productImageFileDataList) && Objects.equals(saleList, product.saleList);
+        return stock == product.stock && Float.compare(product.price, price) == 0 && Float.compare(product.discountPercentage, discountPercentage) == 0 && Objects.equals(productId, product.productId) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(productImageFileDataList, product.productImageFileDataList) && Objects.equals(saleList, product.saleList) && Objects.equals(orderedProductsList, product.orderedProductsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, productImageFileDataList, saleList);
+        return Objects.hash(productId, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, productImageFileDataList, saleList, orderedProductsList);
     }
 
     @Override
@@ -186,6 +205,7 @@ public class Product implements TimeStamped {
                 ", subcategory=" + subcategory +
 //                ", productImageFileDataList=" + productImageFileDataList +
 //                ", saleList=" + saleList +
+//                ", orderedProductsList=" + orderedProductsList +
                 '}';
     }
 }

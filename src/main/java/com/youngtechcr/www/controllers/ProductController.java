@@ -2,42 +2,59 @@ package com.youngtechcr.www.controllers;
 
 
 import com.youngtechcr.www.domain.Product;
+import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import com.youngtechcr.www.services.domain.ProductService;
 import com.youngtechcr.www.utils.ResponseEntityUtils;
+import jakarta.servlet.annotation.MultipartConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.print.attribute.standard.Media;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/products")
-public class ProductController implements BasicCrudController<Product> {
+public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @Override
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Integer productId) {
+    public ResponseEntity<Product> findProductById(@PathVariable("id") Integer productId) {
         Product fetchedProduct = this.productService.findById(productId);
         return ResponseEntity.ok().body(fetchedProduct);
     }
 
-    @Override
-    public ResponseEntity<Product> create(Product productToBeCreated) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Product> createProduct(@RequestBody Product productToBeCreated) {
         Product createdProduct = this.productService.create(productToBeCreated);
         return ResponseEntityUtils.created(createdProduct);
     }
 
-    @Override
-    public ResponseEntity<Product> updateById(Integer id, Product toBeUpdated) {
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Product> updateProductById(
+            @PathVariable("id") Integer productId,
+            @RequestBody Product productToBeUpdated
+    ){
+        Product updatedProduct = this.productService.updateById(productId, productToBeUpdated);
+        return ResponseEntity.ok().body(updatedProduct);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Product> deleteProductById(@PathVariable("id") Integer productId) {
+        this.productService.deleteById(productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(path = "/{id}/images")
+    public ResponseEntity<List<ProductImageFileData>> uploadImageByProductId(
+            @PathVariable("id") Integer productId,
+            @RequestPart MultipartFile imageToBeUploaded
+    ) {
         return null;
     }
 
-    @Override
-    public ResponseEntity<Product> deleteById(Integer id) {
-        return null;
-    }
 }

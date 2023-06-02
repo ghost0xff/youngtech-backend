@@ -1,6 +1,8 @@
 package com.youngtechcr.www.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -69,6 +71,8 @@ public class Role implements TimeStamped {
         this.roleName = roleName;
     }
 
+    @JsonManagedReference(value = "user-role")
+    @JsonProperty("users")
     public List<User> getUserList() {
         return userList;
     }

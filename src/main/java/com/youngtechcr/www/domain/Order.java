@@ -1,5 +1,8 @@
 package com.youngtechcr.www.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -32,13 +35,13 @@ public class Order implements TimeStamped {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @ManyToOne
-    @JoinColumn(name = "fk_user_id", referencedColumnName = "id_user")
+    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
     private User user;
     @OneToMany(mappedBy = "order")
-    List<OrderedProducts> orderedProductsList;
+    @JsonProperty("orderedProducts")
+    private List<OrderedProduct> orderedProductsList;
 
-    public Order() {
-    }
+    public Order() { }
 
     public Order(Integer orderId) {
         this.orderId = orderId;
@@ -128,6 +131,7 @@ public class Order implements TimeStamped {
         this.deliveryDate = deliveryDate;
     }
 
+    @JsonBackReference(value = "user-order")
     public User getUser() {
         return user;
     }
@@ -136,11 +140,12 @@ public class Order implements TimeStamped {
         this.user = user;
     }
 
-    public List<OrderedProducts> getOrderedProductsList() {
+    @JsonManagedReference(value = "user-ordered_products")
+    public List<OrderedProduct> getOrderedProductsList() {
         return orderedProductsList;
     }
 
-    public void setOrderedProductsList(List<OrderedProducts> orderedProductsList) {
+    public void setOrderedProductsList(List<OrderedProduct> orderedProductsList) {
         this.orderedProductsList = orderedProductsList;
     }
 

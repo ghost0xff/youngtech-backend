@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.*;
 
 @Service
-public class ProductImageFileDataStorageService implements StorageService {
+public class ProductImageStorageService implements StorageService {
 
 
     @Override

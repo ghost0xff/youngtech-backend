@@ -1,5 +1,6 @@
 package com.youngtechcr.www.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
@@ -8,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_ordered_product")
-public class OrderedProducts implements TimeStamped {
+public class OrderedProduct implements TimeStamped {
 
 
     @Id
@@ -74,6 +75,7 @@ public class OrderedProducts implements TimeStamped {
         isCanceled = canceled;
     }
 
+    @JsonBackReference(value = "user-ordered_products")
     public Order getOrder() {
         return order;
     }
@@ -82,6 +84,7 @@ public class OrderedProducts implements TimeStamped {
         this.order = order;
     }
 
+    @JsonBackReference(value = "product-ordered_products")
     public Product getProduct() {
         return product;
     }
@@ -94,7 +97,7 @@ public class OrderedProducts implements TimeStamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderedProducts that = (OrderedProducts) o;
+        OrderedProduct that = (OrderedProduct) o;
         return isDelivered == that.isDelivered && isCanceled == that.isCanceled && Objects.equals(orderedProductsId, that.orderedProductsId) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(order, that.order) && Objects.equals(product, that.product);
     }
 

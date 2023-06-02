@@ -1,10 +1,10 @@
 package com.youngtechcr.www.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -61,6 +61,7 @@ public class Sale implements TimeStamped {
         this.idSale = idSale;
     }
 
+    @JsonBackReference(value = "product-sale")
     public Product getProduct() {
         return product;
     }
@@ -69,6 +70,7 @@ public class Sale implements TimeStamped {
         this.product = product;
     }
 
+    @JsonBackReference(value = "user-sale")
     public User getUser() {
         return user;
     }
