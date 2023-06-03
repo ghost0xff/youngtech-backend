@@ -33,10 +33,16 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
     private ProductService productService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProductImageFileData storeProductImage(Integer productId, MultipartFile imageToBeUploaded, @Nullable ProductImageFileData imageMetaData) {
+    public ProductImageFileData storeProductImage(
+            Integer productId, MultipartFile imageToBeUploaded,
+            @Nullable ProductImageFileData imageMetaData
+    ) {
         Product productWhoseImageWillBeAdded = this.productService.findProductById(productId);
         if(!alreadyHasMainImage(productWhoseImageWillBeAdded)){
-            Path posibleProductDirectory = Paths.get(StorageUtils.PRODUCT_STORAGE_DIRECTORY).resolve(productId.toString());
+            Path posibleProductDirectory = Paths
+                    .get(StorageUtils.PRODUCT_STORAGE_DIRECTORY)
+                    .resolve(productId.toString())
+                    .resolve(StorageUtils.IMAGE_DIRECTORY);
             String serverFileName = StorageUtils.generateServerFileName(productId, imageToBeUploaded);
             var savedProductImageInWithSomeMetaData = this.saveToFileSystem(serverFileName, posibleProductDirectory, imageToBeUploaded);
             savedProductImageInWithSomeMetaData.setMain(imageMetaData != null ? imageMetaData.isMain() : false);
@@ -52,7 +58,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
 
     @Override
     public ProductImageFileData saveToFileSystem(String serverFileName, Path posibleProductDirectoryPath, MultipartFile imageToBeUploaded) {
-        StorageUtils.createDirectoryIfNotAlreadyExists(posibleProductDirectoryPath);
+        StorageUtils.createDirectoriesIfNotAlreadyExists(posibleProductDirectoryPath);
         Path relativeImagePath = posibleProductDirectoryPath.resolve(serverFileName);
         StorageUtils.saveFileOrReplaceIfExisting(imageToBeUploaded, relativeImagePath);
         var savedProductImageInFileSystem = new ProductImageFileData(

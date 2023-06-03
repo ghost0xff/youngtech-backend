@@ -19,7 +19,7 @@ public final class StorageUtils {
     public static final String ROOT_STORAGE_DIRECTORY = "../youngtech-storage";
     public static final String PRODUCT_STORAGE_DIRECTORY = "../youngtech-storage/products";
     public static final String USERS_STORAGE_DIRECTORY = "../youngtech-storage/users";
-
+    public static final String IMAGE_DIRECTORY = "images";
 
     public static String generateServerFileName(Integer elementId, MultipartFile fileToBeUploaded) {
         UUID randomUuid = UUID.randomUUID();
@@ -27,11 +27,11 @@ public final class StorageUtils {
         return newServerFileName;
     }
 
-    public static Path createDirectoryIfNotAlreadyExists(Path posibleDirectoryPath) {
+    public static Path createDirectoriesIfNotAlreadyExists(Path posibleDirectoryPath) {
         posibleDirectoryPath.toAbsolutePath().normalize();
         if (Files.notExists(posibleDirectoryPath)) {
             try {
-                return Files.createDirectory(posibleDirectoryPath);
+                return Files.createDirectories(posibleDirectoryPath);
             } catch (IOException e) {
                 log.warn("Can't create directory with name: " + posibleDirectoryPath.getFileName() + " due to...");
                 e.printStackTrace(System.out);
