@@ -1,4 +1,4 @@
-package com.youngtechcr.www.services.domain;
+package com.youngtechcr.www.services;
 
 import com.youngtechcr.www.domain.Brand;
 import com.youngtechcr.www.domain.Product;
@@ -6,7 +6,6 @@ import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.repositories.BrandRepository;
-import com.youngtechcr.www.services.BasicCrudService;
 import com.youngtechcr.www.utils.ErrorMessages;
 import com.youngtechcr.www.utils.TimestampUtils;
 import org.slf4j.Logger;
@@ -81,7 +80,7 @@ public class BrandService implements BasicCrudService<Brand> {
     @Transactional(readOnly = true)
     public Product findProductByBrandId(Integer brandId, Integer productId) {
         Brand requestedBrand = this.findById(brandId);
-        Product requestedProduct = this.productService.findById(productId);
+        Product requestedProduct = this.productService.findProductById(productId);
         if(requestedProduct.getBrand().equals(requestedBrand)) {
             return requestedProduct;
         }

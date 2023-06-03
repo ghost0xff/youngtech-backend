@@ -1,4 +1,4 @@
-package com.youngtechcr.www.domain.interfaces;
+package com.youngtechcr.www.domain;
 
 import java.time.LocalDateTime;
 

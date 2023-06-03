@@ -1,10 +1,11 @@
 package com.youngtechcr.www.utils;
 
-import com.youngtechcr.www.domain.interfaces.TimeStamped;
+import com.youngtechcr.www.domain.TimeStamped;
 
 import java.time.LocalDateTime;
 
 public final class TimestampUtils {
+
 
     public static void setTimestampsToNow(TimeStamped timeStampedToBeCreated) {
         timeStampedToBeCreated.setCreatedAt(LocalDateTime.now());

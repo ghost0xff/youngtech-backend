@@ -1,4 +1,4 @@
-package com.youngtechcr.www.services.domain;
+package com.youngtechcr.www.services;
 
 import com.youngtechcr.www.domain.Category;
 import com.youngtechcr.www.domain.Subcategory;

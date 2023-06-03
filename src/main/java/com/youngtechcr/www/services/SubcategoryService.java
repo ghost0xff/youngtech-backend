@@ -1,11 +1,10 @@
-package com.youngtechcr.www.services.domain;
+package com.youngtechcr.www.services;
 
 import com.youngtechcr.www.domain.Subcategory;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.repositories.SubcategoryRepository;
-import com.youngtechcr.www.services.BasicCrudService;
 import com.youngtechcr.www.utils.ErrorMessages;
 import com.youngtechcr.www.utils.TimestampUtils;
 import org.slf4j.Logger;
@@ -59,5 +58,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
         }
         throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
+
+
 }
 

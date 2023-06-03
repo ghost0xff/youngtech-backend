@@ -1,4 +1,4 @@
-package com.youngtechcr.www.services.domain;
+package com.youngtechcr.www.services;
 
 import com.youngtechcr.www.domain.Brand;
 import com.youngtechcr.www.domain.Category;
@@ -8,27 +8,24 @@ import com.youngtechcr.www.repositories.BrandRepository;
 import com.youngtechcr.www.repositories.CategoryRepository;
 import com.youngtechcr.www.repositories.ProductRepository;
 import com.youngtechcr.www.repositories.SubcategoryRepository;
+import com.youngtechcr.www.services.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.util.Platform;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class ProductServiceTest {
+class ValidationServiceTest {
 
     private ProductRepository productRepository;
     private BrandRepository brandRepository;
     private CategoryRepository categoryRepository;
     private SubcategoryRepository subcategoryRepository;
-    private ProductService productService;
+    private ValidationService validationService;
 
     @BeforeEach
     void setUp(){
@@ -36,7 +33,7 @@ class ProductServiceTest {
         this.brandRepository = mock(BrandRepository.class);
         this.categoryRepository = mock(CategoryRepository.class);
         this.subcategoryRepository = mock(SubcategoryRepository.class);
-        this.productService = new ProductService(productRepository, brandRepository, categoryRepository, subcategoryRepository);
+        this.validationService = new ValidationService(productRepository, brandRepository, categoryRepository, subcategoryRepository);
     }
     @Test
     @DisplayName("Test product validation")
@@ -69,7 +66,7 @@ class ProductServiceTest {
         productToBeValidates.setCategory(categoryToBeTested);
         productToBeValidates.setSubcategory(subcategoryToBeTested);
 
-        assertTrue(this.productService.isValid(productToBeValidates));
+        assertTrue(this.validationService.isProductValid(productToBeValidates));
 
     }
 

@@ -4,7 +4,6 @@ package com.youngtechcr.www.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import com.youngtechcr.www.domain.storage.ProductImageFileData;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -40,7 +39,7 @@ public class Product implements TimeStamped {
     private Subcategory subcategory;
     @OneToMany(mappedBy = "product")
     @JsonProperty("images")
-    private List<ProductImageFileData> productImageFileDataList;
+    private List<ProductImageFileData> imageList;
     @OneToMany(mappedBy = "product")
     @JsonProperty("sales")
     private List<Sale> saleList;
@@ -152,11 +151,11 @@ public class Product implements TimeStamped {
     }
 
     @JsonManagedReference(value = "product-image")
-    public List<ProductImageFileData> getProductImageFileDataList() {
-        return productImageFileDataList;
+    public List<ProductImageFileData> getImageList() {
+        return imageList;
     }
-    public void setProductImageFileDataList(List<ProductImageFileData> productImageFileDataList) {
-        this.productImageFileDataList = productImageFileDataList;
+    public void setImageList(List<ProductImageFileData> imageList) {
+        this.imageList = imageList;
     }
 
     @JsonManagedReference(value = "product-sale")
@@ -181,12 +180,12 @@ public class Product implements TimeStamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return stock == product.stock && Float.compare(product.price, price) == 0 && Float.compare(product.discountPercentage, discountPercentage) == 0 && Objects.equals(productId, product.productId) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(productImageFileDataList, product.productImageFileDataList) && Objects.equals(saleList, product.saleList) && Objects.equals(orderedProductsList, product.orderedProductsList);
+        return stock == product.stock && Float.compare(product.price, price) == 0 && Float.compare(product.discountPercentage, discountPercentage) == 0 && Objects.equals(productId, product.productId) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(imageList, product.imageList) && Objects.equals(saleList, product.saleList) && Objects.equals(orderedProductsList, product.orderedProductsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, productImageFileDataList, saleList, orderedProductsList);
+        return Objects.hash(productId, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, imageList, saleList, orderedProductsList);
     }
 
     @Override

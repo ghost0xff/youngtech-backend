@@ -2,8 +2,11 @@ package com.youngtechcr.www.domain.storage;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.Product;
-import com.youngtechcr.www.domain.interfaces.TimeStamped;
+import com.youngtechcr.www.domain.OneAmongMany;
+import com.youngtechcr.www.domain.TimeStamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product_image")
-public class ProductImageFileData implements FileData, TimeStamped {
+public class ProductImageFileData implements FileData, TimeStamped, OneAmongMany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +27,12 @@ public class ProductImageFileData implements FileData, TimeStamped {
     @Column(name = "relative_path")
     private String relativePath;
     @Column(name = "is_main_image")
+    @JsonProperty("main")
     private boolean isMainImage;
+    @Column(name = "mime_type")
+    private String mimeType;
+    @Column(name = "size_in_bytes")
+    private long sizeInBytes;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
@@ -33,13 +41,15 @@ public class ProductImageFileData implements FileData, TimeStamped {
     @JoinColumn(name = "fk_id_product", referencedColumnName = "id_product")
     private Product product;
 
+
     public ProductImageFileData() {
     }
 
-    public ProductImageFileData(Integer idProductImage) {
-        this.idProductImage = idProductImage;
+    public ProductImageFileData(String serverFileName, String originalFileName, String relativePath) {
+        this.serverFileName = serverFileName;
+        this.originalFileName = originalFileName;
+        this.relativePath = relativePath;
     }
-
 
     @Override
     public LocalDateTime getCreatedAt() {
@@ -62,33 +72,59 @@ public class ProductImageFileData implements FileData, TimeStamped {
     }
 
     @Override
+    @JsonIgnore
     public String getOriginalFileName() {
         return this.originalFileName;
     }
 
     @Override
+    @JsonProperty
     public void setOriginalFileName(String originalFileName) {
         this.originalFileName = originalFileName;
     }
 
     @Override
+    @JsonIgnore
     public String getServerFileName() {
         return this.serverFileName;
     }
 
     @Override
-    public void getServerFileName(String serverFileName) {
+    @JsonProperty
+    public void setServerFileName(String serverFileName) {
         this.serverFileName = serverFileName;
     }
 
     @Override
+    @JsonIgnore
     public String getRelativePath() {
         return this.relativePath;
     }
 
     @Override
+    @JsonProperty
     public void setRelativePath(String relativePath) {
         this.relativePath = relativePath;
+    }
+
+    @Override
+    public String getMimeType() {
+        return this.mimeType;
+    }
+
+    @Override
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    @Override
+    public long getSizeInBytes() {
+        return this.sizeInBytes;
+    }
+
+    @Override
+    public void setSizeInBytes(long sizeInBytes) {
+        this.sizeInBytes = sizeInBytes;
     }
 
     public Integer getIdProductImage() {
@@ -99,15 +135,12 @@ public class ProductImageFileData implements FileData, TimeStamped {
         this.idProductImage = idProductImage;
     }
 
-    public void setServerFileName(String serverFileName) {
-        this.serverFileName = serverFileName;
-    }
 
-    public boolean isMainImage() {
+    public boolean isMain() {
         return isMainImage;
     }
 
-    public void setMainImage(boolean mainImage) {
+    public void setMain(boolean mainImage) {
         isMainImage = mainImage;
     }
 
@@ -120,17 +153,18 @@ public class ProductImageFileData implements FileData, TimeStamped {
         this.product = product;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductImageFileData that = (ProductImageFileData) o;
-        return isMainImage == that.isMainImage && Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
+        return isMainImage == that.isMainImage && sizeInBytes == that.sizeInBytes && Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(mimeType, that.mimeType) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idProductImage, serverFileName, originalFileName, relativePath, isMainImage, createdAt, updatedAt, product);
+        return Objects.hash(idProductImage, serverFileName, originalFileName, relativePath, isMainImage, mimeType, sizeInBytes, createdAt, updatedAt, product);
     }
 
     @Override
@@ -141,6 +175,8 @@ public class ProductImageFileData implements FileData, TimeStamped {
                 ", originalFileName='" + originalFileName + '\'' +
                 ", relativePath='" + relativePath + '\'' +
                 ", isMainImage=" + isMainImage +
+                ", mimeType='" + mimeType + '\'' +
+                ", sizeInBytes=" + sizeInBytes +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", product=" + product +

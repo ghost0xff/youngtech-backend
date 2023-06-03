@@ -1,6 +1,9 @@
-package com.youngtechcr.www.exceptions;
+package com.youngtechcr.www.utils;
 
-public class ExceptionUtils {
+import com.youngtechcr.www.exceptions.CustomProblemDetail;
+import com.youngtechcr.www.exceptions.CustomRuntimeException;
+
+public final class ExceptionUtils {
 
     public static <T extends RuntimeException & CustomRuntimeException> CustomProblemDetail handle(T exception) {
         CustomProblemDetail customProblemDetail = CustomProblemDetail.of(

@@ -3,7 +3,6 @@ package com.youngtechcr.www.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.domain.interfaces.TimeStamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

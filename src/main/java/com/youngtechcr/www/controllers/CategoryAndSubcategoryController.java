@@ -2,10 +2,9 @@ package com.youngtechcr.www.controllers;
 
 import com.youngtechcr.www.domain.Category;
 import com.youngtechcr.www.domain.Subcategory;
-import com.youngtechcr.www.services.domain.CategoryService;
+import com.youngtechcr.www.services.CategoryService;
 import com.youngtechcr.www.utils.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

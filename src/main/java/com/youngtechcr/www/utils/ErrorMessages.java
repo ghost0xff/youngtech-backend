@@ -16,5 +16,6 @@ public final class ErrorMessages {
     public static final String CANT_CREATE_DUPLICATE_ID = "Can't create element with requested id it already exists another element with the id provided.";
     // Hierarchy of elements should be explained in the official documentation of this application
     public static final String REQUESTED_CHILD_ELEMENT_DOESNT_EXIST = "Requested child element doesn't match for requested parent element.";
-
+    public static final String UNABLE_TO_UPLOAD_REQUESTED_FILE = "Couldn't store uploaded file due to unexpected problems on the server";
+    public static final String CANT_CREATE_DUPLICATE_MAIN_IMAGE = "Can't upload requested image as main because it already exists another main image";
 }
