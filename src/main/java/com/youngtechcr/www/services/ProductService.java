@@ -36,6 +36,7 @@ public class ProductService {
         this.productImageStorageService = productImageStorageService;
     }
 
+    @Transactional(readOnly = true)
     public Product findProductById(Integer productId) {
         return this
                 .productRepository

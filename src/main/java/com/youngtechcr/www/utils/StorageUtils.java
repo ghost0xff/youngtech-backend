@@ -20,6 +20,7 @@ public final class StorageUtils {
     public static final String PRODUCT_STORAGE_DIRECTORY = "../youngtech-storage/products";
     public static final String USERS_STORAGE_DIRECTORY = "../youngtech-storage/users";
     public static final String IMAGE_DIRECTORY = "images";
+    // ^^^^ a string representing a DIRECTORY, NOT A  PATH to a directory
 
     public static String generateServerFileName(Integer elementId, MultipartFile fileToBeUploaded) {
         UUID randomUuid = UUID.randomUUID();
