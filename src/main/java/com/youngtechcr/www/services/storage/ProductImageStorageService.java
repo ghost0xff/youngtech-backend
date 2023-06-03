@@ -43,7 +43,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
                     .get(StorageUtils.PRODUCT_STORAGE_DIRECTORY)
                     .resolve(productId.toString())
                     .resolve(StorageUtils.IMAGE_DIRECTORY);
-            String serverFileName = StorageUtils.generateServerFileName(productId, imageToBeUploaded);
+            String serverFileName = StorageUtils.generateServerFileName(productId, imageToBeUploaded, FileType.IMAGE);
             var savedProductImageInWithSomeMetaData = this.saveToFileSystem(serverFileName, posibleProductDirectory, imageToBeUploaded);
             savedProductImageInWithSomeMetaData.setMain(imageMetaData != null ? imageMetaData.isMain() : false);
             savedProductImageInWithSomeMetaData.setSizeInBytes(imageToBeUploaded.getSize());
