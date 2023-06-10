@@ -14,12 +14,12 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product_image")
-public class ProductImageFileData implements FileData, TimeStamped, OneAmongMany {
+public class ProductImageFileMetaData implements FileMetaData, TimeStamped, OneAmongMany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_product_image")
-    private Integer idProductImage;
+    private Integer productImageId;
     @Column(name = "server_name")
     private String serverFileName;
     @Column(name = "original_name")
@@ -42,10 +42,10 @@ public class ProductImageFileData implements FileData, TimeStamped, OneAmongMany
     private Product product;
 
 
-    public ProductImageFileData() {
+    public ProductImageFileMetaData() {
     }
 
-    public ProductImageFileData(String serverFileName, String originalFileName, String relativePath) {
+    public ProductImageFileMetaData(String serverFileName, String originalFileName, String relativePath) {
         this.serverFileName = serverFileName;
         this.originalFileName = originalFileName;
         this.relativePath = relativePath;
@@ -127,12 +127,12 @@ public class ProductImageFileData implements FileData, TimeStamped, OneAmongMany
         this.sizeInBytes = sizeInBytes;
     }
 
-    public Integer getIdProductImage() {
-        return idProductImage;
+    public Integer getProductImageId() {
+        return productImageId;
     }
 
-    public void setIdProductImage(Integer idProductImage) {
-        this.idProductImage = idProductImage;
+    public void setProductImageId(Integer productImageId) {
+        this.productImageId = productImageId;
     }
 
 
@@ -145,10 +145,12 @@ public class ProductImageFileData implements FileData, TimeStamped, OneAmongMany
     }
 
     @JsonBackReference(value = "product-image")
+    @JsonIgnore
     public Product getProduct() {
         return product;
     }
 
+    @JsonProperty
     public void setProduct(Product product) {
         this.product = product;
     }
@@ -158,19 +160,19 @@ public class ProductImageFileData implements FileData, TimeStamped, OneAmongMany
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductImageFileData that = (ProductImageFileData) o;
-        return isMainImage == that.isMainImage && sizeInBytes == that.sizeInBytes && Objects.equals(idProductImage, that.idProductImage) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(mimeType, that.mimeType) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
+        ProductImageFileMetaData that = (ProductImageFileMetaData) o;
+        return isMainImage == that.isMainImage && sizeInBytes == that.sizeInBytes && Objects.equals(productImageId, that.productImageId) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(mimeType, that.mimeType) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idProductImage, serverFileName, originalFileName, relativePath, isMainImage, mimeType, sizeInBytes, createdAt, updatedAt, product);
+        return Objects.hash(productImageId, serverFileName, originalFileName, relativePath, isMainImage, mimeType, sizeInBytes, createdAt, updatedAt, product);
     }
 
     @Override
     public String toString() {
         return "ProductImageFileData{" +
-                "idProductImage=" + idProductImage +
+                "idProductImage=" + productImageId +
                 ", serverFileName='" + serverFileName + '\'' +
                 ", originalFileName='" + originalFileName + '\'' +
                 ", relativePath='" + relativePath + '\'' +
