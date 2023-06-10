@@ -1,6 +1,6 @@
 package com.youngtechcr.www.domain.storage;
 
-public interface FileData {
+public interface FileMetaData {
 
     public String getOriginalFileName();
     public void setOriginalFileName(String originalFileName);

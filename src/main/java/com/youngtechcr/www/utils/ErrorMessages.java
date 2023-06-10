@@ -17,5 +17,9 @@ public final class ErrorMessages {
     // Hierarchy of elements should be explained in the official documentation of this application
     public static final String REQUESTED_CHILD_ELEMENT_DOESNT_EXIST = "Requested child element doesn't match for requested parent element.";
     public static final String UNABLE_TO_UPLOAD_REQUESTED_FILE = "Couldn't store uploaded file due to unexpected problems on the server";
-    public static final String CANT_CREATE_DUPLICATE_MAIN_IMAGE = "Can't upload requested image as main because it already exists another main image";
+    public static final String UNABLE_TO_DOWNLOAD_REQUESTED_FILE = "Couldn't download file due to unexpected problems on the server.";
+    public static final String UNABLE_TO_LOCATE_REQUESTES_FILE = "Couldn't locate requested file. File might not exist or might've been deleted";
+    public static final String CANT_CREATE_DUPLICATE_MAIN_IMAGE = "Can't upload requested image as main because  it already exists another main image";
+    public static final String NO_MAIN_ELEMENT_WAS_FOUND= "No main element was found.";
+
 }

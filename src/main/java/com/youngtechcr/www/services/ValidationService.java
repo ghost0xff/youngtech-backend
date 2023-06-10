@@ -4,14 +4,13 @@ import com.youngtechcr.www.domain.Brand;
 import com.youngtechcr.www.domain.Category;
 import com.youngtechcr.www.domain.Product;
 import com.youngtechcr.www.domain.Subcategory;
-import com.youngtechcr.www.domain.storage.ProductImageFileData;
+import com.youngtechcr.www.domain.storage.ProductImageMetaData;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.repositories.BrandRepository;
 import com.youngtechcr.www.repositories.CategoryRepository;
 import com.youngtechcr.www.repositories.ProductRepository;
 import com.youngtechcr.www.repositories.SubcategoryRepository;
 import com.youngtechcr.www.utils.ErrorMessages;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +60,7 @@ public class ValidationService {
         return isValid;
     }
 
-    public boolean isProductImageValid(ProductImageFileData productImageFileData) {
+    public boolean isProductImageValid(ProductImageMetaData productImageFileData) {
         boolean isValid = true;
 
         return isValid;

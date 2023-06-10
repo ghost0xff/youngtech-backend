@@ -1,7 +1,8 @@
 package com.youngtechcr.www.services;
 
 import com.youngtechcr.www.domain.Product;
-import com.youngtechcr.www.domain.storage.ProductImageFileData;
+import com.youngtechcr.www.domain.storage.DoubleNameFileCarrier;
+import com.youngtechcr.www.domain.storage.ProductImageMetaData;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
@@ -12,11 +13,14 @@ import com.youngtechcr.www.utils.TimestampUtils;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -78,13 +82,48 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductImageFileData uploadProductImageByProductId(Integer productId, MultipartFile imageToBeUploaded, @Nullable ProductImageFileData imageMetadata) {
+    public ProductImageMetaData uploadProductImageByProductId(Integer productId, MultipartFile imageToBeUploaded, @Nullable ProductImageMetaData imageMetaData) {
         if (!this.productRepository.existsById(productId)) {
             throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
         }
-        ProductImageFileData uploadedProductImage = this
+        ProductImageMetaData uploadedProductImage = this
                 .productImageStorageService
-                .storeProductImage(productId, imageToBeUploaded, imageMetadata);
+                .storeProductImage(productId, imageToBeUploaded, imageMetaData);
         return uploadedProductImage;
     }
+
+    @Transactional(readOnly = true)
+    public List<ProductImageMetaData> getProductImagesMetadataById(Integer productId) {
+        return this.findProductById(productId).getImageList();
+    }
+
+    public DoubleNameFileCarrier downloadMainProductImageByProductId(Integer productId) {
+        var productToBeInspected = this.findProductById(productId);
+        if(this.hasMainImage(productToBeInspected)) {
+            ProductImageMetaData mainImage = this.obtainMainImage(productToBeInspected);
+            String originaImageName = mainImage.getOriginalFileName();
+            MediaType imageMediaType = MediaType.parseMediaType(mainImage.getMimeType());
+            Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(mainImage);
+            return new DoubleNameFileCarrier(obtainedImageResource, originaImageName, imageMediaType);
+        }
+        throw new NoDataFoundException(ErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasMainImage(Product productToBeInspected) {
+        return productToBeInspected
+                .getImageList()
+                .parallelStream()
+                .anyMatch((image) -> image.isMain());
+    }
+
+    public ProductImageMetaData obtainMainImage(Product productToBeInspected) {
+        return productToBeInspected
+                .getImageList()
+                .parallelStream()
+                .filter( image -> image.isMain())
+                .findAny()
+                .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND));
+    }
+
 }

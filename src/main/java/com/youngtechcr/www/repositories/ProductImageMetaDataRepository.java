@@ -1,14 +1,14 @@
 package com.youngtechcr.www.repositories;
 
-import com.youngtechcr.www.domain.storage.ProductImageFileMetaData;
+import com.youngtechcr.www.domain.storage.ProductImageMetaData;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ProductImageFileDataRepository extends JpaRepository<ProductImageFileMetaData, Integer> {
+public interface ProductImageMetaDataRepository extends JpaRepository<ProductImageMetaData, Integer> {
 
 
-    Optional<ProductImageFileMetaData> findByIsMainImage(boolean isMainImage);
+    Optional<ProductImageMetaData> findByIsMainImage(boolean isMainImage);
     boolean existsByIsMainImage(boolean isMainImage);
 
 }

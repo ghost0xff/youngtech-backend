@@ -2,11 +2,11 @@ package com.youngtechcr.www.controllers;
 
 
 import com.youngtechcr.www.domain.Product;
-import com.youngtechcr.www.domain.storage.ProductImageFileData;
+import com.youngtechcr.www.domain.storage.DoubleNameFileCarrier;
+import com.youngtechcr.www.domain.storage.ProductImageMetaData;
 import com.youngtechcr.www.services.ProductService;
 import com.youngtechcr.www.utils.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,21 +49,27 @@ public class ProductController {
     }
 
     @PostMapping(path = "/{id}/images")
-    public ResponseEntity<ProductImageFileData> uploadImageByProductId(
+    public ResponseEntity<ProductImageMetaData> uploadImageByProductId(
             @PathVariable("id") Integer productId,
             @RequestPart(name = "file-data") MultipartFile imageToBeUploaded,
-            @RequestPart(name = "meta-data", required = false) ProductImageFileData imageMetadata
+            @RequestPart(name = "meta-data", required = false) ProductImageMetaData imageMetaData
     ) {
-        var uploadedProductImage = this.productService.uploadProductImageByProductId(productId, imageToBeUploaded, imageMetadata);
+        var uploadedProductImage = this.productService.uploadProductImageByProductId(productId, imageToBeUploaded, imageMetaData);
         return ResponseEntityUtils.created(uploadedProductImage);
     }
 
     @GetMapping(path = "/{id}/images")
-    public ResponseEntity<Resource> downloadMainImage(
-            @RequestParam(name = "main") boolean main
-    ){
-
-        return null;
+    public ResponseEntity<?> downloadMainImage(
+            @PathVariable("id") Integer productId,
+            @RequestParam(name = "main", required = false) boolean isMain
+    ) {
+        if(isMain) {
+            DoubleNameFileCarrier resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
+            return ResponseEntityUtils.downloadedFileWithCustomName(resourceWithSomeMetaData.resource(), resourceWithSomeMetaData.customFileName(),resourceWithSomeMetaData.fileMediaType() );
+        }
+        List<ProductImageMetaData> imagesMetaData = this.productService.getProductImagesMetadataById(productId);
+        return ResponseEntity.ok().body(imagesMetaData);
     }
+
 
 }

@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product_image")
-public class ProductImageFileMetaData implements FileMetaData, TimeStamped, OneAmongMany {
+public class ProductImageMetaData implements FileMetaData, TimeStamped, OneAmongMany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,10 +42,10 @@ public class ProductImageFileMetaData implements FileMetaData, TimeStamped, OneA
     private Product product;
 
 
-    public ProductImageFileMetaData() {
+    public ProductImageMetaData() {
     }
 
-    public ProductImageFileMetaData(String serverFileName, String originalFileName, String relativePath) {
+    public ProductImageMetaData(String serverFileName, String originalFileName, String relativePath) {
         this.serverFileName = serverFileName;
         this.originalFileName = originalFileName;
         this.relativePath = relativePath;
@@ -145,7 +145,6 @@ public class ProductImageFileMetaData implements FileMetaData, TimeStamped, OneA
     }
 
     @JsonBackReference(value = "product-image")
-    @JsonIgnore
     public Product getProduct() {
         return product;
     }
@@ -160,7 +159,7 @@ public class ProductImageFileMetaData implements FileMetaData, TimeStamped, OneA
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductImageFileMetaData that = (ProductImageFileMetaData) o;
+        ProductImageMetaData that = (ProductImageMetaData) o;
         return isMainImage == that.isMainImage && sizeInBytes == that.sizeInBytes && Objects.equals(productImageId, that.productImageId) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(mimeType, that.mimeType) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
     }
 

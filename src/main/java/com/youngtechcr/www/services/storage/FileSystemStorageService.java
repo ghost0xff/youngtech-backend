@@ -1,6 +1,6 @@
 package com.youngtechcr.www.services.storage;
 
-import com.youngtechcr.www.domain.storage.FileData;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -8,6 +8,8 @@ import java.nio.file.Path;
 public interface FileSystemStorageService<T> {
 
     T saveToFileSystem(String serverFileName, Path pathToBeSaved, MultipartFile fileToBeSaved);
+
+    Resource retrieveFromFileSystem(Path absoluteFilePath);
 
     T saveToDataBase(T fileToBeSaved);
 }

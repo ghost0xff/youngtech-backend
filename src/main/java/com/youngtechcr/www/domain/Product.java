@@ -4,7 +4,7 @@ package com.youngtechcr.www.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.domain.storage.ProductImageFileData;
+import com.youngtechcr.www.domain.storage.ProductImageMetaData;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +39,7 @@ public class Product implements TimeStamped {
     private Subcategory subcategory;
     @OneToMany(mappedBy = "product")
     @JsonProperty("images")
-    private List<ProductImageFileData> imageList;
+    private List<ProductImageMetaData> imageList;
     @OneToMany(mappedBy = "product")
     @JsonProperty("sales")
     private List<Sale> saleList;
@@ -151,10 +151,10 @@ public class Product implements TimeStamped {
     }
 
     @JsonManagedReference(value = "product-image")
-    public List<ProductImageFileData> getImageList() {
+    public List<ProductImageMetaData> getImageList() {
         return imageList;
     }
-    public void setImageList(List<ProductImageFileData> imageList) {
+    public void setImageList(List<ProductImageMetaData> imageList) {
         this.imageList = imageList;
     }
 

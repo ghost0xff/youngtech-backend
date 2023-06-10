@@ -1,10 +1,13 @@
 package com.youngtechcr.www.utils;
 
+import com.youngtechcr.www.domain.OneAmongMany;
+import com.youngtechcr.www.domain.storage.FileMetaData;
 import com.youngtechcr.www.exceptions.custom.FileOperationException;
 import com.youngtechcr.www.services.storage.FileType;
 import com.youngtechcr.www.services.storage.ProductImageStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,13 +24,15 @@ public final class StorageUtils {
     public static final String PRODUCT_STORAGE_DIRECTORY = "../youngtech-storage/products";
     public static final String USERS_STORAGE_DIRECTORY = "../youngtech-storage/users";
     public static final String IMAGE_DIRECTORY = "images";
-    // ^^^^ a string representing a DIRECTORY, NOT A  PATH to a directory
+    // ^^^^ a string representing a posible DIRECTORY, NOT A  PATH to a directory
 
     public static String generateServerFileName(Integer elementId, MultipartFile fileToBeUploaded, FileType fileType) {
         /*
                     SERVER FILE NAME STRUCTURE
             Formated server file name should look like this:
-                {id of element related to file} + "-" + {filTypeIdentifier} + "-" + {randomGeneratedUuid}
+
+                {id of element related to file} + "-" + {fileTypeIdentifier} + "-" + {randomGeneratedUuid}
+
             The first and second "-" (hyphens) indicate the elementId and the type of file that a file stores,
             this is needed since it would be difficult to identify files by only the element id and a random UUID.
             No extensions for files are added because server file name are JUST for storing files in server and
@@ -38,7 +43,6 @@ public final class StorageUtils {
                 21-video-7894c665-da24-4f93-a380-43eff9abf1f2
                 23-pdf-7894c665-da24-4f93-a380-43eff9abf1f2
                 67-xlsOrXlsx-7894c665-da24-4f93-a380-43eff9abf1f2
-
         */
         UUID randomUuid = UUID.randomUUID();
         String fileTypeIdentifier = fileType.identifier;
@@ -46,22 +50,29 @@ public final class StorageUtils {
         return newServerFileName;
     }
 
+    public static <T extends FileMetaData & OneAmongMany> void setFileMetaData(
+        T file, boolean main, long sizeInBytes, String mimeType
+    ){
+        file.setMain(main);
+        file.setSizeInBytes(sizeInBytes);
+        file.setMimeType(mimeType);
+    }
+
     public static Path createDirectoriesIfNotAlreadyExists(Path posibleDirectoryPath) {
         posibleDirectoryPath.toAbsolutePath().normalize();
-        if (Files.notExists(posibleDirectoryPath)) {
-            try {
-                return Files.createDirectories(posibleDirectoryPath);
-            } catch (IOException e) {
-                log.warn("Can't create directory with name: " + posibleDirectoryPath.getFileName() + " due to...");
-                e.printStackTrace(System.out);
-                throw new FileOperationException(ErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
-            }
-        } else if( Files.isRegularFile(posibleDirectoryPath)) {
+        if (Files.exists(posibleDirectoryPath) && Files.isRegularFile(posibleDirectoryPath)) {
             log.warn("Can't create directory with name: " + posibleDirectoryPath.getFileName() + " becasuse a regular file already exists in the specified file system path");
             throw new FileOperationException(ErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
         }
-        return posibleDirectoryPath;
+        try {
+            return Files.createDirectories(posibleDirectoryPath);
+        } catch (IOException e) {
+            log.warn("Can't create directory with name: " + posibleDirectoryPath.getFileName() + " due to...");
+            e.printStackTrace(System.out);
+            throw new FileOperationException(ErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
+        }
     }
+
 
     public static void saveFileOrReplaceIfExisting(MultipartFile imageToBeUploaded, Path relativeImagePath) {
         try {
