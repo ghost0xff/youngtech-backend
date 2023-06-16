@@ -66,14 +66,21 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
     }
 
     public Resource obtainProductImage(ProductImageMetaData imageFileMetaData) {
-        Path absoluteImagePath = Path.of(imageFileMetaData.getRelativePath()).toAbsolutePath().normalize();
+        Path absoluteImagePath = Path.of(
+                imageFileMetaData.getRelativePath())
+                .toAbsolutePath()
+                .normalize();
         Resource retrievedImageFromFileSystem = this.retrieveFromFileSystem(absoluteImagePath);
         return retrievedImageFromFileSystem;
     }
 
+    @Transactional
     public void eliminateProductImageCompletely(ProductImageMetaData productImageToBeDeleted) {
-        Path absoluteImagePathToBeDeleted = Path.of(productImageToBeDeleted.getRelativePath()).toAbsolutePath().normalize();
-       this.removeFromFileSystem(absoluteImagePathToBeDeleted);
+        Path absoluteImagePathToBeDeleted = Path.of(
+                productImageToBeDeleted.getRelativePath())
+                .toAbsolutePath()
+                .normalize();
+        this.removeFromFileSystemAndDataBase(absoluteImagePathToBeDeleted, productImageToBeDeleted);
 
     }
     @Override
@@ -105,9 +112,11 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
     }
 
     @Override
-    public void removeFromFileSystem(Path absoluteImagePathToBeEliminated) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void removeFromFileSystemAndDataBase(Path absoluteImagePathToBeEliminated, ProductImageMetaData imageMetaDataToBeDeleted) {
         try {
-            Files.deleteIfExists(absoluteImagePathToBeEliminated);
+            this.productImageFileDataRepository.deleteById(imageMetaDataToBeDeleted.getProductImageId());
+            Files.delete(absoluteImagePathToBeEliminated);
         } catch (IOException e) {
             log.warn("IOException interrupted file deletion");
             e.printStackTrace();
@@ -122,10 +131,5 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
         TimestampUtils.setTimestampsToNow(productImageToBeSaved);
         var savedProductImageRepresentationInDataBase = this.productImageFileDataRepository.save(productImageToBeSaved);
         return savedProductImageRepresentationInDataBase;
-    }
-
-    @Override
-    public void removeFromDataBase(Integer elementId) {
-
     }
 }

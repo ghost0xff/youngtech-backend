@@ -11,9 +11,8 @@ public interface  FileSystemStorageService<T> {
 
     Resource retrieveFromFileSystem(Path absoluteFilePath);
 
-    void removeFromFileSystem(Path absoluteFilePathToBeEliminated);
+    void removeFromFileSystemAndDataBase(Path absoluteFilePathToBeEliminated, T elementToBeDeleted);
 
     T saveToDataBase(T fileToBeSaved);
 
-    void removeFromDataBase(Integer elementId);
 }

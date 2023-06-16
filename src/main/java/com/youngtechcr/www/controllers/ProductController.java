@@ -59,7 +59,7 @@ public class ProductController {
     }
 
     @GetMapping(path = "/{id}/images")
-    public ResponseEntity<?> downloadMainImage(
+    public ResponseEntity<?> downloadMainImageOrObtainImageMetaDataList(
             @PathVariable("id") Integer productId, @RequestParam(name = "main", required = false) boolean isMain) {
         if(isMain) {
             DoubleNameFileCarrier resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
