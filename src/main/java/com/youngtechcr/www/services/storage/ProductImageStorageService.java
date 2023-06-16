@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.youngtechcr.www.utils.StorageUtils;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,6 +70,12 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
         Resource retrievedImageFromFileSystem = this.retrieveFromFileSystem(absoluteImagePath);
         return retrievedImageFromFileSystem;
     }
+
+    public void eliminateProductImageCompletely(ProductImageMetaData productImageToBeDeleted) {
+        Path absoluteImagePathToBeDeleted = Path.of(productImageToBeDeleted.getRelativePath()).toAbsolutePath().normalize();
+       this.removeFromFileSystem(absoluteImagePathToBeDeleted);
+
+    }
     @Override
     public ProductImageMetaData saveToFileSystem(String serverFileName, Path posibleProductDirectoryPath, MultipartFile imageToBeUploaded) {
         StorageUtils.createDirectoriesIfNotAlreadyExists(posibleProductDirectoryPath);
@@ -95,8 +101,20 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
                 throw new FileOperationException(ErrorMessages.UNABLE_TO_DOWNLOAD_REQUESTED_FILE);
             }
         }
-        throw new NoDataFoundException(ErrorMessages.UNABLE_TO_LOCATE_REQUESTES_FILE);
+        throw new NoDataFoundException(ErrorMessages.UNABLE_TO_LOCATE_REQUESTED_FILE);
     }
+
+    @Override
+    public void removeFromFileSystem(Path absoluteImagePathToBeEliminated) {
+        try {
+            Files.deleteIfExists(absoluteImagePathToBeEliminated);
+        } catch (IOException e) {
+            log.warn("IOException interrupted file deletion");
+            e.printStackTrace();
+            throw new FileOperationException(ErrorMessages.UNABLE_TO_DELETE_REQUESTED_FILE);
+        }
+    }
+
 
     @Override
     @Transactional
@@ -106,5 +124,8 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
         return savedProductImageRepresentationInDataBase;
     }
 
+    @Override
+    public void removeFromDataBase(Integer elementId) {
 
+    }
 }

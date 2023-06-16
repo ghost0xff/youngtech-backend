@@ -21,17 +21,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail handleEmptyRepositoryException(EmptyRepositoryException exception) {
         return ExceptionUtils.handle(exception);
     }
-
     @ExceptionHandler(NoDataFoundException.class)
     public ProblemDetail handleNoDataFoundException(NoDataFoundException exception) {
         return ExceptionUtils.handle(exception);
     }
-
     @ExceptionHandler(ValueMismatchException.class)
     public ProblemDetail handleValueMismatchException(ValueMismatchException exception) {
         return ExceptionUtils.handle(exception);
     }
-
     @ExceptionHandler(AlreadyExistsException.class)
     public ProblemDetail handleAlreadyExistsException(AlreadyExistsException exception) {
         return ExceptionUtils.handle(exception);

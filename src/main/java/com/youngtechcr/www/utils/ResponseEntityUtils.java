@@ -1,13 +1,10 @@
 package com.youngtechcr.www.utils;
 
-import com.youngtechcr.www.exceptions.custom.FileOperationException;
+import com.youngtechcr.www.domain.storage.DoubleNameFileCarrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-
-import java.io.IOException;
-import java.nio.file.Files;
 
 public final class ResponseEntityUtils {
 
@@ -18,11 +15,15 @@ public final class ResponseEntityUtils {
         return responseEntity;
     }
 
-    public static <T extends Resource> ResponseEntity<T> downloadedFileWithCustomName(T resourceToBeDownloaded, String customFileName, MediaType fileMediaType) {
+    public static <T extends Resource> ResponseEntity<T> downloadedFileWithMetaDataCarrier(DoubleNameFileCarrier doubleNameFileCarrier) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("File-Name", customFileName);
-        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name=" + customFileName);
-        ResponseEntity<T> responseEntity = ResponseEntity.ok().contentType(fileMediaType).headers(httpHeaders).body(resourceToBeDownloaded);
+        httpHeaders.add("File-Name", doubleNameFileCarrier.customFileName());
+        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name=" + doubleNameFileCarrier.customFileName());
+        ResponseEntity responseEntity = ResponseEntity
+                .ok()
+                .contentType(doubleNameFileCarrier.fileMediaType())
+                .headers(httpHeaders)
+                .body(doubleNameFileCarrier.resource());
         return responseEntity;
     }
 

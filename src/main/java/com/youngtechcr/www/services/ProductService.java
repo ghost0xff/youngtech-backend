@@ -29,15 +29,18 @@ public class ProductService {
     private ProductRepository productRepository;
     private ValidationService validationService;
     private ProductImageStorageService productImageStorageService;
+    private ProductImageMetaDataService imageMetaDataService;
 
     public ProductService(
             ProductRepository productRepository,
             ValidationService validationService,
-            ProductImageStorageService productImageStorageService
+            ProductImageStorageService productImageStorageService,
+            ProductImageMetaDataService imageMetaDataService
     ) {
         this.productRepository = productRepository;
         this.validationService = validationService;
         this.productImageStorageService = productImageStorageService;
+        this.imageMetaDataService = imageMetaDataService;
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +85,10 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductImageMetaData uploadProductImageByProductId(Integer productId, MultipartFile imageToBeUploaded, @Nullable ProductImageMetaData imageMetaData) {
+    public ProductImageMetaData uploadProductImageByProductId(
+            Integer productId,
+            MultipartFile imageToBeUploaded,
+            @Nullable ProductImageMetaData imageMetaData) {
         if (!this.productRepository.existsById(productId)) {
             throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
         }
@@ -110,6 +116,17 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public DoubleNameFileCarrier downloadProductImageByProductId(Integer productId, Integer productImageId) {
+        if(this.productRepository.existsById(productId)) {
+            ProductImageMetaData productImageMetaData = this.imageMetaDataService.findImageMetaDataById(productImageId);
+            Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(productImageMetaData);
+            String originalFileName = productImageMetaData.getOriginalFileName();
+            MediaType imageMediaType = MediaType.parseMediaType(productImageMetaData.getMimeType());
+            return new DoubleNameFileCarrier(obtainedImageResource, originalFileName, imageMediaType);
+        }
+        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+    }
+
     public boolean hasMainImage(Product productToBeInspected) {
         return productToBeInspected
                 .getImageList()
@@ -126,4 +143,11 @@ public class ProductService {
                 .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND));
     }
 
+    public void deleteProductImageByProduct(Integer productId, Integer productImageId) {
+        if(this.productRepository.existsById(productId)) {
+            ProductImageMetaData productImageToBeDeleted = this.imageMetaDataService.findImageMetaDataById(productImageId);
+            this.productImageStorageService.eliminateProductImageCompletely(productImageToBeDeleted);
+        }
+        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+    }
 }

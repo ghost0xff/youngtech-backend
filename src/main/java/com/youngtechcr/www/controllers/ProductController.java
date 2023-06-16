@@ -1,12 +1,12 @@
 package com.youngtechcr.www.controllers;
 
-
 import com.youngtechcr.www.domain.Product;
 import com.youngtechcr.www.domain.storage.DoubleNameFileCarrier;
 import com.youngtechcr.www.domain.storage.ProductImageMetaData;
 import com.youngtechcr.www.services.ProductService;
 import com.youngtechcr.www.utils.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,16 +60,31 @@ public class ProductController {
 
     @GetMapping(path = "/{id}/images")
     public ResponseEntity<?> downloadMainImage(
-            @PathVariable("id") Integer productId,
-            @RequestParam(name = "main", required = false) boolean isMain
-    ) {
+            @PathVariable("id") Integer productId, @RequestParam(name = "main", required = false) boolean isMain) {
         if(isMain) {
             DoubleNameFileCarrier resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
-            return ResponseEntityUtils.downloadedFileWithCustomName(resourceWithSomeMetaData.resource(), resourceWithSomeMetaData.customFileName(),resourceWithSomeMetaData.fileMediaType() );
+            return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
         }
         List<ProductImageMetaData> imagesMetaData = this.productService.getProductImagesMetadataById(productId);
         return ResponseEntity.ok().body(imagesMetaData);
     }
 
+    @GetMapping(path = "/{productId}/images/{imageId}")
+    public ResponseEntity<Resource> downloadProductImage(
+            @PathVariable Integer productId,
+            @PathVariable("imageId") Integer productImageId
+    ) {
+        DoubleNameFileCarrier resourceWithSomeMetaData = this.productService.downloadProductImageByProductId(productId, productImageId);
+        return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
+    }
+
+    @DeleteMapping(path = "/{productId}/images/{imageId}")
+    public ResponseEntity<ProductImageMetaData> deleteProductImageByProductId(
+            @PathVariable Integer productId,
+            @PathVariable("imageId") Integer productImageId
+    ){
+        this.productService.deleteProductImageByProduct(productId, productImageId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
