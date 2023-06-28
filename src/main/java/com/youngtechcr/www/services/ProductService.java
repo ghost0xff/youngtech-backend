@@ -130,14 +130,14 @@ public class ProductService {
     public boolean hasMainImage(Product productToBeInspected) {
         return productToBeInspected
                 .getImageList()
-                .parallelStream()
+                .stream()
                 .anyMatch((image) -> image.isMain());
     }
 
     public ProductImageMetaData obtainMainImage(Product productToBeInspected) {
         return productToBeInspected
                 .getImageList()
-                .parallelStream()
+                .stream()
                 .filter( image -> image.isMain())
                 .findAny()
                 .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND));

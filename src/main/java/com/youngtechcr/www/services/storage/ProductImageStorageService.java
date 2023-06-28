@@ -32,7 +32,6 @@ import java.nio.file.Paths;
 public class ProductImageStorageService implements FileSystemStorageService<ProductImageMetaData> {
 
     private static final Logger log = LoggerFactory.getLogger(ProductImageStorageService.class);
-
     @Autowired
     private ProductImageMetaDataRepository productImageFileDataRepository;
     @Lazy

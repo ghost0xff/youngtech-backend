@@ -1,5 +1,7 @@
 package com.youngtechcr.www.services;
 
+import com.youngtechcr.www.domain.Product;
+import com.youngtechcr.www.exceptions.custom.EmptyRepositoryException;
 import com.youngtechcr.www.domain.Category;
 import com.youngtechcr.www.domain.Subcategory;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
@@ -35,6 +37,13 @@ public class CategoryService {
                         .orElseThrow( () ->  new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public List<Category>  findAllCategories() {
+       List<Category> allCategories = this.categoryRepository.findAll();
+        if(!allCategories.isEmpty())  return allCategories;
+	throw new NoDataFoundException(ErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);
+	
+    }
     @Transactional
     public Category createCategory(Category categoryToBeCreated) {
         if (!this.categoryRepository.existsByName(categoryToBeCreated.getName())) {
@@ -119,4 +128,13 @@ public class CategoryService {
         }
         throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
+
+   @Transactional(readOnly = true)
+   public List<Product> findProductsByCategory(Integer categoryId) {
+   	var categoryWhoseProductsWillBeObtained = this.findCategoryById(categoryId);
+   	List<Product> productsFound = categoryWhoseProductsWillBeObtained.getProductList();
+	if(!productsFound.isEmpty()) return productsFound;
+	throw new NoDataFoundException(ErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);	
+   }
+
 }

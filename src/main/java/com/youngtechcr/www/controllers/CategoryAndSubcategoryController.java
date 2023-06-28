@@ -1,6 +1,7 @@
 package com.youngtechcr.www.controllers;
 
 import com.youngtechcr.www.domain.Category;
+import com.youngtechcr.www.domain.Product;
 import com.youngtechcr.www.domain.Subcategory;
 import com.youngtechcr.www.services.CategoryService;
 import com.youngtechcr.www.utils.ResponseEntityUtils;
@@ -16,6 +17,12 @@ public class CategoryAndSubcategoryController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @GetMapping
+    public ResponseEntity<List<Category>> findAllCategories() {
+        List<Category> allCategories = this.categoryService.findAllCategories();
+        return ResponseEntity.ok.body();
+    }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Category> findCategoryById(@PathVariable("id")Integer categorId) {
@@ -87,4 +94,15 @@ public class CategoryAndSubcategoryController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @GetMapping(path = "{categoryId}/products")
+    public ResponseEntity<List<Product>> findProductsByCategory(
+	       @PathVariable Integer categoryId
+	) {
+		List<Product> categoryProducts = this.categoryService.findProductsByCategory(categoryId);
+		return ResponseEntity.ok().body(categoryProducts);
+	} 
+	
+
+    	
 }

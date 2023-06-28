@@ -22,5 +22,5 @@ public final class ErrorMessages {
     public static final String UNABLE_TO_DELETE_REQUESTED_FILE = "Couldn't delete requested file from server due to unexpected problems on the server";
     public static final String CANT_CREATE_DUPLICATE_MAIN_IMAGE = "Can't upload requested image as main because  it already exists another main image";
     public static final String NO_MAIN_ELEMENT_WAS_FOUND= "No main element was found.";
-
+    public static final String NO_ELEMENTS_FOUND_IN_SERVER = "No elements for requested type found in server";
 }
