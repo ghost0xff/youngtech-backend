@@ -1,4 +1,4 @@
-package com.youngtechcr.www.subcategory;
+package com.youngtechcr.www.category.subcategory;
 
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;

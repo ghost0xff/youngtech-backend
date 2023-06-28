@@ -1,6 +1,5 @@
-package com.youngtechcr.www.productimage;
+package com.youngtechcr.www.product.image;
 
-import com.youngtechcr.www.productimage.ProductImageMetaData;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

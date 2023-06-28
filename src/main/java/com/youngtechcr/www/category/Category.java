@@ -2,7 +2,7 @@ package com.youngtechcr.www.category;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.subcategory.Subcategory;
+import com.youngtechcr.www.category.subcategory.Subcategory;
 import com.youngtechcr.www.domain.TimeStamped;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;

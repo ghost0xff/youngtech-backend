@@ -1,4 +1,4 @@
-package com.youngtechcr.www.productimage;
+package com.youngtechcr.www.product.image;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;

@@ -1,4 +1,4 @@
-package com.youngtechcr.www.subcategory;
+package com.youngtechcr.www.category.subcategory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

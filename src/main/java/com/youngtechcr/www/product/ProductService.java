@@ -1,13 +1,13 @@
 package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.storage.DoubleNameFileCarrier;
-import com.youngtechcr.www.productimage.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
-import com.youngtechcr.www.productimage.ProductImageMetaDataService;
+import com.youngtechcr.www.product.image.ProductImageMetaDataService;
 import com.youngtechcr.www.validation.ValidationService;
-import com.youngtechcr.www.productimage.ProductImageStorageService;
+import com.youngtechcr.www.product.image.ProductImageStorageService;
 import com.youngtechcr.www.exceptions.ErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import jakarta.annotation.Nullable;

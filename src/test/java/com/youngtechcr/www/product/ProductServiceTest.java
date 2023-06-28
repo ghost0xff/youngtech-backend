@@ -1,13 +1,9 @@
-package com.youngtechcr.www.services;
+package com.youngtechcr.www.product;
 
 
-import com.youngtechcr.www.product.ProductService;
-import com.youngtechcr.www.productimage.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
-import com.youngtechcr.www.product.ProductRepository;
-import com.youngtechcr.www.productimage.ProductImageStorageService;
-import com.youngtechcr.www.utils.DomainUtils;
-import com.youngtechcr.www.validation.ValidationService;
+import com.youngtechcr.www.product.image.ProductImageStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

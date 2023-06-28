@@ -1,11 +1,11 @@
 package com.youngtechcr.www.category;
 
 import com.youngtechcr.www.product.Product;
-import com.youngtechcr.www.subcategory.Subcategory;
+import com.youngtechcr.www.category.subcategory.Subcategory;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
-import com.youngtechcr.www.subcategory.SubcategoryService;
+import com.youngtechcr.www.category.subcategory.SubcategoryService;
 import com.youngtechcr.www.exceptions.ErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;

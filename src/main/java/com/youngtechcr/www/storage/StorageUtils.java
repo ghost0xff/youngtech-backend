@@ -2,7 +2,7 @@ package com.youngtechcr.www.storage;
 
 import com.youngtechcr.www.domain.OneAmongMany;
 import com.youngtechcr.www.exceptions.custom.FileOperationException;
-import com.youngtechcr.www.productimage.ProductImageStorageService;
+import com.youngtechcr.www.product.image.ProductImageStorageService;
 import com.youngtechcr.www.exceptions.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

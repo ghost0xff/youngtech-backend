@@ -1,7 +1,7 @@
 package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.storage.DoubleNameFileCarrier;
-import com.youngtechcr.www.productimage.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

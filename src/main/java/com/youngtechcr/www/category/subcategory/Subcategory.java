@@ -1,4 +1,4 @@
-package com.youngtechcr.www.subcategory;
+package com.youngtechcr.www.category.subcategory;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
