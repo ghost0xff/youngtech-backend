@@ -1,14 +1,14 @@
 package com.youngtechcr.www.services;
 
-import com.youngtechcr.www.domain.Brand;
-import com.youngtechcr.www.domain.Category;
-import com.youngtechcr.www.domain.Product;
-import com.youngtechcr.www.domain.Subcategory;
-import com.youngtechcr.www.repositories.BrandRepository;
-import com.youngtechcr.www.repositories.CategoryRepository;
-import com.youngtechcr.www.repositories.ProductRepository;
-import com.youngtechcr.www.repositories.SubcategoryRepository;
-import com.youngtechcr.www.services.ValidationService;
+import com.youngtechcr.www.brand.Brand;
+import com.youngtechcr.www.category.Category;
+import com.youngtechcr.www.product.Product;
+import com.youngtechcr.www.subcategory.Subcategory;
+import com.youngtechcr.www.brand.BrandRepository;
+import com.youngtechcr.www.category.CategoryRepository;
+import com.youngtechcr.www.product.ProductRepository;
+import com.youngtechcr.www.subcategory.SubcategoryRepository;
+import com.youngtechcr.www.validation.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

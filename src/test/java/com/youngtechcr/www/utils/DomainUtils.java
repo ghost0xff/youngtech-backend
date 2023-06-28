@@ -1,7 +1,7 @@
 package com.youngtechcr.www.utils;
 
-import com.youngtechcr.www.domain.Product;
-import com.youngtechcr.www.domain.storage.ProductImageMetaData;
+import com.youngtechcr.www.product.Product;
+import com.youngtechcr.www.productimage.ProductImageMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
