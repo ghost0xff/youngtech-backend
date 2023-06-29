@@ -39,9 +39,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
     private ProductService productService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProductImageMetaData storeProductImage(
-            Integer productId,
-            MultipartFile imageToBeUploaded,
+    public ProductImageMetaData storeProductImage(Integer productId, MultipartFile imageToBeUploaded,
             @Nullable ProductImageMetaData imageMetaData
     ) {
         Product productToAddNewImage = this.productService.findProductById(productId);
@@ -50,14 +48,21 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
                     .get(StorageUtils.PRODUCT_STORAGE_DIRECTORY)
                     .resolve(productId.toString())
                     .resolve(StorageUtils.IMAGE_DIRECTORY); // equals to ../youngtech-storage/products/{id}/images
-            String serverFileName = StorageUtils.generateServerFileName(productId, imageToBeUploaded, FileType.IMAGE);
-            var savedWithRelativePathAndServerNameAndOriginalName = this.saveToFileSystem(serverFileName, posibleProductDirectory, imageToBeUploaded);
+            String serverFileName = StorageUtils.generateServerFileName(
+                    productId,
+                    imageToBeUploaded,
+                    FileType.IMAGE);
+            var savedWithRelativePathAndServerNameAndOriginalName = this.saveToFileSystem(
+                    serverFileName,
+                    posibleProductDirectory,
+                    imageToBeUploaded);
             StorageUtils.setFileMetaData(
                     savedWithRelativePathAndServerNameAndOriginalName,
                     imageMetaData != null ? imageMetaData.isMain() : false, // isMainImage ????
                     imageToBeUploaded.getSize(),imageToBeUploaded.getContentType());
             savedWithRelativePathAndServerNameAndOriginalName.setProduct(productToAddNewImage);
-            ProductImageMetaData savedProductImageRepresentation = this.saveToDataBase(savedWithRelativePathAndServerNameAndOriginalName);
+            ProductImageMetaData savedProductImageRepresentation = this.saveToDataBase(
+                    savedWithRelativePathAndServerNameAndOriginalName);
             log.info("Stored (in file system and in database) product image in server successfully: " + savedProductImageRepresentation);
             return savedProductImageRepresentation;
         }

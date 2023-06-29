@@ -17,3 +17,7 @@ spring:
       max-request-size: 10MB
   main:
     banner-mode: off
+
+server:
+  servlet:
+    context-path: /api/v1

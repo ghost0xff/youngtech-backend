@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/brands")
+@RequestMapping(path = "/brands")
 public class BrandController implements BasicCrudController<Brand> {
 
     @Autowired
