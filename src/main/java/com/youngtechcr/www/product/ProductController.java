@@ -1,7 +1,7 @@
 package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.storage.DoubleNameFileCarrier;
-import com.youngtechcr.www.productimage.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/products")
+@RequestMapping(path = "/products")
 public class ProductController {
 
     @Autowired

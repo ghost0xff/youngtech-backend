@@ -1,7 +1,7 @@
 package com.youngtechcr.www.category;
 
 import com.youngtechcr.www.product.Product;
-import com.youngtechcr.www.subcategory.Subcategory;
+import com.youngtechcr.www.category.subcategory.Subcategory;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/categories")
+@RequestMapping(path = "/categories")
 public class CategoryAndSubcategoryController {
 
     @Autowired

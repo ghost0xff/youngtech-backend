@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.TimeStamped;
-import com.youngtechcr.www.user.User;
+import com.youngtechcr.www.person.Person;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -36,8 +36,8 @@ public class Order implements TimeStamped {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @ManyToOne
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
-    private User user;
+    @JoinColumn(name = "fk_id_person", referencedColumnName = "id_person")
+    private Person person;
     @OneToMany(mappedBy = "order")
     @JsonProperty("orderedProducts")
     private List<OrderedProduct> orderedProductsList;
@@ -132,16 +132,16 @@ public class Order implements TimeStamped {
         this.deliveryDate = deliveryDate;
     }
 
-    @JsonBackReference(value = "user-order")
-    public User getUser() {
-        return user;
+    @JsonBackReference(value = "person-order")
+    public Person getPerson() {
+        return this.person;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
-    @JsonManagedReference(value = "user-ordered_products")
+    @JsonManagedReference(value = "order-orderedproduct")
     public List<OrderedProduct> getOrderedProductsList() {
         return orderedProductsList;
     }
@@ -155,12 +155,12 @@ public class Order implements TimeStamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Float.compare(order.total, total) == 0 && Float.compare(order.subtotal, subtotal) == 0 && ivaPercentage == order.ivaPercentage && isDelivered == order.isDelivered && isCanceled == order.isCanceled && Objects.equals(orderId, order.orderId) && Objects.equals(orderDate, order.orderDate) && Objects.equals(deliveryDate, order.deliveryDate) && Objects.equals(createdAt, order.createdAt) && Objects.equals(updatedAt, order.updatedAt) && Objects.equals(user, order.user) && Objects.equals(orderedProductsList, order.orderedProductsList);
+        return Float.compare(order.total, total) == 0 && Float.compare(order.subtotal, subtotal) == 0 && ivaPercentage == order.ivaPercentage && isDelivered == order.isDelivered && isCanceled == order.isCanceled && Objects.equals(orderId, order.orderId) && Objects.equals(orderDate, order.orderDate) && Objects.equals(deliveryDate, order.deliveryDate) && Objects.equals(createdAt, order.createdAt) && Objects.equals(updatedAt, order.updatedAt) && Objects.equals(person, order.person) && Objects.equals(orderedProductsList, order.orderedProductsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, total, subtotal, ivaPercentage, isDelivered, isCanceled, orderDate, deliveryDate, createdAt, updatedAt, user, orderedProductsList);
+        return Objects.hash(orderId, total, subtotal, ivaPercentage, isDelivered, isCanceled, orderDate, deliveryDate, createdAt, updatedAt, person, orderedProductsList);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Order implements TimeStamped {
                 ", deliveryDate=" + deliveryDate +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", user=" + user +
+                ", person=" + person +
 //                ", orderedProductsList=" + orderedProductsList +
                 '}';
     }

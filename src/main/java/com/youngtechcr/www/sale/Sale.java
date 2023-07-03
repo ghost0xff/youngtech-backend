@@ -2,8 +2,8 @@ package com.youngtechcr.www.sale;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.person.Person;
 import com.youngtechcr.www.product.Product;
-import com.youngtechcr.www.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -25,8 +25,8 @@ public class Sale implements TimeStamped {
     @JoinColumn(name = "fk_id_product", referencedColumnName = "id_product")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
-    private User user;
+    @JoinColumn(name = "fk_id_person", referencedColumnName = "id_person")
+    private Person person;
 
     public Sale() {
     }
@@ -68,17 +68,17 @@ public class Sale implements TimeStamped {
         return product;
     }
 
+    @JsonBackReference(value = "person-sale")
+    public Person getPerson() {
+        return person;
+    }
+
     public void setProduct(Product product) {
         this.product = product;
     }
 
-    @JsonBackReference(value = "user-sale")
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     @Override
@@ -86,12 +86,12 @@ public class Sale implements TimeStamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sale sale = (Sale) o;
-        return Objects.equals(idSale, sale.idSale) && Objects.equals(createdAt, sale.createdAt) && Objects.equals(updatedAt, sale.updatedAt) && Objects.equals(product, sale.product) && Objects.equals(user, sale.user);
+        return Objects.equals(idSale, sale.idSale) && Objects.equals(createdAt, sale.createdAt) && Objects.equals(updatedAt, sale.updatedAt) && Objects.equals(product, sale.product) && Objects.equals(person, sale.person);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idSale, createdAt, updatedAt, product, user);
+        return Objects.hash(idSale, createdAt, updatedAt, product, person);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class Sale implements TimeStamped {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", product=" + product +
-                ", user=" + user +
+                ", user=" + person +
                 '}';
     }
 }

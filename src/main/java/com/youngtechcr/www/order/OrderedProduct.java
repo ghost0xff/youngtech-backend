@@ -76,7 +76,7 @@ public class OrderedProduct implements TimeStamped {
         isCanceled = canceled;
     }
 
-    @JsonBackReference(value = "user-ordered_products")
+    @JsonBackReference(value = "order-orderedproduct")
     public Order getOrder() {
         return order;
     }

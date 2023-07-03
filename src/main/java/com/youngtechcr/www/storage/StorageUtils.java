@@ -2,8 +2,8 @@ package com.youngtechcr.www.storage;
 
 import com.youngtechcr.www.domain.OneAmongMany;
 import com.youngtechcr.www.exceptions.custom.FileOperationException;
-import com.youngtechcr.www.productimage.ProductImageStorageService;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.product.image.ProductImageStorageService;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,14 +60,14 @@ public final class StorageUtils {
         posibleDirectoryPath.toAbsolutePath().normalize();
         if (Files.exists(posibleDirectoryPath) && Files.isRegularFile(posibleDirectoryPath)) {
             log.warn("Can't create directory with name: " + posibleDirectoryPath.getFileName() + " becasuse a regular file already exists in the specified file system path");
-            throw new FileOperationException(ErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
+            throw new FileOperationException(HttpErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
         }
         try {
             return Files.createDirectories(posibleDirectoryPath);
         } catch (IOException e) {
             log.warn("Can't create directory with name: " + posibleDirectoryPath.getFileName() + " due to...");
             e.printStackTrace(System.out);
-            throw new FileOperationException(ErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
+            throw new FileOperationException(HttpErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
         }
     }
 
@@ -78,7 +78,7 @@ public final class StorageUtils {
         } catch (IOException e) {
             log.warn("Can't create file with name: " + relativeImagePath.getFileName() + " due to...");
             e.printStackTrace(System.out);
-            throw new FileOperationException(ErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
+            throw new FileOperationException(HttpErrorMessages.UNABLE_TO_UPLOAD_REQUESTED_FILE);
         }
     }
 

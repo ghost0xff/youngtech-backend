@@ -10,8 +10,8 @@ public final class ResponseEntityUtils {
 
     private static final Logger log = LoggerFactory.getLogger(ResponseEntityUtils.class);
 
-    public static <T> ResponseEntity<T> created(T resourceToBeCreated) {
-        ResponseEntity<T> responseEntity = new ResponseEntity(resourceToBeCreated,HttpStatus.CREATED);
+    public static <T> ResponseEntity<T> created(T createdResource) {
+        ResponseEntity<T> responseEntity = new ResponseEntity(createdResource,HttpStatus.CREATED);
         return responseEntity;
     }
 

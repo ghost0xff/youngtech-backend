@@ -17,3 +17,12 @@ spring:
       max-request-size: 10MB
   main:
     banner-mode: off
+
+server:
+  servlet:
+    context-path: ${api.base-url}
+
+api:
+  version: 1
+  base-url: /api/v1
+  web-client: http://localhost:4200

@@ -1,14 +1,13 @@
 package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.storage.DoubleNameFileCarrier;
-import com.youngtechcr.www.productimage.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
-import com.youngtechcr.www.productimage.ProductImageMetaDataService;
-import com.youngtechcr.www.validation.ValidationService;
-import com.youngtechcr.www.productimage.ProductImageStorageService;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.product.image.ProductImageMetaDataService;
+import com.youngtechcr.www.product.image.ProductImageStorageService;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
@@ -27,13 +26,13 @@ public class ProductService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private ProductRepository productRepository;
-    private ValidationService validationService;
+    private ProductValidator validationService;
     private ProductImageStorageService productImageStorageService;
     private ProductImageMetaDataService imageMetaDataService;
 
     public ProductService(
             ProductRepository productRepository,
-            ValidationService validationService,
+            ProductValidator validationService,
             ProductImageStorageService productImageStorageService,
             ProductImageMetaDataService imageMetaDataService
     ) {
@@ -48,18 +47,18 @@ public class ProductService {
         return this
                 .productRepository
                 .findById(productId)
-                .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
     @Transactional
     public Product createProduct(Product productToBeCreated) {
-        if(this.validationService.isProductValid(productToBeCreated)) {
+        if(this.validationService.isValid(productToBeCreated)) {
             TimestampedUtils.setTimestampsToNow(productToBeCreated);
             var createdProduct = this.productRepository.save(productToBeCreated);
             log.info("Created new products" + createdProduct);
             return createdProduct;
         }
-        throw new InvalidElementException(ErrorMessages.INVALID_PRODUCT);
+        throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT);
     }
 
     @Transactional
@@ -71,7 +70,7 @@ public class ProductService {
             log.info("Updated product: " + updatedProduct);
             return updatedProduct;
         }
-        throw new ValueMismatchException(ErrorMessages.PROVIDED_IDS_DONT_MATCH);
+        throw new ValueMismatchException(HttpErrorMessages.PROVIDED_IDS_DONT_MATCH);
     }
 
     @Transactional
@@ -81,7 +80,7 @@ public class ProductService {
             log.info("Deleted product with id: " +  productId);
             return;
         }
-        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
     @Transactional
@@ -90,7 +89,7 @@ public class ProductService {
             MultipartFile imageToBeUploaded,
             @Nullable ProductImageMetaData imageMetaData) {
         if (!this.productRepository.existsById(productId)) {
-            throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+            throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
         }
         ProductImageMetaData uploadedProductImage = this
                 .productImageStorageService
@@ -112,7 +111,7 @@ public class ProductService {
             Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(mainImage);
             return new DoubleNameFileCarrier(obtainedImageResource, originaImageName, imageMediaType);
         }
-        throw new NoDataFoundException(ErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND);
     }
 
     @Transactional(readOnly = true)
@@ -124,7 +123,7 @@ public class ProductService {
             MediaType imageMediaType = MediaType.parseMediaType(productImageMetaData.getMimeType());
             return new DoubleNameFileCarrier(obtainedImageResource, originalFileName, imageMediaType);
         }
-        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
     public boolean hasMainImage(Product productToBeInspected) {
@@ -140,7 +139,7 @@ public class ProductService {
                 .stream()
                 .filter( image -> image.isMain())
                 .findAny()
-                .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND));
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND));
     }
 
     public void deleteProductImageByProduct(Integer productId, Integer productImageId) {
@@ -148,6 +147,6 @@ public class ProductService {
             ProductImageMetaData productImageToBeDeleted = this.imageMetaDataService.findImageMetaDataById(productImageId);
             this.productImageStorageService.eliminateProductImageCompletely(productImageToBeDeleted);
         }
-        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 }

@@ -2,7 +2,7 @@ package com.youngtechcr.www.category;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.subcategory.Subcategory;
+import com.youngtechcr.www.category.subcategory.Subcategory;
 import com.youngtechcr.www.domain.TimeStamped;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
@@ -31,29 +31,8 @@ public class Category implements TimeStamped {
     @JsonProperty("subcategories")
     List<Subcategory> subcategoryList;
 
-    public Category() {}
-    public Category(Integer categoryId) {
+    public Category(int categoryId) {
         this.categoryId = categoryId;
-    }
-
-    @Override
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    @Override
-    public void setCreatedAt(LocalDateTime timestamp) {
-        this.createdAt = timestamp;
-    }
-
-    @Override
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    @Override
-    public void setUpdatedAt(LocalDateTime timestamp) {
-        this.updatedAt = timestamp;
     }
 
     public Integer getCategoryId() {
@@ -72,6 +51,26 @@ public class Category implements TimeStamped {
         this.name = name;
     }
 
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @JsonManagedReference(value = "product-category")
     public List<Product> getProductList() {
         return productList;
@@ -85,6 +84,7 @@ public class Category implements TimeStamped {
     public List<Subcategory> getSubcategoryList() {
         return subcategoryList;
     }
+
     public void setSubcategoryList(List<Subcategory> subcategoryList) {
         this.subcategoryList = subcategoryList;
     }
@@ -109,8 +109,8 @@ public class Category implements TimeStamped {
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-//                ", productList=" + productList +
-//                ", subcategoryList=" + subcategoryList +
+                ", productList=" + productList +
+                ", subcategoryList=" + subcategoryList +
                 '}';
     }
 }
