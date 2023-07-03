@@ -1,10 +1,9 @@
-package com.youngtechcr.www.role;
+package com.youngtechcr.www.user.role;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.TimeStamped;
-import com.youngtechcr.www.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -25,8 +24,6 @@ public class Role implements TimeStamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "role")
-    private List<User> userList;
 
     public Role() {
     }
@@ -72,27 +69,17 @@ public class Role implements TimeStamped {
         this.roleName = roleName;
     }
 
-    @JsonManagedReference(value = "user-role")
-    @JsonProperty("users")
-    public List<User> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt) && Objects.equals(userList, role.userList);
+        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, roleName, createdAt, updatedAt, userList);
+        return Objects.hash(roleId, roleName, createdAt, updatedAt);
     }
 
     @Override
@@ -102,7 +89,6 @@ public class Role implements TimeStamped {
                 ", roleName='" + roleName + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-//                ", userList=" + userList +
                 '}';
     }
 }

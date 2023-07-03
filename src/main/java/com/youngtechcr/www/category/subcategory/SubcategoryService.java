@@ -4,7 +4,7 @@ import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.http.BasicCrudService;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
         return this
                 .subcategoryRepository
                 .findById(subcategoryId)
-                .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
             Subcategory createdSubcategory = this.subcategoryRepository.save(subcategoryToBeCreated);
             return createdSubcategory;
         }
-        throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_NAME);
+        throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_NAME);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
             var updatedSubcategory = this.subcategoryRepository.save(subcategoryToBeUpdated);
             return updatedSubcategory;
         }
-        throw new ValueMismatchException(ErrorMessages.PROVIDED_IDS_DONT_MATCH);
+        throw new ValueMismatchException(HttpErrorMessages.PROVIDED_IDS_DONT_MATCH);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
             this.subcategoryRepository.deleteById(categoryId);
             return;
         }
-        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
 

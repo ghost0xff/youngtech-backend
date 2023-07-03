@@ -6,7 +6,7 @@ import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.category.subcategory.SubcategoryService;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +32,14 @@ public class CategoryService {
         return this
                 .categoryRepository
                     .findById(categoryId)
-                        .orElseThrow( () ->  new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
+                        .orElseThrow( () ->  new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
     @Transactional(readOnly = true)
     public List<Category>  findAllCategories() {
        List<Category> allCategories = this.categoryRepository.findAll();
         if(!allCategories.isEmpty())  return allCategories;
-	throw new NoDataFoundException(ErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);
+	throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);
 	
     }
     @Transactional
@@ -50,7 +50,7 @@ public class CategoryService {
             log.info("Created new category: " + createdCategory);
             return createdCategory;
         }
-        throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_NAME);
+        throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_NAME);
     }
 
     @Transactional
@@ -62,7 +62,7 @@ public class CategoryService {
             log.info("Updated category: " + updatedCategory);
             return updatedCategory;
         }
-        throw new ValueMismatchException(ErrorMessages.PROVIDED_IDS_DONT_MATCH);
+        throw new ValueMismatchException(HttpErrorMessages.PROVIDED_IDS_DONT_MATCH);
     }
 
     @Transactional
@@ -72,7 +72,7 @@ public class CategoryService {
             log.info("Deleted category with id: " + categoryId);
             return;
         }
-        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +80,7 @@ public class CategoryService {
         Category requestedCategory = this
                 .categoryRepository
                 .findById(categoryId)
-                .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
         return requestedCategory.getSubcategoryList();
     }
 
@@ -101,7 +101,7 @@ public class CategoryService {
         if(requetedSubcategory.getCategory() != null && requetedSubcategory.getCategory().equals(categoryToBeConsulted)) {
             return requetedSubcategory;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(HttpErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
     @Transactional
@@ -112,7 +112,7 @@ public class CategoryService {
             log.info("Updated subcategory: " + updatedSubcategory + "in category: " + categoryWhosSubcategoryWillBeModified);
             return updatedSubcategory;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(HttpErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
     @Transactional
@@ -124,7 +124,7 @@ public class CategoryService {
             log.info("Deleted subcategory: " + subcategoryToBeDeleted + " from category " + categoryWhosSubcategotyWillBeDeleted);
             return;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(HttpErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
    @Transactional(readOnly = true)
@@ -132,7 +132,7 @@ public class CategoryService {
    	var categoryWhoseProductsWillBeObtained = this.findCategoryById(categoryId);
    	List<Product> productsFound = categoryWhoseProductsWillBeObtained.getProductList();
 	if(!productsFound.isEmpty()) return productsFound;
-	throw new NoDataFoundException(ErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);	
+	throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);
    }
 
 }

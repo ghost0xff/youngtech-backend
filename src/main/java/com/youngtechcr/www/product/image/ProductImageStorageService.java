@@ -7,7 +7,7 @@ import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.product.ProductService;
 import com.youngtechcr.www.storage.FileSystemStorageService;
 import com.youngtechcr.www.storage.FileType;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
             log.info("Stored (in file system and in database) product image in server successfully: " + savedProductImageRepresentation);
             return savedProductImageRepresentation;
         }
-        throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_MAIN_IMAGE);
+        throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_MAIN_IMAGE);
     }
 
     public Resource obtainProductImage(ProductImageMetaData imageFileMetaData) {
@@ -109,10 +109,10 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
             } catch (MalformedURLException malformedURLException) {
                 log.warn("Couldn't download file due to malformed url/uri exception created from file path");
                 malformedURLException.printStackTrace();
-                throw new FileOperationException(ErrorMessages.UNABLE_TO_DOWNLOAD_REQUESTED_FILE);
+                throw new FileOperationException(HttpErrorMessages.UNABLE_TO_DOWNLOAD_REQUESTED_FILE);
             }
         }
-        throw new NoDataFoundException(ErrorMessages.UNABLE_TO_LOCATE_REQUESTED_FILE);
+        throw new NoDataFoundException(HttpErrorMessages.UNABLE_TO_LOCATE_REQUESTED_FILE);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
         } catch (IOException e) {
             log.warn("IOException interrupted file deletion");
             e.printStackTrace();
-            throw new FileOperationException(ErrorMessages.UNABLE_TO_DELETE_REQUESTED_FILE);
+            throw new FileOperationException(HttpErrorMessages.UNABLE_TO_DELETE_REQUESTED_FILE);
         }
     }
 

@@ -20,20 +20,24 @@ public class Subcategory implements TimeStamped {
     @Column(name = "id_subcategory")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer subcategoryId;
+    @ManyToOne
+    @JoinColumn(name = "fk_id_category", referencedColumnName = "id_category")
+    private Category category;
     private String name;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @ManyToOne
-    @JoinColumn(name = "fk_id_category", referencedColumnName = "id_category")
-    private Category category;
     @OneToMany(mappedBy = "subcategory")
     @JsonProperty("products")
-    List<Product> productList;
+    private List<Product> productList;
 
-    public Subcategory(){}
-    public Subcategory(Integer subcategoryId){ this.subcategoryId = subcategoryId; }
+    public Subcategory() {
+    }
+
+    public Subcategory(Integer subcategoryId) {
+        this.subcategoryId = subcategoryId;
+    }
 
     @Override
     public LocalDateTime getCreatedAt() {
@@ -94,23 +98,23 @@ public class Subcategory implements TimeStamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subcategory that = (Subcategory) o;
-        return Objects.equals(subcategoryId, that.subcategoryId) && Objects.equals(name, that.name) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(category, that.category) && Objects.equals(productList, that.productList);
+        return Objects.equals(subcategoryId, that.subcategoryId) && Objects.equals(category, that.category) && Objects.equals(name, that.name) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(productList, that.productList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subcategoryId, name, createdAt, updatedAt, category, productList);
+        return Objects.hash(subcategoryId, category, name, createdAt, updatedAt, productList);
     }
 
     @Override
     public String toString() {
         return "Subcategory{" +
                 "subcategoryId=" + subcategoryId +
+                ", category=" + category +
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", category=" + category +
-//                ", productList=" + productList +
+                ", productList=" + productList +
                 '}';
     }
 }

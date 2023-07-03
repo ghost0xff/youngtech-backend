@@ -1,7 +1,7 @@
 package com.youngtechcr.www.product.image;
 
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,7 @@ public class ProductImageMetaDataService {
         return this
                 .imageMetaDataRepository
                 .findById(imageMetaDataId)
-                .orElseThrow( () -> new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
 }

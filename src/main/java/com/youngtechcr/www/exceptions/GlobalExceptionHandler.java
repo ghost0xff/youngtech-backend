@@ -1,15 +1,16 @@
 package com.youngtechcr.www.exceptions;
 
-import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
-import com.youngtechcr.www.exceptions.custom.EmptyRepositoryException;
-import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
-import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
+import com.youngtechcr.www.exceptions.custom.*;
+import com.youngtechcr.www.regex.RegexMatchingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.regex.PatternSyntaxException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -33,4 +34,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ExceptionUtils.handle(exception);
     }
 
+    @ExceptionHandler(InvalidElementException.class)
+    public ProblemDetail handleInvalidElementException(InvalidElementException exception) {
+        return ExceptionUtils.handle(exception);
+    }
+
+    @ExceptionHandler(RegexMatchingException.class)
+    public ProblemDetail handleRegexMatchingException(RegexMatchingException exception) {
+        return ExceptionUtils.handle(exception);
+    }
 }

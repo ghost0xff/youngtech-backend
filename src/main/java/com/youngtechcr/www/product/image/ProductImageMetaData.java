@@ -21,9 +21,9 @@ public class ProductImageMetaData implements FileMetaData, TimeStamped, OneAmong
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_product_image")
     private Integer productImageId;
-    @Column(name = "server_name")
+    @Column(name = "server_file_name")
     private String serverFileName;
-    @Column(name = "original_name")
+    @Column(name = "original_file_name")
     private String originalFileName;
     @Column(name = "relative_path")
     private String relativePath;

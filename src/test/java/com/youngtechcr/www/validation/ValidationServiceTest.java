@@ -8,6 +8,7 @@ import com.youngtechcr.www.category.subcategory.Subcategory;
 import com.youngtechcr.www.brand.BrandRepository;
 import com.youngtechcr.www.category.CategoryRepository;
 import com.youngtechcr.www.category.subcategory.SubcategoryRepository;
+import com.youngtechcr.www.product.ProductValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class ValidationServiceTest {
     private BrandRepository brandRepository;
     private CategoryRepository categoryRepository;
     private SubcategoryRepository subcategoryRepository;
-    private ValidationService validationService;
+    private ProductValidator validationService;
 
     @BeforeEach
     void setUp(){
@@ -31,7 +32,7 @@ class ValidationServiceTest {
         this.brandRepository = mock(BrandRepository.class);
         this.categoryRepository = mock(CategoryRepository.class);
         this.subcategoryRepository = mock(SubcategoryRepository.class);
-        this.validationService = new ValidationService(productRepository, brandRepository, categoryRepository, subcategoryRepository);
+        this.validationService = new ProductValidator(productRepository, brandRepository, categoryRepository, subcategoryRepository);
     }
     @Test
     @DisplayName("Test product validation")
@@ -64,7 +65,7 @@ class ValidationServiceTest {
         productToBeValidates.setCategory(categoryToBeTested);
         productToBeValidates.setSubcategory(subcategoryToBeTested);
 
-        assertTrue(this.validationService.isProductValid(productToBeValidates));
+        assertTrue(this.validationService.isValid(productToBeValidates));
 
     }
 

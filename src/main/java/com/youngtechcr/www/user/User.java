@@ -1,69 +1,48 @@
 package com.youngtechcr.www.user;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.role.Role;
-import com.youngtechcr.www.sale.Sale;
-import com.youngtechcr.www.domain.TimeStamped;
-import com.youngtechcr.www.order.Order;
+import com.youngtechcr.www.person.Person;
+import com.youngtechcr.www.user.profilepicture.ProfilePictureMetaData;
+import com.youngtechcr.www.user.role.Role;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_user")
-public class User implements TimeStamped {
+public class User {
 
     @Id
     @Column(name = "id_user")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
+    @OneToOne(mappedBy = "user")
+    private ProfilePictureMetaData profilePicture;
     private String username;
     private String password;
     private String email;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    @ManyToOne
-    @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
-    private Role role;
-    @OneToMany(mappedBy = "user")
-    @JsonProperty("orders")
-    private List<Order> orderList;
-    @OneToMany(mappedBy = "user")
-    @JsonProperty("sales")
-    private List<Sale> saleList;
+    @Column(name = "signed_up_at")
+    private LocalDateTime signedUpAt;
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+    @Column(name = "last_update_at")
+    private LocalDateTime lastUpdateAt;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "tbl_user_and_role",
+            joinColumns = @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
+    )
+    private List<Role> roles;
+    @OneToOne(mappedBy = "user")
+    private Person person;
 
-    public User(){}
-
-    public User(Integer userId) {
-        this.userId = userId;
+    public User() {
     }
-
-
-    @Override
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    @Override
-    public void setCreatedAt(LocalDateTime timestamp) {
-        this.createdAt = timestamp;
-    }
-
-    @Override
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    @Override
-    public void setUpdatedAt(LocalDateTime timestamp) {
-        this.updatedAt = timestamp;
+    public User(String username, String email, List<Role> roleList) {
+        this.username = username;
+        this.email = email;
+        this.roles = roleList;
     }
 
     public Integer getUserId() {
@@ -72,6 +51,14 @@ public class User implements TimeStamped {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public ProfilePictureMetaData getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(ProfilePictureMetaData profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public String getUsername() {
@@ -98,59 +85,43 @@ public class User implements TimeStamped {
         this.email = email;
     }
 
-    @JsonBackReference(value = "user-role")
-    public Role getRole() {
-        return role;
+    public LocalDateTime getSignedUpAt() {
+        return signedUpAt;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setSignedUpAt(LocalDateTime signedUpAt) {
+        this.signedUpAt = signedUpAt;
     }
 
-    @JsonManagedReference(value = "user-sale")
-    public List<Sale> getSaleList() {
-        return saleList;
+    public LocalDateTime getLastLoginAt() {
+        return lastLoginAt;
     }
 
-    public void setSaleList(List<Sale> saleList) {
-        this.saleList = saleList;
+    public void setLastLoginAt(LocalDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 
-    @JsonManagedReference(value = "user-order")
-    public List<Order> getOrderList() {
-        return orderList;
+    public LocalDateTime getLastUpdateAt() {
+        return lastUpdateAt;
     }
 
-    public void setOrderList(List<Order> orderList) {
-        this.orderList = orderList;
+    public void setLastUpdateAt(LocalDateTime lastUpdateAt) {
+        this.lastUpdateAt = lastUpdateAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(createdAt, user.createdAt) && Objects.equals(updatedAt, user.updatedAt) && Objects.equals(role, user.role) && Objects.equals(orderList, user.orderList) && Objects.equals(saleList, user.saleList);
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, username, password, email, createdAt, updatedAt, role, orderList, saleList);
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", role=" + role +
-//                ", orderList=" + orderList +
-//                ", saleList=" + saleList +
-                '}';
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
     }
 }

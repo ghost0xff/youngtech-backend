@@ -6,7 +6,7 @@ import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.http.BasicCrudService;
 import com.youngtechcr.www.product.ProductService;
-import com.youngtechcr.www.exceptions.ErrorMessages;
+import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class BrandService implements BasicCrudService<Brand> {
         return this
                 .brandRepository
                 .findById(brandId)
-                .orElseThrow(() -> new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
+                .orElseThrow(() -> new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
     @Transactional
@@ -44,7 +44,7 @@ public class BrandService implements BasicCrudService<Brand> {
             log.info("Created new brand: " + newBrand);
             return newBrand;
         }
-        throw new AlreadyExistsException(ErrorMessages.CANT_CREATE_DUPLICATE_NAME);
+        throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_NAME);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BrandService implements BasicCrudService<Brand> {
             log.info("Updated brand: " + updatedBrand);
             return updatedBrand;
         }
-        throw new ValueMismatchException(ErrorMessages.PROVIDED_IDS_DONT_MATCH);
+        throw new ValueMismatchException(HttpErrorMessages.PROVIDED_IDS_DONT_MATCH);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BrandService implements BasicCrudService<Brand> {
             log.info("Deleted Brand with id: " + brandId);
             return;
         }
-        throw new NoDataFoundException(ErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
+        throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
     @Transactional(readOnly = true)
@@ -84,7 +84,7 @@ public class BrandService implements BasicCrudService<Brand> {
         if(requestedProduct.getBrand().equals(requestedBrand)) {
             return requestedProduct;
         }
-        throw new ValueMismatchException(ErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
+        throw new ValueMismatchException(HttpErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
     }
 
 }

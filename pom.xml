@@ -78,6 +78,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- DATA VALIDATION DEPENDENCIES -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
