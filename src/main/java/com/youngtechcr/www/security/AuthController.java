@@ -17,7 +17,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping(path = "/signin")
+    @PostMapping(path = "/signup")
     public ResponseEntity<?> signIn(
             @RequestParam List<UserType> types,
             @RequestBody UserCreationMetadata userMetadata
