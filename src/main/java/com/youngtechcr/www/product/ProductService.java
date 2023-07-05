@@ -1,6 +1,6 @@
 package com.youngtechcr.www.product;
 
-import com.youngtechcr.www.storage.DoubleNameFileCarrier;
+import com.youngtechcr.www.storage.DualFilenameBearer;
 import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
@@ -102,26 +102,26 @@ public class ProductService {
         return this.findProductById(productId).getImageList();
     }
 
-    public DoubleNameFileCarrier downloadMainProductImageByProductId(Integer productId) {
+    public DualFilenameBearer downloadMainProductImageByProductId(Integer productId) {
         var productToBeInspected = this.findProductById(productId);
         if(this.hasMainImage(productToBeInspected)) {
             ProductImageMetaData mainImage = this.obtainMainImage(productToBeInspected);
             String originaImageName = mainImage.getOriginalFileName();
             MediaType imageMediaType = MediaType.parseMediaType(mainImage.getMimeType());
             Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(mainImage);
-            return new DoubleNameFileCarrier(obtainedImageResource, originaImageName, imageMediaType);
+            return new DualFilenameBearer(obtainedImageResource, originaImageName, imageMediaType);
         }
         throw new NoDataFoundException(HttpErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND);
     }
 
     @Transactional(readOnly = true)
-    public DoubleNameFileCarrier downloadProductImageByProductId(Integer productId, Integer productImageId) {
+    public DualFilenameBearer downloadProductImageByProductId(Integer productId, Integer productImageId) {
         if(this.productRepository.existsById(productId)) {
             ProductImageMetaData productImageMetaData = this.imageMetaDataService.findImageMetaDataById(productImageId);
             Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(productImageMetaData);
             String originalFileName = productImageMetaData.getOriginalFileName();
             MediaType imageMediaType = MediaType.parseMediaType(productImageMetaData.getMimeType());
-            return new DoubleNameFileCarrier(obtainedImageResource, originalFileName, imageMediaType);
+            return new DualFilenameBearer(obtainedImageResource, originalFileName, imageMediaType);
         }
         throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
