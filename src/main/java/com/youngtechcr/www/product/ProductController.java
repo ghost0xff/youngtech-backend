@@ -1,6 +1,6 @@
 package com.youngtechcr.www.product;
 
-import com.youngtechcr.www.storage.DoubleNameFileCarrier;
+import com.youngtechcr.www.storage.DualFilenameBearer;
 import com.youngtechcr.www.product.image.ProductImageMetaData;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class ProductController {
     public ResponseEntity<?> downloadMainImageOrObtainImageMetaDataList(
             @PathVariable("id") Integer productId, @RequestParam(name = "main", required = false) boolean isMain) {
         if(isMain) {
-            DoubleNameFileCarrier resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
+            DualFilenameBearer resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
             return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
         }
         List<ProductImageMetaData> imagesMetaData = this.productService.getProductImagesMetadataById(productId);
@@ -72,7 +72,7 @@ public class ProductController {
             @PathVariable Integer productId,
             @PathVariable("imageId") Integer productImageId
     ) {
-        DoubleNameFileCarrier resourceWithSomeMetaData = this.productService.downloadProductImageByProductId(productId, productImageId);
+        DualFilenameBearer resourceWithSomeMetaData = this.productService.downloadProductImageByProductId(productId, productImageId);
         return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
     }
 
