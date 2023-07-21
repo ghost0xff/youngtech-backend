@@ -1,7 +1,7 @@
 package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.storage.DualFilenameBearer;
-import com.youngtechcr.www.product.image.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -47,10 +47,10 @@ public class ProductController {
     }
 
     @PostMapping(path = "/{id}/images")
-    public ResponseEntity<ProductImageMetaData> uploadImageByProductId(
+    public ResponseEntity<ProductImage> uploadImageByProductId(
             @PathVariable("id") Integer productId,
             @RequestPart(name = "file-data") MultipartFile imageToBeUploaded,
-            @RequestPart(name = "meta-data", required = false) ProductImageMetaData imageMetaData
+            @RequestPart(name = "meta-data", required = false) ProductImage imageMetaData
     ) {
         var uploadedProductImage = this.productService.uploadProductImageByProductId(productId, imageToBeUploaded, imageMetaData);
         return ResponseEntityUtils.created(uploadedProductImage);
@@ -63,7 +63,7 @@ public class ProductController {
             DualFilenameBearer resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
             return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
         }
-        List<ProductImageMetaData> imagesMetaData = this.productService.getProductImagesMetadataById(productId);
+        List<ProductImage> imagesMetaData = this.productService.getProductImagesMetadataById(productId);
         return ResponseEntity.ok().body(imagesMetaData);
     }
 
@@ -77,7 +77,7 @@ public class ProductController {
     }
 
     @DeleteMapping(path = "/{productId}/images/{imageId}")
-    public ResponseEntity<ProductImageMetaData> deleteProductImageByProductId(
+    public ResponseEntity<ProductImage> deleteProductImageByProductId(
             @PathVariable Integer productId,
             @PathVariable("imageId") Integer productImageId
     ){

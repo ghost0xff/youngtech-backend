@@ -1,11 +1,13 @@
 package com.youngtechcr.www.product;
 
+import com.youngtechcr.www.brand.Brand;
+import com.youngtechcr.www.brand.BrandService;
 import com.youngtechcr.www.storage.DualFilenameBearer;
-import com.youngtechcr.www.product.image.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
-import com.youngtechcr.www.product.image.ProductImageMetaDataService;
+import com.youngtechcr.www.product.image.ProductImageService;
 import com.youngtechcr.www.product.image.ProductImageStorageService;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
@@ -25,21 +27,23 @@ import java.util.List;
 public class ProductService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
-    private ProductRepository productRepository;
-    private ProductValidator validationService;
-    private ProductImageStorageService productImageStorageService;
-    private ProductImageMetaDataService imageMetaDataService;
+    private final ProductRepository productRepository;
+    private final ProductValidator validationService;
+    private final ProductImageStorageService productImageStorageService;
+    private final ProductImageService imageMetaDataService;
+    private final BrandService brandService;
 
     public ProductService(
             ProductRepository productRepository,
             ProductValidator validationService,
             ProductImageStorageService productImageStorageService,
-            ProductImageMetaDataService imageMetaDataService
-    ) {
+            ProductImageService imageMetaDataService,
+            BrandService brandService) {
         this.productRepository = productRepository;
         this.validationService = validationService;
         this.productImageStorageService = productImageStorageService;
         this.imageMetaDataService = imageMetaDataService;
+        this.brandService = brandService;
     }
 
     @Transactional(readOnly = true)
@@ -83,29 +87,40 @@ public class ProductService {
         throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
     }
 
+    @Transactional(readOnly = true)
+    public Product findProductByBrandId(Integer productId, Integer brandId) {
+        Brand requestedBrand = brandService.findById(brandId);
+        Product requestedProduct = findProductById(productId);
+        if(requestedProduct.getBrand().equals(requestedBrand)) {
+            return requestedProduct;
+        }
+        throw new ValueMismatchException(HttpErrorMessages.REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
+    }
+
+
     @Transactional
-    public ProductImageMetaData uploadProductImageByProductId(
+    public ProductImage uploadProductImageByProductId(
             Integer productId,
             MultipartFile imageToBeUploaded,
-            @Nullable ProductImageMetaData imageMetaData) {
+            @Nullable ProductImage imageMetaData) {
         if (!this.productRepository.existsById(productId)) {
             throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);
         }
-        ProductImageMetaData uploadedProductImage = this
+        ProductImage uploadedProductImage = this
                 .productImageStorageService
                 .storeProductImage(productId, imageToBeUploaded, imageMetaData);
         return uploadedProductImage;
     }
 
     @Transactional(readOnly = true)
-    public List<ProductImageMetaData> getProductImagesMetadataById(Integer productId) {
+    public List<ProductImage> getProductImagesMetadataById(Integer productId) {
         return this.findProductById(productId).getImageList();
     }
 
     public DualFilenameBearer downloadMainProductImageByProductId(Integer productId) {
         var productToBeInspected = this.findProductById(productId);
         if(this.hasMainImage(productToBeInspected)) {
-            ProductImageMetaData mainImage = this.obtainMainImage(productToBeInspected);
+            ProductImage mainImage = this.obtainMainImage(productToBeInspected);
             String originaImageName = mainImage.getOriginalFileName();
             MediaType imageMediaType = MediaType.parseMediaType(mainImage.getMimeType());
             Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(mainImage);
@@ -117,7 +132,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public DualFilenameBearer downloadProductImageByProductId(Integer productId, Integer productImageId) {
         if(this.productRepository.existsById(productId)) {
-            ProductImageMetaData productImageMetaData = this.imageMetaDataService.findImageMetaDataById(productImageId);
+            ProductImage productImageMetaData = this.imageMetaDataService.findImageMetaDataById(productImageId);
             Resource obtainedImageResource = this.productImageStorageService.obtainProductImage(productImageMetaData);
             String originalFileName = productImageMetaData.getOriginalFileName();
             MediaType imageMediaType = MediaType.parseMediaType(productImageMetaData.getMimeType());
@@ -133,7 +148,7 @@ public class ProductService {
                 .anyMatch((image) -> image.isMain());
     }
 
-    public ProductImageMetaData obtainMainImage(Product productToBeInspected) {
+    public ProductImage obtainMainImage(Product productToBeInspected) {
         return productToBeInspected
                 .getImageList()
                 .stream()
@@ -144,7 +159,7 @@ public class ProductService {
 
     public void deleteProductImageByProduct(Integer productId, Integer productImageId) {
         if(this.productRepository.existsById(productId)) {
-            ProductImageMetaData productImageToBeDeleted = this.imageMetaDataService.findImageMetaDataById(productImageId);
+            ProductImage productImageToBeDeleted = this.imageMetaDataService.findImageMetaDataById(productImageId);
             this.productImageStorageService.eliminateProductImageCompletely(productImageToBeDeleted);
         }
         throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND);

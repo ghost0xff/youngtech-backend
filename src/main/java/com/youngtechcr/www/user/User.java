@@ -1,12 +1,15 @@
 package com.youngtechcr.www.user;
 
 import com.youngtechcr.www.person.Person;
-import com.youngtechcr.www.user.profilepicture.ProfilePictureMetaData;
+import com.youngtechcr.www.profile.Profile;
 import com.youngtechcr.www.user.role.Role;
 import jakarta.persistence.*;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_user")
@@ -16,9 +19,6 @@ public class User {
     @Column(name = "id_user")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
-    @OneToOne(mappedBy = "user")
-    private ProfilePictureMetaData profilePicture;
-    private String username;
     private String password;
     private String email;
     @Column(name = "signed_up_at")
@@ -36,13 +36,15 @@ public class User {
     private List<Role> roles;
     @OneToOne(mappedBy = "user")
     private Person person;
+    @OneToOne(mappedBy = "user")
+    @PrimaryKeyJoinColumn
+    private Profile profile;
 
-    public User() {
-    }
-    public User(String username, String email, List<Role> roleList) {
-        this.username = username;
+    public User() { }
+
+    public User(String email, Collection<Role> roles) {
         this.email = email;
-        this.roles = roleList;
+        this.roles = (List<Role>) roles;
     }
 
     public Integer getUserId() {
@@ -51,22 +53,6 @@ public class User {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
-    public ProfilePictureMetaData getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(ProfilePictureMetaData profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -123,5 +109,41 @@ public class User {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(signedUpAt, user.signedUpAt) && Objects.equals(lastLoginAt, user.lastLoginAt) && Objects.equals(lastUpdateAt, user.lastUpdateAt) && Objects.equals(roles, user.roles) && Objects.equals(person, user.person) && Objects.equals(profile, user.profile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, password, email, signedUpAt, lastLoginAt, lastUpdateAt, roles, person, profile);
+    }
+
+    @Override
+    public String toString() {
+        return "BasicUser{" +
+                "userId=" + userId +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", signedUpAt=" + signedUpAt +
+                ", lastLoginAt=" + lastLoginAt +
+                ", lastUpdateAt=" + lastUpdateAt +
+                ", roles=" + roles +
+                ", person=" + person +
+                ", profile=" + profile +
+                '}';
     }
 }

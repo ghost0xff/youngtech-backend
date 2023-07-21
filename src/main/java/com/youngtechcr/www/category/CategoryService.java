@@ -10,7 +10,6 @@ import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +19,15 @@ import java.util.List;
 @Service
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    private SubcategoryService subcategoryService;
+    private final CategoryRepository categoryRepository;
+    private final SubcategoryService subcategoryService;
 
     private static final Logger log = LoggerFactory.getLogger(CategoryService.class);
+
+    public CategoryService(CategoryRepository categoryRepository, SubcategoryService subcategoryService) {
+        this.categoryRepository = categoryRepository;
+        this.subcategoryService = subcategoryService;
+    }
 
     @Transactional(readOnly = true)
     public Category findCategoryById(Integer categoryId) {
@@ -135,4 +137,8 @@ public class CategoryService {
 	throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);
    }
 
+   @Transactional(readOnly = true)
+    public boolean existsById(Integer id) {
+        return categoryRepository.existsById(id);
+   }
 }

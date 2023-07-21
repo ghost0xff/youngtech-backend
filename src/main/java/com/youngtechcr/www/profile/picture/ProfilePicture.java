@@ -1,10 +1,9 @@
-package com.youngtechcr.www.user.profilepicture;
+package com.youngtechcr.www.profile.picture;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.profile.Profile;
 import com.youngtechcr.www.storage.FileMetaData;
-import com.youngtechcr.www.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,14 +11,11 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_profile_picture")
-public class ProfilePictureMetaData implements FileMetaData, TimeStamped {
+public class ProfilePicture implements FileMetaData, TimeStamped {
     @Id
     @Column(name = "id_profile_picture")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer profilePictureId;
-    @OneToOne
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
-    private User user;
     @Column(name = "server_file_name")
     private String serverFileName;
     @Column(name = "original_file_name")
@@ -34,6 +30,8 @@ public class ProfilePictureMetaData implements FileMetaData, TimeStamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @OneToOne(mappedBy = "profilePicture")
+    private Profile profile;
 
     public Integer getProfilePictureId() {
         return profilePictureId;
@@ -43,13 +41,7 @@ public class ProfilePictureMetaData implements FileMetaData, TimeStamped {
         this.profilePictureId = profilePictureId;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     @Override
     public String getServerFileName() {
@@ -121,31 +113,6 @@ public class ProfilePictureMetaData implements FileMetaData, TimeStamped {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProfilePictureMetaData that = (ProfilePictureMetaData) o;
-        return sizeInBytes == that.sizeInBytes && Objects.equals(profilePictureId, that.profilePictureId) && Objects.equals(user, that.user) && Objects.equals(serverFileName, that.serverFileName) && Objects.equals(originalFileName, that.originalFileName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(mimeType, that.mimeType) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(profilePictureId, user, serverFileName, originalFileName, relativePath, mimeType, sizeInBytes, createdAt, updatedAt);
-    }
-
-    @Override
-    public String toString() {
-        return "ProfilePictureMetaData{" +
-                "profilePictureId=" + profilePictureId +
-                ", user=" + user +
-                ", serverFileName='" + serverFileName + '\'' +
-                ", originalFileName='" + originalFileName + '\'' +
-                ", relativePath='" + relativePath + '\'' +
-                ", mimeType='" + mimeType + '\'' +
-                ", sizeInBytes=" + sizeInBytes +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
 }
+
+

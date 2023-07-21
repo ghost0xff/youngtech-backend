@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.order.Order;
 import com.youngtechcr.www.sale.Sale;
-import jakarta.persistence.*;
 import com.youngtechcr.www.user.User;
-import org.springframework.cglib.core.Local;
+import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,14 +22,8 @@ public class Person  {
     @OneToOne
     @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
     private User user;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "second_name")
-    private String secondName;
-    @Column(name = "first_lastname")
-    private String firstLastname;
-    @Column(name = "second_lastname")
-    private String secondLastname;
+    private String firstname;
+    private String lastname;
     private int age;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -63,37 +55,20 @@ public class Person  {
         this.user = user;
     }
 
-    public String getFirstName() {
-
-        return firstName;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public String getFirstLastname() {
-        return firstLastname;
-    }
-
-    public void setFirstLastname(String firstLastname) {
-        this.firstLastname = firstLastname;
-    }
-
-    public String getSecondLastname() {
-        return secondLastname;
-    }
-
-    public void setSecondLastname(String secondLastname) {
-        this.secondLastname = secondLastname;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public int getAge() {
@@ -136,12 +111,12 @@ public class Person  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return age == person.age && Objects.equals(personId, person.personId) && Objects.equals(user, person.user) && Objects.equals(firstName, person.firstName) && Objects.equals(secondName, person.secondName) && Objects.equals(firstLastname, person.firstLastname) && Objects.equals(secondLastname, person.secondLastname) && Objects.equals(birthdate, person.birthdate) && Objects.equals(orderList, person.orderList) && Objects.equals(saleList, person.saleList);
+        return age == person.age && Objects.equals(personId, person.personId) && Objects.equals(user, person.user) && Objects.equals(firstname, person.firstname) && Objects.equals(lastname, person.lastname) && Objects.equals(birthdate, person.birthdate) && Objects.equals(orderList, person.orderList) && Objects.equals(saleList, person.saleList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(personId, user, firstName, secondName, firstLastname, secondLastname, age, birthdate, orderList, saleList);
+        return Objects.hash(personId, user, firstname, lastname, age, birthdate, orderList, saleList);
     }
 
     @Override
@@ -149,10 +124,8 @@ public class Person  {
         return "Person{" +
                 "personId=" + personId +
                 ", user=" + user +
-                ", firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", firstLastname='" + firstLastname + '\'' +
-                ", secondLastname='" + secondLastname + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
                 ", age=" + age +
                 ", birthdate=" + birthdate +
 //                ", orderList=" + orderList +

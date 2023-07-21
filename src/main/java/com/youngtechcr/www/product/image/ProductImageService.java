@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ProductImageMetaDataService {
+public class ProductImageService {
 
     @Autowired
-    private ProductImageMetaDataRepository imageMetaDataRepository;
+    private ProductImageRepository imageMetaDataRepository;
 
     @Transactional(readOnly = true)
-    public ProductImageMetaData findImageMetaDataById(Integer imageMetaDataId) {
+    public ProductImage findImageMetaDataById(Integer imageMetaDataId) {
         return this
                 .imageMetaDataRepository
                 .findById(imageMetaDataId)

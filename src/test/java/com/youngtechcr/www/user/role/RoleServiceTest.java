@@ -1,13 +1,13 @@
 package com.youngtechcr.www.user.role;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,64 +25,38 @@ class RoleServiceTest {
     }
 
     @Test
-    @DisplayName("Given existing role should return true")
-    void given_Existin_Role_Should_Return_True() {
+    @DisplayName("Valid options should map to existing roles")
+    void given_Valid_Options_Should_Return_Valid_Roles(){
+        // preparing mock
+       Role expectedUserRole = new Role(1, "ROLE_USER");
+       Role expectedCustomerRole = new Role(2, "ROLE_CUSTOMER");
+       Role expectedStudentRole = new Role(3, "ROLE_STUDENT");
 
-        //Preparing assertion
-        List<Role> existingRoles = new ArrayList<>();
-        existingRoles.add(new Role(2));
+        // whens
+       when(roleRepository.findByName("USER")).thenReturn(Optional.of(expectedUserRole));
+       when(roleRepository.findByName("CUSTOMER")).thenReturn(Optional.of(expectedCustomerRole));
+       when(roleRepository.findByName("STUDENT")).thenReturn(Optional.of(expectedStudentRole));
 
-        //Preparing 'when's
-        when(this.roleRepository.existsById(2)).thenReturn(true);
+       // operations
+        List<Role> roles = roleService.
+                mapOptionsToRoles(
+                        RoleOption.USER,
+                        RoleOption.CUSTOMER,
+                        RoleOption.STUDENT
+                );
 
-        //Assertions
-        Assertions.assertTrue(this.roleService.doThisRolesExist(existingRoles));
+        // assertions
+        assertTrue(roles.containsAll(
+                List.of(
+                        expectedCustomerRole,
+                        expectedUserRole,
+                        expectedUserRole)
+                )
+        );
+
+
+
 
     }
-
-    @Test
-    @DisplayName("Given ONE NONE EXISTING role should return false")
-    void given_One_Unexisting_Role_Should_Return_False() {
-
-        //Preparing assertion
-        List<Role> existingRoles = new ArrayList<>();
-        existingRoles.add(new Role(10));
-
-        //Preparing 'when's
-        when(this.roleRepository.existsById(410)).thenReturn(false);
-
-        //Assertions
-        Assertions.assertFalse(this.roleService.doThisRolesExist(existingRoles));
-
-    }
-
-
-    @Test
-    @DisplayName("Given some NONE existing and some existing role should return false")
-    void given_Somee_Unexisting_Roles_And_Some_Existing_Roles_Should_Return_False() {
-
-        //Preparing assertion
-        List<Role> existingRoles = new ArrayList<>();
-        existingRoles.add(new Role(1));
-        existingRoles.add(new Role(2));
-        existingRoles.add(new Role(13));
-        existingRoles.add(new Role(15));
-        existingRoles.add(new Role(20));
-
-        //Preparing 'when's
-        when(this.roleRepository.existsById(1)).thenReturn(true);
-        when(this.roleRepository.existsById(2)).thenReturn(true);
-        when(this.roleRepository.existsById(13)).thenReturn(false);
-        when(this.roleRepository.existsById(15)).thenReturn(false);
-        when(this.roleRepository.existsById(20)).thenReturn(false);
-
-        //Assertions
-        Assertions.assertFalse(this.roleService.doThisRolesExist(existingRoles));
-
-    }
-
-
-
-
 
 }

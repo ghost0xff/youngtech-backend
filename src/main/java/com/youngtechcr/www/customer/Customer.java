@@ -2,7 +2,6 @@ package com.youngtechcr.www.customer;
 
 import com.youngtechcr.www.domain.TimeStamped;
 import com.youngtechcr.www.person.Person;
-import com.youngtechcr.www.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

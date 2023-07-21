@@ -29,18 +29,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class ProductImageStorageService implements FileSystemStorageService<ProductImageMetaData> {
+public class ProductImageStorageService implements FileSystemStorageService<ProductImage> {
 
     private static final Logger log = LoggerFactory.getLogger(ProductImageStorageService.class);
     @Autowired
-    private ProductImageMetaDataRepository productImageFileDataRepository;
+    private ProductImageRepository productImageFileDataRepository;
     @Lazy
     @Autowired
     private ProductService productService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProductImageMetaData storeProductImage(Integer productId, MultipartFile imageToBeUploaded,
-            @Nullable ProductImageMetaData imageMetaData
+    public ProductImage storeProductImage(Integer productId, MultipartFile imageToBeUploaded,
+                                          @Nullable ProductImage imageMetaData
     ) {
         Product productToAddNewImage = this.productService.findProductById(productId);
         if(!this.productService.hasMainImage(productToAddNewImage)){
@@ -61,7 +61,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
                     imageMetaData != null ? imageMetaData.isMain() : false, // isMainImage ????
                     imageToBeUploaded.getSize(),imageToBeUploaded.getContentType());
             savedWithRelativePathAndServerNameAndOriginalName.setProduct(productToAddNewImage);
-            ProductImageMetaData savedProductImageRepresentation = this.saveToDataBase(
+            ProductImage savedProductImageRepresentation = this.saveToDataBase(
                     savedWithRelativePathAndServerNameAndOriginalName);
             log.info("Stored (in file system and in database) product image in server successfully: " + savedProductImageRepresentation);
             return savedProductImageRepresentation;
@@ -69,7 +69,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
         throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_MAIN_IMAGE);
     }
 
-    public Resource obtainProductImage(ProductImageMetaData imageFileMetaData) {
+    public Resource obtainProductImage(ProductImage imageFileMetaData) {
         Path absoluteImagePath = Path.of(
                 imageFileMetaData.getRelativePath())
                 .toAbsolutePath()
@@ -79,7 +79,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
     }
 
     @Transactional
-    public void eliminateProductImageCompletely(ProductImageMetaData productImageToBeDeleted) {
+    public void eliminateProductImageCompletely(ProductImage productImageToBeDeleted) {
         Path absoluteImagePathToBeDeleted = Path.of(
                 productImageToBeDeleted.getRelativePath())
                 .toAbsolutePath()
@@ -88,11 +88,11 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
 
     }
     @Override
-    public ProductImageMetaData saveToFileSystem(String serverFileName, Path posibleProductDirectoryPath, MultipartFile imageToBeUploaded) {
+    public ProductImage saveToFileSystem(String serverFileName, Path posibleProductDirectoryPath, MultipartFile imageToBeUploaded) {
         StorageUtils.createDirectoriesIfNotAlreadyExists(posibleProductDirectoryPath);
         Path relativeImagePath = posibleProductDirectoryPath.resolve(serverFileName);
         StorageUtils.saveFileOrReplaceIfExisting(imageToBeUploaded, relativeImagePath);
-        var savedProductImageInFileSystem = new ProductImageMetaData(
+        var savedProductImageInFileSystem = new ProductImage(
             serverFileName,
             imageToBeUploaded.getOriginalFilename(),
             relativeImagePath.toString()
@@ -117,7 +117,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeFromFileSystemAndDataBase(Path absoluteImagePathToBeEliminated, ProductImageMetaData imageMetaDataToBeDeleted) {
+    public void removeFromFileSystemAndDataBase(Path absoluteImagePathToBeEliminated, ProductImage imageMetaDataToBeDeleted) {
         try {
             this.productImageFileDataRepository.deleteById(imageMetaDataToBeDeleted.getProductImageId());
             Files.delete(absoluteImagePathToBeEliminated);
@@ -131,7 +131,7 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
 
     @Override
     @Transactional
-    public ProductImageMetaData saveToDataBase(ProductImageMetaData productImageToBeSaved) {
+    public ProductImage saveToDataBase(ProductImage productImageToBeSaved) {
         TimestampedUtils.setTimestampsToNow(productImageToBeSaved);
         var savedProductImageRepresentationInDataBase = this.productImageFileDataRepository.save(productImageToBeSaved);
         return savedProductImageRepresentationInDataBase;

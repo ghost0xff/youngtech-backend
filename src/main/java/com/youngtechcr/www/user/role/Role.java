@@ -19,13 +19,17 @@ public class Role implements TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
     @Column(name = "name")
-    private String roleName;
+    private String name;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public Role() {
+    }
+    public Role(Integer roleId, String name) {
+        this.roleId = roleId;
+        this.name = name;
     }
 
     public Role(Integer roleId) {
@@ -62,11 +66,11 @@ public class Role implements TimeStamped {
     }
 
     public String getRoleName() {
-        return roleName;
+        return name;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRoleName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -74,19 +78,19 @@ public class Role implements TimeStamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt);
+        return Objects.equals(roleId, role.roleId) && Objects.equals(name, role.name) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, roleName, createdAt, updatedAt);
+        return Objects.hash(roleId, name, createdAt, updatedAt);
     }
 
     @Override
     public String toString() {
         return "Role{" +
                 "roleId=" + roleId +
-                ", roleName='" + roleName + '\'' +
+                ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
