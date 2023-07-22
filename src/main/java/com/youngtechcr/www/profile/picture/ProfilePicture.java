@@ -1,25 +1,24 @@
 package com.youngtechcr.www.profile.picture;
 
 
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.profile.Profile;
-import com.youngtechcr.www.storage.FileMetaData;
+import com.youngtechcr.www.storage.Storable;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_profile_picture")
-public class ProfilePicture implements FileMetaData, TimeStamped {
+public class ProfilePicture implements Storable, Timestamped {
     @Id
     @Column(name = "id_profile_picture")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer profilePictureId;
-    @Column(name = "server_file_name")
-    private String serverFileName;
-    @Column(name = "original_file_name")
-    private String originalFileName;
+    @Column(name = "server_name")
+    private String serverName;
+    @Column(name = "original_name")
+    private String originalName;
     @Column(name = "relative_path")
     private String relativePath;
     @Column(name = "mime_type")
@@ -41,26 +40,22 @@ public class ProfilePicture implements FileMetaData, TimeStamped {
         this.profilePictureId = profilePictureId;
     }
 
-
-
     @Override
-    public String getServerFileName() {
-        return serverFileName;
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverFileName) {
+        this.serverName = serverFileName;
     }
 
     @Override
-    public void setServerFileName(String serverFileName) {
-        this.serverFileName = serverFileName;
+    public String getOriginalName() {
+        return originalName;
     }
 
-    @Override
-    public String getOriginalFileName() {
-        return originalFileName;
-    }
-
-    @Override
-    public void setOriginalFileName(String originalFileName) {
-        this.originalFileName = originalFileName;
+    public void setOriginalName(String originalFileName) {
+        this.originalName = originalFileName;
     }
 
     @Override
@@ -68,7 +63,6 @@ public class ProfilePicture implements FileMetaData, TimeStamped {
         return relativePath;
     }
 
-    @Override
     public void setRelativePath(String relativePath) {
         this.relativePath = relativePath;
     }
@@ -78,7 +72,6 @@ public class ProfilePicture implements FileMetaData, TimeStamped {
         return mimeType;
     }
 
-    @Override
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
@@ -88,7 +81,6 @@ public class ProfilePicture implements FileMetaData, TimeStamped {
         return sizeInBytes;
     }
 
-    @Override
     public void setSizeInBytes(long sizeInBytes) {
         this.sizeInBytes = sizeInBytes;
     }
@@ -98,7 +90,6 @@ public class ProfilePicture implements FileMetaData, TimeStamped {
         return createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -108,11 +99,30 @@ public class ProfilePicture implements FileMetaData, TimeStamped {
         return updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    @Override
+    public String toString() {
+        return "ProfilePicture{" +
+                "profilePictureId=" + profilePictureId +
+                ", serverName='" + serverName + '\'' +
+                ", originalName='" + originalName + '\'' +
+                ", relativePath='" + relativePath + '\'' +
+                ", mimeType='" + mimeType + '\'' +
+                ", sizeInBytes=" + sizeInBytes +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", profile=" + profile +
+                '}';
+    }
 }
-
-

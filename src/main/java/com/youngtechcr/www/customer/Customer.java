@@ -1,6 +1,6 @@
 package com.youngtechcr.www.customer;
 
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.person.Person;
 import jakarta.persistence.*;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_customer")
-public class Customer implements TimeStamped {
+public class Customer implements Timestamped {
 
     @Id
     @Column(name = "id_customer")
@@ -46,7 +46,6 @@ public class Customer implements TimeStamped {
         return createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -56,7 +55,6 @@ public class Customer implements TimeStamped {
         return updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }

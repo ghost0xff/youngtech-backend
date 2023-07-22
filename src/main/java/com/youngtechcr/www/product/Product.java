@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product")
-public class Product implements TimeStamped {
+public class Product implements Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

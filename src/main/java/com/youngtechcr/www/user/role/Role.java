@@ -1,18 +1,15 @@
 package com.youngtechcr.www.user.role;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_role")
-public class Role implements TimeStamped {
+public class Role implements Timestamped {
 
     @Id
     @Column(name = "id_role")
@@ -42,7 +39,6 @@ public class Role implements TimeStamped {
         return this.createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime timestamp) {
         this.createdAt = timestamp;
     }
@@ -52,7 +48,6 @@ public class Role implements TimeStamped {
         return this.updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime timestamp) {
         this.updatedAt = timestamp;
     }

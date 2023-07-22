@@ -1,6 +1,6 @@
 package com.youngtechcr.www.http;
 
-import com.youngtechcr.www.storage.DualFilenameBearer;
+import com.youngtechcr.www.storage.DualNameFileCarrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -15,15 +15,15 @@ public final class ResponseEntityUtils {
         return responseEntity;
     }
 
-    public static <T extends Resource> ResponseEntity<T> downloadedFileWithMetaDataCarrier(DualFilenameBearer dualFilenameBearer) {
+    public static <T extends Resource> ResponseEntity<T> downloadedFileWithMetaDataCarrier(DualNameFileCarrier dualNameFileCarrier) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("File-Name", dualFilenameBearer.customFileName());
-        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name=" + dualFilenameBearer.customFileName());
+        httpHeaders.add("File-Name", dualNameFileCarrier.secondFilename());
+        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name=" + dualNameFileCarrier.secondFilename());
         ResponseEntity responseEntity = ResponseEntity
                 .ok()
-                .contentType(dualFilenameBearer.fileMediaType())
+                .contentType(dualNameFileCarrier.fileMediaType())
                 .headers(httpHeaders)
-                .body(dualFilenameBearer.resource());
+                .body(dualNameFileCarrier.resource());
         return responseEntity;
     }
 

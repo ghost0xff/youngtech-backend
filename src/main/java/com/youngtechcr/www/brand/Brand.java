@@ -3,7 +3,7 @@ package com.youngtechcr.www.brand;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.product.Product;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_brand")
-public class Brand implements TimeStamped {
+public class Brand implements Timestamped {
 
     @Id
     @Column(name = "id_brand")

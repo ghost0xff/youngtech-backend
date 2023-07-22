@@ -27,7 +27,7 @@ class UserServiceTest {
         this.customerService = customerService;
         this.profileService = profileService;
         this.personService = personService;
-        this.roleService = new RoleService();
+//        this.roleService = new RoleService();
         userService = new UserService(
                 passwordEncoder,
                 basicUserValidator,

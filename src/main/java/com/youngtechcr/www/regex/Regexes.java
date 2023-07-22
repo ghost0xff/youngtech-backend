@@ -10,8 +10,10 @@ public final class Regexes {
     //Person
     public static final String PERSON_NAME_AND_LASTNAME_PATTERN = "^(?=[^\\s].+[^\\s]$)[a-zA-Z\\s]{3,20}$"; // not chars at start nor end && just alphabetic chars
 
-
     //Product
     public static final String PRODUCT_NAME_PATTERN = "^(?=[^\\s].+[^\\s]$).{1,60}$";
     public static final String PRODUCT_DESCRIPTION_PATTERN = "^.{1,255}$";
+
+    //Server file name
+    public static final String SERVER_FILENAME_PATTERN = "^[0-9]+-[A-Za-z]+-[0-9a-z]{32}$";
 }

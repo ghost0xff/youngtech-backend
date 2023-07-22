@@ -89,35 +89,6 @@ public class UserService implements UserDetailsService {
         return;
     }
 
-
-//    @Transactional
-//    public void
-
-
-
-
-//    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-//    public BasicUser createBasicUserAndPerson(BasicUser basicUserToBeCreated, Person relatedPerson) {
-//        if(!existsByEmail(basicUserToBeCreated)) {
-//            if (this.userValidator.isValid(basicUserToBeCreated)) {
-//                String hashedPasssword = this
-//                        .passwordEncoder.encode(basicUserToBeCreated.getPassword());
-//                basicUserToBeCreated.setPassword(hashedPasssword);
-//                basicUserToBeCreated.setSignedUpAt(LocalDateTime.now());
-//                basicUserToBeCreated.setLastUpdateAt(LocalDateTime.now());
-//                BasicUser createdBasicUser = this.userRepository.save(basicUserToBeCreated);
-//                Person createdPerson = personService.createPersonFromUser(
-//                        relatedPerson, createdBasicUser);
-//
-//                return createdBasicUser;
-//            }
-//        }
-//        throw new AlreadyExistsException(
-//                HttpErrorMessages.CANT_CREATE_DUPLICATE_USER_REASON_USERNAME_OR_EMAIL
-//        );
-//    }
-
-
     @Transactional(readOnly = true)
     private boolean existsByEmail(String email) {
         return  this.userRepository

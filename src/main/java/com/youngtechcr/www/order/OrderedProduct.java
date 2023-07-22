@@ -1,7 +1,7 @@
 package com.youngtechcr.www.order;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
 
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_ordered_product")
-public class OrderedProduct implements TimeStamped {
+public class OrderedProduct implements Timestamped {
 
 
     @Id
@@ -37,7 +37,6 @@ public class OrderedProduct implements TimeStamped {
         return this.createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime timestamp) {
         this.createdAt = timestamp;
     }
@@ -47,7 +46,6 @@ public class OrderedProduct implements TimeStamped {
         return this.updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime timestamp) {
         this.updatedAt = timestamp;
     }

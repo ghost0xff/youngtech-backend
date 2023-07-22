@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.category.Category;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
 
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_subcategory")
-public class Subcategory implements TimeStamped {
+public class Subcategory implements Timestamped {
 
     @Id
     @Column(name = "id_subcategory")
@@ -44,7 +44,6 @@ public class Subcategory implements TimeStamped {
         return this.createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime timestamp) {
         this.createdAt = timestamp;
     }
@@ -54,7 +53,6 @@ public class Subcategory implements TimeStamped {
         return this.updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime timestamp) {
         this.updatedAt = timestamp;
     }

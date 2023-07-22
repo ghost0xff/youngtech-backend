@@ -1,7 +1,7 @@
 package com.youngtechcr.www.sale;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.person.Person;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_sale")
-public class Sale implements TimeStamped {
+public class Sale implements Timestamped {
 
     @Id
     @Column(name = "id_sale")
