@@ -15,11 +15,11 @@ public class RegexService {
 
     public boolean matches(String regex, String text) {
         if (regex == null) {
-            log.debug(InternalErrorMessages.NULL_REGEX_PATTERN_VALUE);
+            log.debug(InternalErrorMessages.CANT_MATCH_NULL_REGEX);
             throw new RegexMatchingException(HttpErrorMessages.NULL_REGEX_PATTERN_OR_TEXT_VALUE);
         }
         else if (text == null) {
-            log.debug(InternalErrorMessages.NULL_REGEX_TEXT_VALUE);
+            log.debug(InternalErrorMessages.CANT_MATCH_NULL_TEXT);
             throw new RegexMatchingException(HttpErrorMessages.NULL_REGEX_PATTERN_OR_TEXT_VALUE);
         }
         return Pattern.matches(regex, text);

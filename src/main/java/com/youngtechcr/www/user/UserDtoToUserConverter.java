@@ -8,7 +8,6 @@ public class UserDtoToUserConverter implements Converter<UserDto, User> {
     @Override
     public User convert(UserDto source) {
         return new User(
-                source.username(),
                 source.email(),
                 source.roleList()
         );

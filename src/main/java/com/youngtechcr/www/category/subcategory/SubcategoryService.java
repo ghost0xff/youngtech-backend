@@ -8,7 +8,6 @@ import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,9 +15,12 @@ import java.time.LocalDateTime;
 @Service
 public class SubcategoryService implements BasicCrudService<Subcategory> {
 
-    @Autowired
-    private SubcategoryRepository subcategoryRepository;
+    private final SubcategoryRepository subcategoryRepository;
     private static final Logger log = LoggerFactory.getLogger(SubcategoryService.class);
+
+    public SubcategoryService(SubcategoryRepository subcategoryRepository) {
+        this.subcategoryRepository = subcategoryRepository;
+    }
 
     @Override
     public Subcategory findById(Integer subcategoryId) {

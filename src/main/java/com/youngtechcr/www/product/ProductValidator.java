@@ -1,61 +1,148 @@
 package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.brand.Brand;
+import com.youngtechcr.www.brand.BrandService;
 import com.youngtechcr.www.category.Category;
+import com.youngtechcr.www.category.CategoryService;
+import com.youngtechcr.www.category.subcategory.SubcategoryRepository;
+import com.youngtechcr.www.category.subcategory.SubcategoryService;
 import com.youngtechcr.www.domain.Validator;
 import com.youngtechcr.www.category.subcategory.Subcategory;
-import com.youngtechcr.www.exceptions.custom.InvalidElementException;
-import com.youngtechcr.www.brand.BrandRepository;
-import com.youngtechcr.www.category.CategoryRepository;
-import com.youngtechcr.www.category.subcategory.SubcategoryRepository;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
+import com.youngtechcr.www.exceptions.custom.InvalidElementException;
+import com.youngtechcr.www.order.OrderedProduct;
+import com.youngtechcr.www.product.image.ProductImage;
+import com.youngtechcr.www.regex.RegexService;
+import com.youngtechcr.www.regex.Regexes;
+import com.youngtechcr.www.sale.Sale;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class ProductValidator implements Validator<Product> {
 
-    private BrandRepository brandRepository;
-    private CategoryRepository categoryRepository;
-    private SubcategoryRepository subcategoryRepository;
+    private final BrandService brandService;
+    private final SubcategoryService subcategoryService;
+    private final RegexService regexService;
+    private final CategoryService categoryService;
 
-    public ProductValidator(ProductRepository productRepository,
-                            BrandRepository brandRepository,
-                            CategoryRepository categoryRepository,
-                            SubcategoryRepository subcategoryRepository){
-        this.brandRepository = brandRepository;
-        this.categoryRepository = categoryRepository;
-        this.subcategoryRepository = subcategoryRepository;
+    public ProductValidator(BrandService brandService,
+                            RegexService regexService,
+                            SubcategoryService subcategoryService,
+                            CategoryService categoryService){
+        this.brandService = brandService;
+        this.subcategoryService = subcategoryService;
+        this.regexService = regexService;
+        this.categoryService = categoryService;
+    }
+
+    @Override
+    public boolean isValid(Product product) throws InvalidElementException {
+        String name = product.getName();
+        int stock = product.getStock();
+        String description = product.getDescription();
+        float price = product.getPrice();
+        float  discount = product.getDiscountPercentage();
+        Brand brand = product.getBrand();
+        Category category = product.getCategory();
+        Subcategory subcategory = product.getSubcategory();
+        List<ProductImage> imageList = product.getImageList();
+        List<Sale> salesList = product.getSaleList();
+        List<OrderedProduct> orderedProductsList = product.getOrderedProductsList();
+
+
+        return
+                isNameValid(name)
+                && isStockValid(stock)
+                && isDesciptionValid(description)
+                && isPriceValid(price)
+                && isDiscountPercentageValid(discount)
+                && isBrandValid(brand)
+                && isCategoryValid(category)
+                && isSubcategoryValid(subcategory)
+                ;
+    }
+
+    private boolean isNameValid(String name) {
+        if(name != null && regexService.matches(Regexes.PRODUCT_NAME_PATTERN, name) ) {
+            return true;
+        } throw new InvalidElementException(
+                HttpErrorMessages.INVALID_PRODUCT_REASON_NAME);
+    }
+    private boolean isStockValid(int stock) {
+        if(stock >= 0) {
+            return true;
+        } throw new InvalidElementException(
+                HttpErrorMessages.INVALID_PRODUCT_REASON_STOCK);
+    }
+
+    private boolean isDesciptionValid(String description) {
+        if (description != null && regexService.matches(
+                Regexes.PRODUCT_DESCRIPTION_PATTERN, description)) {
+            return true;
+        } throw new InvalidElementException(
+                HttpErrorMessages.INVALID_PRODUCT_REASON_DESCRIPTION);
     }
 
 
-    @Transactional(readOnly = true)
-    public boolean isValid(Product productToBeValidated) {
-        boolean isValid = true;
-        Brand brandOfProductToBeCreated = productToBeValidated.getBrand();
-        if(brandOfProductToBeCreated == null || !this.brandRepository.existsById(brandOfProductToBeCreated.getBrandId()))
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_BRAND);
-        Category categoryOfProductToBeCreated = productToBeValidated.getCategory();
-        if(categoryOfProductToBeCreated == null || !this.categoryRepository.existsById(categoryOfProductToBeCreated.getCategoryId()))
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_CATEGORY);
-        Subcategory subcategoryOfProductToBeCreated = productToBeValidated.getSubcategory();
-        if(subcategoryOfProductToBeCreated == null || !this.subcategoryRepository.existsById(subcategoryOfProductToBeCreated.getSubcategoryId()))
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_SUBCATEGORY);
-        if(productToBeValidated.getDiscountPercentage() >= 0 && productToBeValidated.getDiscountPercentage() <= 100) {
-            isValid = true;
-        } else {
-            isValid = false;
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_DISCOUNT_PERCENTAGE);
-        }
-        if(productToBeValidated.getPrice() <= 0)
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_PRICE);
-        if(productToBeValidated.getDescription().length() > 255)
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_DESCRIPTION);
-        if(productToBeValidated.getStock() < 0)
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_STOCK);
-        if(productToBeValidated.getName().length() > 45)
-            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_NAME);
-        return isValid;
+    private boolean isPriceValid(float price) {
+        if (price > 0) {
+            return true;
+        } throw new InvalidElementException(
+                HttpErrorMessages.INVALID_PRODUCT_REASON_PRICE);
     }
+
+    private boolean isDiscountPercentageValid(float discount) {
+        if(discount > 0 && discount < 100) { // must be between 1 - 99
+           return true;
+        } throw new InvalidElementException(
+                HttpErrorMessages.INVALID_PRODUCT_REASON_DISCOUNT_PERCENTAGE);
+    }
+
+    private boolean isBrandValid(Brand brand) {
+        if(brand != null && brandService.existsById(brand.getBrandId())) {
+            return true;
+        } throw new InvalidElementException(
+                HttpErrorMessages.INVALID_PRODUCT_REASON_BRAND);
+    }
+
+    private boolean isCategoryValid(Category category) {
+        if(category != null && categoryService.existsById(category.getCategoryId())) {
+            return true;
+        } throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_CATEGORY);
+    }
+
+    private boolean isSubcategoryValid(Subcategory subcategory) {
+        if(subcategory != null && categoryService.existsById(subcategory.getSubcategoryId())) {
+            return true;
+        } throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_SUBCATEGORY);
+    }
+
+
+    //    @Transactional(readOnly = true) //    public boolean isValid(Product productToBeValidated) { //        boolean isValid = true; //        Brand brandOfProductToBeCreated = productToBeValidated.getBrand(); //        if(brandOfProductToBeCreated == null || !this.brandRepository.existsById(brandOfProductToBeCreated.getBrandId()))
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_BRAND);
+//        Category categoryOfProductToBeCreated = productToBeValidated.getCategory();
+//        if(categoryOfProductToBeCreated == null || !this.categoryRepository.existsById(categoryOfProductToBeCreated.getCategoryId()))
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_CATEGORY);
+//        Subcategory subcategoryOfProductToBeCreated = productToBeValidated.getSubcategory();
+//        if(subcategoryOfProductToBeCreated == null || !this.subcategoryRepository.existsById(subcategoryOfProductToBeCreated.getSubcategoryId()))
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_SUBCATEGORY);
+//        if(productToBeValidated.getDiscountPercentage() >= 0 && productToBeValidated.getDiscountPercentage() <= 100) {
+//            isValid = true;
+//        } else {
+//            isValid = false;
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_DISCOUNT_PERCENTAGE);
+//        }
+//        if(productToBeValidated.getPrice() <= 0)
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_PRICE);
+//        if(productToBeValidated.getDescription().length() > 255)
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_DESCRIPTION);
+//        if(productToBeValidated.getStock() < 0)
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_STOCK);
+//        if(productToBeValidated.getName().length() > 45)
+//            throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_NAME);
+//        return isValid;
+//    }
 
 }

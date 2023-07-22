@@ -1,31 +1,32 @@
 package com.youngtechcr.www.user.role;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_role")
-public class Role implements TimeStamped {
+public class Role implements Timestamped {
 
     @Id
     @Column(name = "id_role")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
     @Column(name = "name")
-    private String roleName;
+    private String name;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public Role() {
+    }
+    public Role(Integer roleId, String name) {
+        this.roleId = roleId;
+        this.name = name;
     }
 
     public Role(Integer roleId) {
@@ -38,7 +39,6 @@ public class Role implements TimeStamped {
         return this.createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime timestamp) {
         this.createdAt = timestamp;
     }
@@ -48,7 +48,6 @@ public class Role implements TimeStamped {
         return this.updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime timestamp) {
         this.updatedAt = timestamp;
     }
@@ -62,11 +61,11 @@ public class Role implements TimeStamped {
     }
 
     public String getRoleName() {
-        return roleName;
+        return name;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRoleName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -74,19 +73,19 @@ public class Role implements TimeStamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(roleId, role.roleId) && Objects.equals(roleName, role.roleName) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt);
+        return Objects.equals(roleId, role.roleId) && Objects.equals(name, role.name) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, roleName, createdAt, updatedAt);
+        return Objects.hash(roleId, name, createdAt, updatedAt);
     }
 
     @Override
     public String toString() {
         return "Role{" +
                 "roleId=" + roleId +
-                ", roleName='" + roleName + '\'' +
+                ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

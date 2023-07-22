@@ -8,7 +8,6 @@ import com.youngtechcr.www.regex.Regexes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class PersonValidator implements Validator<Person> {
@@ -21,39 +20,42 @@ public class PersonValidator implements Validator<Person> {
     }
 
     @Override
-    public boolean isValid(Person personToBeValidated) {
-        if (personToBeValidated == null) return false;
-        String firstName = personToBeValidated.getFirstName();
-        String secondName = personToBeValidated.getSecondName();
-        String firstLastname = personToBeValidated.getFirstLastname();
-        String secondLastname = personToBeValidated.getSecondLastname();
+    public boolean isValid(Person personToBeValidated) throws InvalidElementException {
+        if (personToBeValidated == null) {
+            throw new InvalidElementException(HttpErrorMessages.INVALID_PERSON_REASON_NULL);
+        }
+        String firstname = personToBeValidated.getFirstname();
+        String lastname = personToBeValidated.getLastname();
         int age = personToBeValidated.getAge();
 
         // Validations are made this way because values in DB MUST be either NULL or valid
         return
-                (firstName == null || isNameValid(firstName)) &&
-                (secondName == null || isNameValid(secondName)) &&
-                (firstLastname == null || isLastNameValid(firstLastname)) &&
-                (secondLastname == null || isLastNameValid(secondLastname)) &&
-                (isAgeValid(age));
+                (firstname == null || isNameValid(firstname))
+                && (lastname == null || isLastNameValid(lastname))
+                && (isAgeValid(age));
 
     }
 
 
     private boolean isNameValid(String name) {
-        return this
-                .regexService
-                    .matches(Regexes.REGEX_PERSON_NAME_AND_LASTNAME_PATTERN, name);
+        if(regexService.matches(Regexes.PERSON_NAME_AND_LASTNAME_PATTERN, name)) {
+            return true;
+        }
+        throw new InvalidElementException(HttpErrorMessages.INVALID_PERSON_REASON_NAME);
     }
 
     private boolean isLastNameValid(String lastname) {
-        return this
-                .regexService
-                    .matches(Regexes.REGEX_PERSON_NAME_AND_LASTNAME_PATTERN, lastname);
+        if(regexService.matches(Regexes.PERSON_NAME_AND_LASTNAME_PATTERN, lastname)){
+            return true;
+        }
+        throw new InvalidElementException(HttpErrorMessages.INVALID_PERSON_REASON_LASTNAME);
     }
 
     private boolean isAgeValid(int age) {
-        return age > 0 && age < 100;
+        if( age > 0 && age < 100 ) {
+            return true;
+        }
+        throw new InvalidElementException(HttpErrorMessages.INVALID_PERSON_REASON_AGE);
     }
 
 

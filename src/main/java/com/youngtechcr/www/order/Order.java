@@ -3,7 +3,7 @@ package com.youngtechcr.www.order;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.youngtechcr.www.domain.TimeStamped;
+import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.person.Person;
 import jakarta.persistence.*;
 
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_order")
-public class Order implements TimeStamped {
+public class Order implements Timestamped {
 
     @Id
     @Column(name = "id_order")

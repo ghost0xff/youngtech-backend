@@ -6,6 +6,11 @@ import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.person.Person;
 import com.youngtechcr.www.person.PersonService;
+import com.youngtechcr.www.profile.Profile;
+import com.youngtechcr.www.profile.ProfileService;
+import com.youngtechcr.www.user.role.Role;
+import com.youngtechcr.www.user.role.RoleOption;
+import com.youngtechcr.www.user.role.RoleService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,21 +26,26 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserValidator userValidator;
+    private final BasicUserValidator basicUserValidator;
     private final UserRepository userRepository;
-    private final PersonService personService;
     private final CustomerService customerService;
-
+    private final ProfileService profileService;
+    private final PersonService personService;
+    private final RoleService roleService;
     public UserService(
             PasswordEncoder passwordEncoder,
-            UserValidator userValidator,
+            BasicUserValidator basicUserValidator,
             UserRepository userRepository,
-            PersonService personService, CustomerService customerService) {
+            CustomerService customerService,
+            ProfileService profileService,
+            PersonService personService, RoleService roleService) {
         this.passwordEncoder = passwordEncoder;
-        this.userValidator = userValidator;
+        this.basicUserValidator = basicUserValidator;
         this.userRepository = userRepository;
-        this.personService = personService;
         this.customerService = customerService;
+        this.profileService = profileService;
+        this.personService = personService;
+        this.roleService = roleService;
     }
 
     @Transactional(readOnly = true)
@@ -43,56 +53,46 @@ public class UserService implements UserDetailsService {
         return this
                 .userRepository
                 .findById(userId)
-                .orElseThrow( () -> new NoDataFoundException(
+                .orElseThrow(() -> new NoDataFoundException(
                         HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND
                 ));
     }
 
+
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public User createBasicUserAndPerson(User userToBeCreated, Person relatedPerson) {
-        if(!existsUserByUsernameAndEmail(userToBeCreated)) {
-            if (this.userValidator.isValid(userToBeCreated)) {
-                String hashedPasssword = this
-                        .passwordEncoder.encode(userToBeCreated.getPassword());
-                userToBeCreated.setPassword(hashedPasssword);
-                userToBeCreated.setSignedUpAt(LocalDateTime.now());
-                userToBeCreated.setLastUpdateAt(LocalDateTime.now());
-                User createdUser = this.userRepository.save(userToBeCreated);
-                Person createdPerson = personService.createPersonFromUser(
-                        relatedPerson,createdUser);
-
-                return createdUser;
+    public User createUserFromBasicInfo(BasicUser basicUser) {
+        if (!existsByEmail(basicUser.email())) {
+            if (basicUserValidator.isValid(basicUser)) {
+              User user = new User();
+              String hashedPassword = passwordEncoder
+                      .encode(basicUser.password());
+              user.setPassword(hashedPassword);
+              user.setEmail(basicUser.email());
+              user.setSignedUpAt(LocalDateTime.now());
+              user.setLastUpdateAt(LocalDateTime.now());
+              Person relatedPerson = personService.createPersonFromUser(user);
+              Profile relatedProfile = profileService.createProfileFromUser(user);
+              addRoles(user, RoleOption.USER);
             }
+
         }
-        throw new AlreadyExistsException(
-                HttpErrorMessages.CANT_CREATE_DUPLICATE_USER_REASON_USERNAME_OR_EMAIL
-        );
+        throw new AlreadyExistsException(HttpErrorMessages
+                    .INVALID_USER_REASON_ALREADY_EXISTS_EMAIL);
     }
 
-
-    private void createEntitiesFromUserTypes(User user,List<UserType> userTypes) {
-        for (UserType type : userTypes){
-            if(type == UserType.CUSTOMER) {
-//                Customer customer = this.customerService.createCustomerFromUser();
-            }
-        }
-    }
-
-    private void addRolesFromUserTypes(User userWithoutRoles, List<UserType> types) {
-
-        for (UserType type : types) {
-
-        }
-
+    @Transactional
+    public void addRoles(User user, RoleOption... roleOptions) {
+        List<Role> rolesToBeAdded = roleService.mapOptionsToRoles(roleOptions);
+        List<Role> currentRoles = user.getRoles();
+        currentRoles.addAll(rolesToBeAdded);
+        userRepository.save(user);
+        return;
     }
 
     @Transactional(readOnly = true)
-    private boolean existsUserByUsernameAndEmail(User userToBeInspected) {
+    private boolean existsByEmail(String email) {
         return  this.userRepository
-                .existsByUsername(userToBeInspected.getUsername())
-                &&
-                this.userRepository
-                .existsByEmail(userToBeInspected.getEmail());
+                .existsByEmail(email);
     }
 
     @Transactional(readOnly = true)

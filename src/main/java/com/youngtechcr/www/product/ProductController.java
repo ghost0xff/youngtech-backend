@@ -1,11 +1,10 @@
 package com.youngtechcr.www.product;
 
-import com.youngtechcr.www.storage.DualFilenameBearer;
-import com.youngtechcr.www.product.image.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImageService;
+import com.youngtechcr.www.storage.DualNameFileCarrier;
+import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.http.ResponseEntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,8 +15,18 @@ import java.util.List;
 @RequestMapping(path = "/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+    private final ProductImageService productImageService;
+
+    public ProductController(
+            ProductService productService,
+            ProductImageService productImageService) {
+        this.productService = productService;
+        this.productImageService = productImageService;
+    }
+
+    // TODO: Implement Pagination to improve clients
+
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Product> findProductById(@PathVariable("id") Integer productId) {
@@ -25,7 +34,7 @@ public class ProductController {
         return ResponseEntity.ok().body(fetchedProduct);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product productToBeCreated) {
         Product createdProduct = this.productService.createProduct(productToBeCreated);
         return ResponseEntityUtils.created(createdProduct);
@@ -36,7 +45,8 @@ public class ProductController {
             @PathVariable("id") Integer productId,
             @RequestBody Product productToBeUpdated
     ){
-        Product updatedProduct = this.productService.updateProductById(productId, productToBeUpdated);
+        Product updatedProduct = this.productService.updateProductById(productId,
+                productToBeUpdated);
         return ResponseEntity.ok().body(updatedProduct);
     }
 
@@ -45,25 +55,29 @@ public class ProductController {
         this.productService.deleteProductById(productId);
         return ResponseEntity.noContent().build();
     }
-
     @PostMapping(path = "/{id}/images")
-    public ResponseEntity<ProductImageMetaData> uploadImageByProductId(
+    public ResponseEntity<ProductImage> uploadImageByProductId(
             @PathVariable("id") Integer productId,
             @RequestPart(name = "file-data") MultipartFile imageToBeUploaded,
-            @RequestPart(name = "meta-data", required = false) ProductImageMetaData imageMetaData
+            @RequestParam(value = "main", required = false) boolean isMain
     ) {
-        var uploadedProductImage = this.productService.uploadProductImageByProductId(productId, imageToBeUploaded, imageMetaData);
-        return ResponseEntityUtils.created(uploadedProductImage);
+        ProductImage uploadedImage = productImageService.uploadProductImageByProduct(
+                productId, imageToBeUploaded, isMain);
+        return ResponseEntityUtils.created(uploadedImage);
     }
 
     @GetMapping(path = "/{id}/images")
     public ResponseEntity<?> downloadMainImageOrObtainImageMetaDataList(
-            @PathVariable("id") Integer productId, @RequestParam(name = "main", required = false) boolean isMain) {
+            @PathVariable("id") Integer productId,
+            @RequestParam(name = "main", required = false) boolean isMain) {
         if(isMain) {
-            DualFilenameBearer resourceWithSomeMetaData = this.productService.downloadMainProductImageByProductId(productId);
-            return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
+            DualNameFileCarrier resourceWithSomeMetaData = productImageService.
+                    downloadMainImageByProduct(productId);
+            return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(
+                    resourceWithSomeMetaData);
         }
-        List<ProductImageMetaData> imagesMetaData = this.productService.getProductImagesMetadataById(productId);
+        List<ProductImage> imagesMetaData = productImageService
+                .getProductImagesMetadataById(productId);
         return ResponseEntity.ok().body(imagesMetaData);
     }
 
@@ -72,16 +86,18 @@ public class ProductController {
             @PathVariable Integer productId,
             @PathVariable("imageId") Integer productImageId
     ) {
-        DualFilenameBearer resourceWithSomeMetaData = this.productService.downloadProductImageByProductId(productId, productImageId);
-        return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
+        DualNameFileCarrier resourceWithSomeMetaData = productImageService
+                .downloadImageByProduct(productId, productImageId);
+        return ResponseEntityUtils.
+                downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
     }
 
     @DeleteMapping(path = "/{productId}/images/{imageId}")
-    public ResponseEntity<ProductImageMetaData> deleteProductImageByProductId(
+    public ResponseEntity<ProductImage> deleteProductImageByProductId(
             @PathVariable Integer productId,
             @PathVariable("imageId") Integer productImageId
     ){
-        this.productService.deleteProductImageByProduct(productId, productImageId);
+        productImageService.deleteImageByProduct(productId, productImageId);
         return ResponseEntity.noContent().build();
     }
 

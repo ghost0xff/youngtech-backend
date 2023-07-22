@@ -4,7 +4,7 @@ package com.youngtechcr.www.brand;
 import com.youngtechcr.www.http.BasicCrudController;
 import com.youngtechcr.www.product.Product;
 import com.youngtechcr.www.http.ResponseEntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.youngtechcr.www.product.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +15,14 @@ import java.util.List;
 @RequestMapping(path = "/brands")
 public class BrandController implements BasicCrudController<Brand> {
 
-    @Autowired
-    private BrandService brandService;
+
+    private final BrandService brandService;
+    private final ProductService productService;
+
+    public BrandController(BrandService brandService, ProductService productService) {
+        this.brandService = brandService;
+        this.productService = productService;
+    }
 
     @Override
     @GetMapping(path = "/{id}")
@@ -59,7 +65,7 @@ public class BrandController implements BasicCrudController<Brand> {
             @PathVariable Integer brandId,
             @PathVariable Integer productId
     ) {
-        Product retrievedProduct = this.brandService.findProductByBrandId(brandId, productId);
+        Product retrievedProduct = this.productService.findProductByBrandId(productId, brandId);
         return ResponseEntity.ok().body(retrievedProduct);
     }
 

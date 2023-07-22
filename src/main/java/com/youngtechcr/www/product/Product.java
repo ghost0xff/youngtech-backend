@@ -8,7 +8,7 @@ import com.youngtechcr.www.brand.Brand;
 import com.youngtechcr.www.category.Category;
 import com.youngtechcr.www.domain.*;
 import com.youngtechcr.www.order.OrderedProduct;
-import com.youngtechcr.www.product.image.ProductImageMetaData;
+import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.sale.Sale;
 import com.youngtechcr.www.category.subcategory.Subcategory;
 import jakarta.persistence.*;
@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_product")
-public class Product implements TimeStamped {
+public class Product implements Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,13 +43,14 @@ public class Product implements TimeStamped {
     @ManyToOne
     @JoinColumn(name = "fk_id_subcategory", referencedColumnName = "id_subcategory")
     private Subcategory subcategory;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonProperty("images")
-    private List<ProductImageMetaData> imageList;
+    private List<ProductImage> imageList;
     @OneToMany(mappedBy = "product")
     @JsonProperty("sales")
     private List<Sale> saleList;
 
+    // TODO: IS THIS OBJECT NECESARY FOR THE APP?
     @OneToMany(mappedBy = "product")
     @JsonProperty("orderedProducts")
     private List<OrderedProduct> orderedProductsList;
@@ -157,10 +158,10 @@ public class Product implements TimeStamped {
     }
 
     @JsonManagedReference(value = "product-image")
-    public List<ProductImageMetaData> getImageList() {
+    public List<ProductImage> getImageList() {
         return imageList;
     }
-    public void setImageList(List<ProductImageMetaData> imageList) {
+    public void setImageList(List<ProductImage> imageList) {
         this.imageList = imageList;
     }
 

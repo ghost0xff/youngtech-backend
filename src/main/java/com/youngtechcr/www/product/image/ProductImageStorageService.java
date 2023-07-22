@@ -1,19 +1,16 @@
 package com.youngtechcr.www.product.image;
 
+import com.youngtechcr.www.domain.TimestampedUtils;
 import com.youngtechcr.www.product.Product;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.FileOperationException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.product.ProductService;
-import com.youngtechcr.www.storage.FileSystemStorageService;
+import com.youngtechcr.www.storage.StorageService;
 import com.youngtechcr.www.storage.FileType;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
-import com.youngtechcr.www.domain.TimestampedUtils;
-import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -29,82 +26,52 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class ProductImageStorageService implements FileSystemStorageService<ProductImageMetaData> {
+public class ProductImageStorageService implements StorageService<ProductImage, Product> {
 
     private static final Logger log = LoggerFactory.getLogger(ProductImageStorageService.class);
-    @Autowired
-    private ProductImageMetaDataRepository productImageFileDataRepository;
-    @Lazy
-    @Autowired
-    private ProductService productService;
+    private final ProductImageRepository productImageRepo;
+    private final ProductService productService;
 
+    public ProductImageStorageService(
+            ProductImageRepository productImageRepo,
+            ProductService productService) {
+        this.productImageRepo = productImageRepo;
+        this.productService = productService;
+    }
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ProductImageMetaData storeProductImage(Integer productId, MultipartFile imageToBeUploaded,
-            @Nullable ProductImageMetaData imageMetaData
-    ) {
-        Product productToAddNewImage = this.productService.findProductById(productId);
-        if(!this.productService.hasMainImage(productToAddNewImage)){
-            Path posibleProductDirectory = Paths
-                    .get(StorageUtils.PRODUCT_STORAGE_DIRECTORY)
-                    .resolve(productId.toString())
-                    .resolve(StorageUtils.IMAGE_DIRECTORY); // equals to ../youngtech-storage/products/{id}/images
-            String serverFileName = StorageUtils.generateServerFileName(
-                    productId,
-                    imageToBeUploaded,
-                    FileType.IMAGE);
-            var savedWithRelativePathAndServerNameAndOriginalName = this.saveToFileSystem(
-                    serverFileName,
-                    posibleProductDirectory,
-                    imageToBeUploaded);
-            StorageUtils.setFileMetaData(
-                    savedWithRelativePathAndServerNameAndOriginalName,
-                    imageMetaData != null ? imageMetaData.isMain() : false, // isMainImage ????
-                    imageToBeUploaded.getSize(),imageToBeUploaded.getContentType());
-            savedWithRelativePathAndServerNameAndOriginalName.setProduct(productToAddNewImage);
-            ProductImageMetaData savedProductImageRepresentation = this.saveToDataBase(
-                    savedWithRelativePathAndServerNameAndOriginalName);
-            log.info("Stored (in file system and in database) product image in server successfully: " + savedProductImageRepresentation);
-            return savedProductImageRepresentation;
-        }
-        throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_MAIN_IMAGE);
-    }
-
-    public Resource obtainProductImage(ProductImageMetaData imageFileMetaData) {
-        Path absoluteImagePath = Path.of(
-                imageFileMetaData.getRelativePath())
-                .toAbsolutePath()
-                .normalize();
-        Resource retrievedImageFromFileSystem = this.retrieveFromFileSystem(absoluteImagePath);
-        return retrievedImageFromFileSystem;
-    }
-
-    @Transactional
-    public void eliminateProductImageCompletely(ProductImageMetaData productImageToBeDeleted) {
-        Path absoluteImagePathToBeDeleted = Path.of(
-                productImageToBeDeleted.getRelativePath())
-                .toAbsolutePath()
-                .normalize();
-        this.removeFromFileSystemAndDataBase(absoluteImagePathToBeDeleted, productImageToBeDeleted);
-
-    }
-    @Override
-    public ProductImageMetaData saveToFileSystem(String serverFileName, Path posibleProductDirectoryPath, MultipartFile imageToBeUploaded) {
-        StorageUtils.createDirectoriesIfNotAlreadyExists(posibleProductDirectoryPath);
-        Path relativeImagePath = posibleProductDirectoryPath.resolve(serverFileName);
-        StorageUtils.saveFileOrReplaceIfExisting(imageToBeUploaded, relativeImagePath);
-        var savedProductImageInFileSystem = new ProductImageMetaData(
-            serverFileName,
-            imageToBeUploaded.getOriginalFilename(),
-            relativeImagePath.toString()
-        );
-        return savedProductImageInFileSystem;
+    public ProductImage store(Product relatedProduct, MultipartFile image) {
+        Integer productId = relatedProduct.getProductId();
+        Path relatedProductDir = Paths
+                .get(StorageUtils.PRODUCT_DIRECTORY).resolve(productId.toString())
+                .resolve(StorageUtils.IMAGE_DIRECTORY).toAbsolutePath().normalize();
+        StorageUtils.createDirectoriesIfNotAlreadyExists(relatedProductDir);
+        log.debug("Created directory(ies?) at " + relatedProductDir.toString());
+        String serverName = StorageUtils.generateServerName(productId, image, FileType.IMAGE);
+        Path imagePath = relatedProductDir.resolve(serverName);
+        ProductImage toBeStored = ProductImage.builder()
+                .withServerName(serverName)
+                .withOriginalName(image.getOriginalFilename())
+                .withRelativePath(imagePath.toString())
+                .withtMimeType(image.getContentType())
+                .withSizeInBytes(image.getSize())
+                .withProduct(relatedProduct)
+                .build();
+        TimestampedUtils.setTimestampsToNow(toBeStored);
+        StorageUtils.saveFileOrReplaceIfExisting(image, imagePath);
+        ProductImage storedProductImage = productImageRepo.save(toBeStored);
+        log.debug("Saved product image to filesystem and database, with metadata -> " + toBeStored);
+        return storedProductImage;
     }
 
     @Override
-    public Resource retrieveFromFileSystem(Path absoluteImagePath) {
-        if(Files.exists(absoluteImagePath) && !Files.isDirectory(absoluteImagePath)) {
+    public Resource obtain(ProductImage productImage) {
+        Path absoluteImagePath = Path.of(productImage.getRelativePath()).toAbsolutePath().normalize();
+        Resource imageResource = null;
+        if (Files.exists(absoluteImagePath) && !Files.isDirectory(absoluteImagePath)) {
             try {
-                UrlResource imageResource = new UrlResource(absoluteImagePath.toUri());
+                imageResource = new UrlResource(absoluteImagePath.toUri());
                 return imageResource;
             } catch (MalformedURLException malformedURLException) {
                 log.warn("Couldn't download file due to malformed url/uri exception created from file path");
@@ -117,23 +84,16 @@ public class ProductImageStorageService implements FileSystemStorageService<Prod
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeFromFileSystemAndDataBase(Path absoluteImagePathToBeEliminated, ProductImageMetaData imageMetaDataToBeDeleted) {
+    public void dump(ProductImage productImage) {
+        Path imagePath = Path.of(productImage.getRelativePath());
         try {
-            this.productImageFileDataRepository.deleteById(imageMetaDataToBeDeleted.getProductImageId());
-            Files.delete(absoluteImagePathToBeEliminated);
+            Files.delete(imagePath);
         } catch (IOException e) {
             log.warn("IOException interrupted file deletion");
             e.printStackTrace();
             throw new FileOperationException(HttpErrorMessages.UNABLE_TO_DELETE_REQUESTED_FILE);
         }
+        this.productImageRepo.deleteById(productImage.getProductImageId());
     }
 
-
-    @Override
-    @Transactional
-    public ProductImageMetaData saveToDataBase(ProductImageMetaData productImageToBeSaved) {
-        TimestampedUtils.setTimestampsToNow(productImageToBeSaved);
-        var savedProductImageRepresentationInDataBase = this.productImageFileDataRepository.save(productImageToBeSaved);
-        return savedProductImageRepresentationInDataBase;
-    }
 }
