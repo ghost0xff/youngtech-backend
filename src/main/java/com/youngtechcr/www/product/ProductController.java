@@ -5,6 +5,7 @@ import com.youngtechcr.www.storage.DualNameFileCarrier;
 import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,14 @@ public class ProductController {
     }
 
     // TODO: Implement Pagination to improve clients
-
+    @GetMapping
+    public ResponseEntity<Page<Product>> findSomeProucts(
+            @RequestParam(value = "page", defaultValue = "0")  int pageNum,
+            @RequestParam(value = "size", defaultValue = "10") int pageSize
+    ) {
+        Page<Product> someProucts = productService.findSomeProducts(pageNum, pageSize);
+        return ResponseEntity.ok(someProucts);
+    }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Product> findProductById(@PathVariable("id") Integer productId) {

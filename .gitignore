@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Cryptography and Security ###
+private-key.pem
+public-key.pem
+
 ### STS ###
 .apt_generated
 .classpath

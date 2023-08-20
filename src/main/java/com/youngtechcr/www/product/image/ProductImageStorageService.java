@@ -54,7 +54,7 @@ public class ProductImageStorageService implements StorageService<ProductImage, 
                 .withServerName(serverName)
                 .withOriginalName(image.getOriginalFilename())
                 .withRelativePath(imagePath.toString())
-                .withtMimeType(image.getContentType())
+                .withMimeType(image.getContentType())
                 .withSizeInBytes(image.getSize())
                 .withProduct(relatedProduct)
                 .build();

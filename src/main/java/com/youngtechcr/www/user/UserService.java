@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 public class UserService implements UserDetailsService {
 
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
     private final BasicUserValidator basicUserValidator;
     private final UserRepository userRepository;
     private final CustomerService customerService;
@@ -33,13 +33,14 @@ public class UserService implements UserDetailsService {
     private final PersonService personService;
     private final RoleService roleService;
     public UserService(
-            PasswordEncoder passwordEncoder,
+//            PasswordEncoder passwordEncoder,
             BasicUserValidator basicUserValidator,
             UserRepository userRepository,
             CustomerService customerService,
             ProfileService profileService,
-            PersonService personService, RoleService roleService) {
-        this.passwordEncoder = passwordEncoder;
+            PersonService personService, RoleService roleService
+    ) {
+//        this.passwordEncoder = passwordEncoder;
         this.basicUserValidator = basicUserValidator;
         this.userRepository = userRepository;
         this.customerService = customerService;
@@ -62,10 +63,12 @@ public class UserService implements UserDetailsService {
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public User createUserFromBasicInfo(BasicUser basicUser) {
         if (!existsByEmail(basicUser.email())) {
-            if (basicUserValidator.isValid(basicUser)) {
+            if (basicUserValidator.isValid(basicUser, false)) {
               User user = new User();
-              String hashedPassword = passwordEncoder
-                      .encode(basicUser.password());
+              //TODO: REMOVE THIS TEMPORARY CRAP
+              String hashedPassword = "some cool password";
+//              String hashedPassword = passwordEncoder
+//                      .encode(basicUser.password());
               user.setPassword(hashedPassword);
               user.setEmail(basicUser.email());
               user.setSignedUpAt(LocalDateTime.now());

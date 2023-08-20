@@ -30,17 +30,19 @@ public final class HttpErrorMessages {
 
 
     // ELEMENT VALIDATION
+
     public static final String PROVIDED_IDS_DONT_MATCH = "Can't proceed with operation because path/url id and element id provided don't match.";
     public static final String NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND = "No element with the requested id was found.";
     public static final String NO_ELEMENT_WITH_THE_REQUESTED_NAME_WAS_FOUND = "No element with the requested name was found.";
     public static final String CANT_CREATE_DUPLICATE_NAME = "Can't create element with requested name because it already exists another element with the name provided.";
-    public static final String CANT_CREATE_DUPLICATE_ID = "Can't create element with requested id it already exists another element with the id provided.";
+    public static final String CANT_PROVIDE_ID_DURING_ELEMENT_CREATION = "Can't provide id during element creation";
     public static final String NO_ELEMENTS_FOUND_IN_SERVER = "No elements for requested type found in server"; // Hierarchy of elements should be explained in the official documentation of this application
     public static final String NO_MAIN_ELEMENT_WAS_FOUND= "No main element was found.";
 
 
     // HTTP REQUEST ERRORS
     public static final String REQUESTED_CHILD_ELEMENT_DOESNT_EXIST = "Requested child element doesn't match for requested parent element.";
+    public static final String REQUESTED_TOO_MUCH_ENTITIES = "Requested too much elements. Elements requested during pagination mustn't surpass 1000 entities per page";
 
 
     // STORAGE ERRORS
@@ -51,4 +53,11 @@ public final class HttpErrorMessages {
     public static final String CANT_CREATE_DUPLICATE_MAIN_IMAGE = "Can't upload requested image as main because  it already exists another main image";
 
 
+    // SERVER ERRORS
+    public static final String FAILED_CONNECTION_EXTERNAL_SERVER =  "Couldn't validate external id token due to failed communication with external resource server";
+
+
+    // SECURITY, OAUTH2.0, OIDC AND EIDC
+    public static final String INVALID_EIDTE_TOKEN =  "Invalid external token provided, try refreshing your actual token or trying with another one";
+    public static final String FAILED_GENERATE_TOKEN = "Failed to generate requested token";
 }

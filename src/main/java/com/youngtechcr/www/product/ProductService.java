@@ -2,15 +2,14 @@ package com.youngtechcr.www.product;
 
 import com.youngtechcr.www.brand.Brand;
 import com.youngtechcr.www.brand.BrandService;
-import com.youngtechcr.www.exceptions.custom.InvalidElementException;
-import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
-import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
-import com.youngtechcr.www.product.image.ProductImageService;
-import com.youngtechcr.www.product.image.ProductImageStorageService;
+import com.youngtechcr.www.exceptions.custom.*;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +21,28 @@ public class ProductService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private final ProductRepository productRepository;
-    private final ProductValidator validationService;
+    private final ProductValidator productValidator;
     private final BrandService brandService;
 
     public ProductService(
             ProductRepository productRepository,
-            ProductValidator validationService,
+            ProductValidator productValidator,
             BrandService brandService) {
         this.productRepository = productRepository;
-        this.validationService = validationService;
+        this.productValidator = productValidator;
         this.brandService = brandService;
     }
+
+   public Page<Product> findSomeProducts(int pageNum, int pageSize) {
+        if (pageSize > 1_000) {
+            throw new ToManyElementsRequestedException(
+                    HttpErrorMessages.REQUESTED_TOO_MUCH_ENTITIES
+            );
+        }
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Page<Product> someProducts = productRepository.findAll(pageable);
+        return someProducts;
+   }
 
     @Transactional(readOnly = true)
     public Product findProductById(Integer productId) {
@@ -45,28 +55,35 @@ public class ProductService {
 
     @Transactional
     public Product createProduct(Product productToBeCreated) {
-        if(this.validationService.isValid(productToBeCreated)) {
+        Integer productId = productToBeCreated.getProductId();
+        if (productId != null) {
+            throw new InvalidElementException(
+                    HttpErrorMessages.CANT_PROVIDE_ID_DURING_ELEMENT_CREATION
+            );
+        }
+        if(this.productValidator.isValid(productToBeCreated, false)) {
             TimestampedUtils.setTimestampsToNow(productToBeCreated);
             var createdProduct = this.productRepository.save(productToBeCreated);
-            log.info("Created new products" + createdProduct);
-            return createdProduct;
+            log.info("Created new product" + createdProduct);
+            return productToBeCreated;
         }
         throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Product updateProductById(Integer productId, Product productToBeUpdated) {
-        if(productToBeUpdated.getProductId().equals(productId)){
-            LocalDateTime storedCreatedAtTimestamp =
-                    this.findProductById(productId).getCreatedAt();
-            TimestampedUtils.updateTimeStamps(productToBeUpdated, storedCreatedAtTimestamp);
-            Product updatedProduct = this.productRepository.save(productToBeUpdated);
-            log.info("Updated product: " + updatedProduct);
-            return updatedProduct;
-        }
-        throw new ValueMismatchException(HttpErrorMessages.PROVIDED_IDS_DONT_MATCH);
-    }
-
+        if(productId.equals(productToBeUpdated.getProductId()) ){
+            Product existingProduct = findProductById(productId);
+            Product updatedProduct = null;
+            if(productValidator.isValid(productToBeUpdated, true)) {
+                LocalDateTime currentCreatedAt = existingProduct.getCreatedAt();
+                TimestampedUtils.updateTimeStamps(productToBeUpdated, currentCreatedAt);
+                updatedProduct = this.productRepository.save(productToBeUpdated);
+                log.info("Updated product: " + updatedProduct);
+                return updatedProduct;
+            }
+        } throw new ValueMismatchException(HttpErrorMessages
+                .PROVIDED_IDS_DONT_MATCH); }
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void deleteProductById(Integer productId) {
         Product toBeDeleted = findProductById(productId);
@@ -80,11 +97,7 @@ public class ProductService {
         Brand requestedBrand = brandService.findById(brandId);
         Product requestedProduct = findProductById(productId);
         if(requestedProduct.getBrand().equals(requestedBrand)) {
-            return requestedProduct;
-        }
-        throw new ValueMismatchException(HttpErrorMessages
-                .REQUESTED_CHILD_ELEMENT_DOESNT_EXIST);
-    }
+            return requestedProduct; } throw new ValueMismatchException(HttpErrorMessages .REQUESTED_CHILD_ELEMENT_DOESNT_EXIST); }
 
     @Transactional(readOnly = true)
     public boolean existsProductById(Integer productId) {

@@ -99,7 +99,9 @@ public class CategoryAndSubcategoryController {
 	) {
 		List<Product> categoryProducts = this.categoryService.findProductsByCategory(categoryId);
 		return ResponseEntity.ok().body(categoryProducts);
-	} 
+	}
+
+
 	
 
     	

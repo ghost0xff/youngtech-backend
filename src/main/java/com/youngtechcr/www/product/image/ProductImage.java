@@ -188,12 +188,12 @@ public class ProductImage implements Storable, Timestamped, OneAmongMany {
             return this;
         }
 
-        public Builder withMain(boolean main) {
+        public Builder withIsMain(boolean main) {
             isMain = main;
             return this;
         }
 
-        public Builder withtMimeType(String mimeType) {
+        public Builder withMimeType(String mimeType) {
             this.mimeType = mimeType;
             return this;
         }

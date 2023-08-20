@@ -20,13 +20,17 @@ public class PersonValidator implements Validator<Person> {
     }
 
     @Override
-    public boolean isValid(Person personToBeValidated) throws InvalidElementException {
+    public boolean isValid(Person personToBeValidated, boolean isUpdate) throws InvalidElementException {
         if (personToBeValidated == null) {
             throw new InvalidElementException(HttpErrorMessages.INVALID_PERSON_REASON_NULL);
         }
         String firstname = personToBeValidated.getFirstname();
         String lastname = personToBeValidated.getLastname();
         int age = personToBeValidated.getAge();
+
+        if(isUpdate) {
+
+        }
 
         // Validations are made this way because values in DB MUST be either NULL or valid
         return

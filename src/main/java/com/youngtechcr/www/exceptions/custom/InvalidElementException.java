@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 public class InvalidElementException extends RuntimeException implements CustomRuntimeException {
 
 
-    private String defaultTitle = "Incomplete element in HTTP body";
+    private String defaultTitle = "Incomplete, invalid or faulty element in HTTP body";
     private ErrorCode customErrorCode = ErrorCode.from(6);
     private HttpStatus defaultHttpStatus = HttpStatus.BAD_REQUEST;
 

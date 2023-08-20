@@ -17,7 +17,7 @@ public class BasicUserValidator implements Validator<BasicUser> {
     }
 
     @Override
-    public boolean isValid(BasicUser basicUser ){
+    public boolean isValid(BasicUser basicUser, boolean isUpdate ){
         return
                 this.validatePassword(basicUser.password())
                 && this.validateEmail(basicUser.email());

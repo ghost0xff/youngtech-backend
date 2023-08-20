@@ -31,6 +31,8 @@ public class Category implements Timestamped {
     @JsonProperty("subcategories")
     List<Subcategory> subcategoryList;
 
+    public Category() {}
+
     public Category(int categoryId) {
         this.categoryId = categoryId;
     }

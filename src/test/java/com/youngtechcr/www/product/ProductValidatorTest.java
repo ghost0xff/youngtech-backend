@@ -41,7 +41,7 @@ class ProductValidatorTest {
         this.subcategoryService = new SubcategoryService(subcategoryRepository);
         this.categoryService = new CategoryService(categoryRepository, subcategoryService);
         this.regexService = new RegexService();
-        this.productValidator = new ProductValidator(brandService, regexService, subcategoryService, categoryService );
+        this.productValidator = new ProductValidator(productRepository, brandService, regexService, subcategoryService, categoryService );
 
 
         when(brandRepository.existsById(

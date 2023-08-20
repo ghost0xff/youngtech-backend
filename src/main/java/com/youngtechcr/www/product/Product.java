@@ -46,12 +46,12 @@ public class Product implements Timestamped {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonProperty("images")
     private List<ProductImage> imageList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonProperty("sales")
     private List<Sale> saleList;
 
     // TODO: IS THIS OBJECT NECESARY FOR THE APP?
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonProperty("orderedProducts")
     private List<OrderedProduct> orderedProductsList;
 

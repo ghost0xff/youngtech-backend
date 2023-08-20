@@ -9,6 +9,7 @@ import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -61,5 +62,10 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
     }
 
 
+    @Transactional(readOnly = true)
+    public boolean existsById(Integer subcategoryId) {
+        return this.subcategoryRepository
+                .existsById(subcategoryId);
+    }
 }
 

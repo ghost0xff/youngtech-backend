@@ -5,14 +5,14 @@ import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
 
-public class EmptyRepositoryException extends RuntimeException implements CustomRuntimeException {
+public class ToManyElementsRequestedException extends RuntimeException implements CustomRuntimeException {
 
-    private String defaultTitle = "No entities available";
-    private HttpStatus defaultStatus = HttpStatus.NOT_FOUND;
+    private String defaultTitle = "Too much elements requested ";
+    private HttpStatus defaultStatus = HttpStatus.TOO_MANY_REQUESTS; // HTTP 429 status code
     private ErrorCode customErrorCode = ErrorCode.from(1);
 
 
-    public EmptyRepositoryException(String detail) {
+    public ToManyElementsRequestedException(String detail) {
         super(detail);
     }
 

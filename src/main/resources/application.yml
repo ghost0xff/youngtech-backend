@@ -5,24 +5,41 @@ spring:
     username: ${YOUNG_TECH_DB_USER}
     password: ${YOUNG_TECH_DB_PASSWORD}
   jpa:
-#    hibernate.ddl-auto: update
-#    generate-ddl: false
     show-sql: true
-  output:
-    ansi:
-      enabled: always
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 10MB
   main:
     banner-mode: off
-
+  output:
+    ansi:
+      enabled: always
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/
 server:
   servlet:
     context-path: ${api.base-url}
 
+logging:
+  level:
+    org:
+      springframework:
+#        security: INFO
+#        security: DEBUG
+        security: TRACE
+
 api:
   version: 1
   base-url: /api/v1
-  web-client: http://localhost:4200
+  web-client: http://localhost:3000
+#  public-key: classpath:certs/public-key.pem
+#  private-key: classpath:certs/private-key.pem
+  public-key: classpath:certs/public-key.pem
+  private-key: classpath:certs/private-key.pem
+
+
+
