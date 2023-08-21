@@ -72,8 +72,8 @@ public class EidteGoogleVerifier implements EidteVerifier {
        String familyName = (String) payload.get(CommonClaimNames.FAMILY_NAME);
        Instant issuedAtTime = Instant.ofEpochSecond(payload.getIssuedAtTimeSeconds());
        Instant expirationTime = Instant.ofEpochSecond(payload.getExpirationTimeSeconds());
-//       Instant authTime = Instant.ofEpochSecond(payload.getAuthorizationTimeSeconds()); // not anid OIDC claim
-//       Instant notBeforeTime = Instant.ofEpochSecond(payload.getNotBeforeTimeSeconds()); // not anid OIDC claim
+//       Instant authTime = Instant.ofEpochSecond(payload.getAuthorizationTimeSeconds()); // not an OIDC claim
+//       Instant notBeforeTime = Instant.ofEpochSecond(payload.getNotBeforeTimeSeconds()); // not an OIDC claim
        String jwtId = payload.getJwtId();
        String type = payload.getType() ;
 
@@ -92,7 +92,7 @@ public class EidteGoogleVerifier implements EidteVerifier {
 //                .authorizationCodeHash( ... ) // no c_hash in googles id_token?  // not anid OIDC claim
                 .authenticationMethods(authnMethods)
                 .authenticationContextClass(authnContextClass)
-//                .authTime(authTime) // not anid OIDC claim
+//                .authTime(authTime) // not an OIDC claim
 //                .claim(CommonClaimNames.NOT_BEFORE_TIME, notBeforeTime) // not anid OIDC claim
                 .claim(CommonClaimNames.EMAIL_VERIFIED, emailVerified)
                 .claim(CommonClaimNames.EMAIL, email)

@@ -38,7 +38,7 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
     public Authentication convert(HttpServletRequest request) {
        MultiValueMap<String, String> httpParams =  getParameters(request);
 
-       //#1 Check if request is a EIDT Exchange
+       //#1 Check if request is a EIDTE Exchange
         String grantType = httpParams.getFirst(OAuth2ParameterNames.GRANT_TYPE);
        if(!EidteParameters.GRANT_TYPE_VALUE.equals(grantType)) {
            return null;
@@ -49,9 +49,6 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
        String cliendId = httpParams.getFirst(CommonOAuthRequestParams.CLIENT_ID);
        String clientSecret = httpParams.getFirst(CommonOAuthRequestParams.CLIENT_SECRET);
        if(cliendId == null || clientSecret == null) {
-           logger.warn("cliendId -> "  + cliendId);
-           logger.warn("cliendSecret -> "  + clientSecret);
-           logger.warn("no client_secret provided >;v");
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
        }
        //#3 Check if mf sent the mf jwt mf
@@ -68,6 +65,9 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
        }
 
        RegisteredClient client = RegisteredClient
+               /*
+               * TODO: CHANGE THIS, THIS CANNOT BE HARDCODED.... or can it?
+               * */
                .withId("1")
                .clientId(cliendId)
                .clientSecret(clientSecret)

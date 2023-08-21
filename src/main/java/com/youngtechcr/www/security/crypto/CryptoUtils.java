@@ -56,8 +56,8 @@ public final class CryptoUtils {
 
     // Some quick testing because I'm to lazy to create a proper unit test :v
 //    public static void main(String[] args) {
-//       Path publicPath = Path.of("/youngtech/app/youngtech-crypto/rsa-backend-keys/public-key.der");
-//       Path privatePath = Path.of("/youngtech/app/youngtech-crypto/rsa-backend-keys/private-key.der");
+//       Path publicPath = Path.of("/some/awsome/path/public.der");
+//       Path privatePath = Path.of("/some/awsome/path/private.der");
 //
 //       RSAPublicKey publicKey =
 //               (RSAPublicKey) rsaKeyFromDerFile(publicPath, AsymmetricKeyType.PUBLIC);
