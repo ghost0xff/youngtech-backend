@@ -5,7 +5,6 @@ import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.ValueMismatchException;
 import com.youngtechcr.www.http.BasicCrudService;
-import com.youngtechcr.www.product.ProductService;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import org.slf4j.Logger;

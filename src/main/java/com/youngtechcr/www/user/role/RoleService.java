@@ -2,14 +2,12 @@ package com.youngtechcr.www.user.role;
 
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
-import com.youngtechcr.www.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service

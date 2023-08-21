@@ -2,7 +2,6 @@ package com.youngtechcr.www.product.image;
 
 import com.youngtechcr.www.domain.TimestampedUtils;
 import com.youngtechcr.www.product.Product;
-import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.FileOperationException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.product.ProductService;

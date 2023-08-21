@@ -31,15 +31,17 @@ logging:
 #        security: INFO
 #        security: DEBUG
         security: TRACE
+        web: TRACE
+
 
 api:
   version: 1
   base-url: /api/v1
   web-client: http://localhost:3000
-#  public-key: classpath:certs/public-key.pem
-#  private-key: classpath:certs/private-key.pem
-  public-key: classpath:certs/public-key.pem
-  private-key: classpath:certs/private-key.pem
 
-
-
+crypto:
+  keys:
+    -
+      private-key-der-path: ${YOUNG_TECH_PRIVATE_KEY_DER_PATH}
+      public-key-der-path: ${YOUNG_TECH_PUBLIC_KEY_DER_PATH}
+      jwk-id: key1

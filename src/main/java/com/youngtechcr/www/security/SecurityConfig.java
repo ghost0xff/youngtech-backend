@@ -1,5 +1,6 @@
 package com.youngtechcr.www.security;
 
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -7,6 +8,9 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.youngtechcr.www.api.ApiProperties;
 import com.youngtechcr.www.http.HttpUtils;
+import com.youngtechcr.www.security.crypto.AsymmetricKeyType;
+import com.youngtechcr.www.security.crypto.CryptoUtils;
+import com.youngtechcr.www.security.crypto.CryptoProps;
 import com.youngtechcr.www.security.eidte.EidteAuthenticationConverter;
 import com.youngtechcr.www.security.eidte.EidteAuthenticationProvider;
 import com.youngtechcr.www.security.eidte.EidteParameters;
@@ -46,7 +50,9 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -54,9 +60,11 @@ public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
     private final ApiProperties apiProperties;
+    private final CryptoProps cryptoProps;
 
-    public SecurityConfig(ApiProperties apiProperties) {
+    public SecurityConfig(ApiProperties apiProperties, CryptoProps cryptoProps) {
         this.apiProperties = apiProperties;
+        this.cryptoProps = cryptoProps;
     }
 
     @Bean
@@ -167,54 +175,26 @@ public class SecurityConfig {
                 jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
     }
 
-//    @Bean
-//    public JWKSource<SecurityContext> jwkSource() {
-//        KeyPair keyPair = new KeyPair(
-//                this.apiProperties.publicKey(),
-//                this.apiProperties.privateKey()
-//        );
-//        logger.trace("Succesdfully created keypair -> " + keyPair);
-//        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-//        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-//        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-//                .privateKey(privateKey)
-//                .keyID("1")
-//                .build();
-//        JWKSet jwkSet = new JWKSet(rsaKey);
-//        return new ImmutableJWKSet<>(jwkSet);
-//    }
-
-    @Bean
-     private static KeyPair generateRsaKey() {
-                  KeyPair keyPair;
-                  try {
-                      KeyPairGenerator keyPairGenerator =
-                              KeyPairGenerator.getInstance("RSA");
-                      keyPairGenerator.initialize(2048);
-                      keyPair = keyPairGenerator.generateKeyPair();
-                  }
-                  catch (Exception ex) {
-                      throw new IllegalStateException(ex);
-                  }
-                  return keyPair;
-    }
 
      @Bean
      public JWKSource<SecurityContext> jwkSource() {
-     KeyPair keyPair = generateRsaKey();
+        List<JWK> jwkList = cryptoProps
+                .keys()
+                .stream()
+                .map(keyMetadata -> {
+                    RSAPublicKey publicKey = (RSAPublicKey) CryptoUtils.rsaKeyFromDerFile(
+                            keyMetadata.publicKeyDerPath(), AsymmetricKeyType.PUBLIC);
+                    RSAPrivateKey privateKey = (RSAPrivateKey) CryptoUtils.rsaKeyFromDerFile(
+                            keyMetadata.privateKeyDerPath(), AsymmetricKeyType.PRIVATE);
+                    String keyId = keyMetadata.keyId();
+                    return new RSAKey.Builder(publicKey).privateKey(privateKey).keyID(keyId).build();
+                }
+          ).collect(Collectors.toList());
 
-     RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-     RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-//     RSAPublicKey publicKey = this.apiProperties.publicKey();
-//     RSAPrivateKey privateKey = this.apiProperties.privateKey();
-
-     RSAKey rsaKey = new RSAKey.Builder(publicKey)
-            .privateKey(privateKey)
-            .keyID(UUID.randomUUID().toString())
-            .build();
-     JWKSet jwkSet = new JWKSet(rsaKey);
+     JWKSet jwkSet = new JWKSet(jwkList);
      return new ImmutableJWKSet<>(jwkSet);
     }
+
 
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {

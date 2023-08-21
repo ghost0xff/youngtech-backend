@@ -15,10 +15,6 @@ public record ApiProperties(
     int version,
     String baseUrl,
     @Pattern(regexp = "https?:\\/\\/\\S+\\:[0-9]+$") //  -> http://localhost:3000
-    String webClient,
-
-//     Security props
-    RSAPrivateKey privateKey,
-    RSAPublicKey publicKey
+    String webClient
 ) {
 }
