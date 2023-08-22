@@ -2,13 +2,12 @@ package com.youngtechcr.www.http;
 
 import org.springframework.http.HttpMethod;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 public final class HttpUtils {
 
-    public static List<String> getAllHttpMethods() {
+    public static List<String> getCommonHttpMethods() {
         return Arrays.asList(
                 HttpMethod.GET.toString(),
                 HttpMethod.POST.toString(),

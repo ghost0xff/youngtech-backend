@@ -1,4 +1,4 @@
-package com.youngtechcr.www.security;
+package com.youngtechcr.www.security.eidte;
 
 public final class CommonOAuthRequestParams {
 

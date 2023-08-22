@@ -1,30 +1,24 @@
 package com.youngtechcr.www.security.eidte;
 
-import com.nimbusds.jose.proc.SecurityContext;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
-import com.youngtechcr.www.security.CommonOAuthRequestParams;
 import com.youngtechcr.www.security.eidte.google.EidteGoogleVerifier;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +27,12 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(
             EidteAuthenticationConverter.class);
+
+    private final RegisteredClientRepository registeredClientRepository;
+
+    public EidteAuthenticationConverter(RegisteredClientRepository registeredClientRepository) {
+        this.registeredClientRepository = registeredClientRepository;
+    }
 
     @Override
     public Authentication convert(HttpServletRequest request) {
@@ -51,32 +51,35 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
        if(cliendId == null || clientSecret == null) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
        }
+       // #2.5 Retrieve registeredClient from repo because we gonna use it above
+       RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(cliendId);
+       if(registeredClient == null) {
+           throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
+       }
+
        //#3 Check if mf sent the mf jwt mf
         String eidteValue = httpParams.getFirst(OAuth2ParameterNames.ASSERTION);
-        if(!StringUtils.hasText(eidteValue)){
+        if(eidteValue == null || !StringUtils.hasText(eidteValue)){
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_TOKEN);
         }
 
         //#4 Verify legitimacy of EIDTE Token with specified provider
-       String eidteIpName = httpParams.getFirst(EidteParameters.IPN);
+       String eidteIpName = httpParams.getFirst(EidteParameters.IDPN);
        Optional<OidcIdToken> eidteToken = Optional.empty();
+
+       /* TODO: THIS MUSTN'T BE HARDCODED LIKE THIS BUT UNTIL I BUILD THE API FOR
+           FOR IT, IT WILL REMAIN LIKE THIS
+       */
        if(eidteIpName.equals("google")) { // hard coded because I just can mf mf >;v
            eidteToken = new EidteGoogleVerifier().verify(eidteValue);
+       } else {
+           throw new OAuth2AuthenticationException(EidteErrorCodes.UNKNOWN_IPDN);
        }
 
-       RegisteredClient client = RegisteredClient
-               /*
-               * TODO: CHANGE THIS, THIS CANNOT BE HARDCODED.... or can it?
-               * */
-               .withId("1")
-               .clientId(cliendId)
-               .clientSecret(clientSecret)
-               .authorizationGrantType(EidteParameters.GRANT_TYPE_INSTANCE)
-               .build();
 
        var principal = new OAuth2ClientAuthenticationToken(
-               client,
-               ClientAuthenticationMethod.NONE,
+               registeredClient,
+               ClientAuthenticationMethod.CLIENT_SECRET_POST,
                null
        );
 

@@ -8,12 +8,12 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.youngtechcr.www.api.ApiProperties;
 import com.youngtechcr.www.http.HttpUtils;
+import com.youngtechcr.www.security.auth.AuthClientRepository;
+import com.youngtechcr.www.security.auth.JpaRegisteredClientRepository;
 import com.youngtechcr.www.security.crypto.AsymmetricKeyType;
 import com.youngtechcr.www.security.crypto.CryptoUtils;
 import com.youngtechcr.www.security.crypto.CryptoProps;
-import com.youngtechcr.www.security.eidte.EidteAuthenticationConverter;
-import com.youngtechcr.www.security.eidte.EidteAuthenticationProvider;
-import com.youngtechcr.www.security.eidte.EidteParameters;
+import com.youngtechcr.www.security.eidte.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -45,13 +45,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -62,7 +59,10 @@ public class SecurityConfig {
     private final ApiProperties apiProperties;
     private final CryptoProps cryptoProps;
 
-    public SecurityConfig(ApiProperties apiProperties, CryptoProps cryptoProps) {
+    public SecurityConfig(
+            ApiProperties apiProperties,
+            CryptoProps cryptoProps
+    ) {
         this.apiProperties = apiProperties;
         this.cryptoProps = cryptoProps;
     }
@@ -72,7 +72,8 @@ public class SecurityConfig {
     public SecurityFilterChain authzServerSecurityFilterChain(
             HttpSecurity http,
             OAuth2AuthorizationService authorizationService,
-            OAuth2TokenGenerator<?> tokenGenerator
+            OAuth2TokenGenerator<?> tokenGenerator,
+            RegisteredClientRepository registeredClientRepository
     ) throws Exception {
 //       OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
@@ -85,7 +86,7 @@ public class SecurityConfig {
                 .tokenEndpoint( tokenEndpoint ->
                         tokenEndpoint
                                 .accessTokenRequestConverters( converters -> {
-                                    converters.add(new EidteAuthenticationConverter());
+                                    converters.add(new EidteAuthenticationConverter(registeredClientRepository));
                                 })
                                 .authenticationProviders( providers -> {
                                    providers.add(new EidteAuthenticationProvider(
@@ -96,8 +97,10 @@ public class SecurityConfig {
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
         http
                 .securityMatcher(endpointsMatcher)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf( csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .csrf( csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+                .csrf( csrf -> csrf.disable())
 //                 Accept access tokens for User Info and/or Client Registration
                 .oauth2ResourceServer((resourceServer) -> resourceServer
                         .jwt(Customizer.withDefaults())
@@ -116,8 +119,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) ->
                         authorize
                                 .requestMatchers(HttpMethod.GET,"/products").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/test").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/test").permitAll()
                                 .anyRequest().permitAll()
                 )
+                .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 ->  oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -125,42 +131,18 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    RegisteredClientRepository registeredClientRepository() {
-        TokenSettings tokenSettings = TokenSettings
-                .builder()
-                .refreshTokenTimeToLive(Duration.ofMinutes(30))
-                .accessTokenTimeToLive(Duration.ofMinutes(15))
-                .build();
-        RegisteredClient webClient = RegisteredClient
-                .withId("1")
-                .clientId("web-frontend")
-                .clientSecret("{noop}secret")
-                .clientAuthenticationMethods( methods -> {
-                    methods.add(ClientAuthenticationMethod.CLIENT_SECRET_POST);
-                })
-                .authorizationGrantTypes( grantTypes -> {
-//                    grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
-                    grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
-                    grantTypes.add(EidteParameters.GRANT_TYPE_INSTANCE);
-                })
-                .tokenSettings(tokenSettings)
-                .build();
+//    @Bean
+//    public EidteVerifier eidteVerifier() {
+//        return new EidteVerifierManager();
+//    }
 
-        return new InMemoryRegisteredClientRepository(webClient);
-    }
-
-    @Bean
-    public OAuth2AuthorizationService authorizationService() {
-        return new InMemoryOAuth2AuthorizationService();
-    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 //        corsConfiguration.setAllowedOrigins(Arrays.asList(this.apiProperties.webClient()));
         corsConfiguration.addAllowedOrigin(this.apiProperties.webClient());
-        corsConfiguration.setAllowedMethods(HttpUtils.getAllHttpMethods());
+        corsConfiguration.setAllowedMethods(HttpUtils.getCommonHttpMethods());
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;

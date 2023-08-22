@@ -10,6 +10,7 @@ import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.FailedExternalHttpConnectionException;
 import com.youngtechcr.www.exceptions.custom.InvalidEidteTokenException;
 import com.youngtechcr.www.security.eidte.CommonClaimNames;
+import com.youngtechcr.www.security.eidte.EidteErrorCodes;
 import com.youngtechcr.www.security.eidte.EidteVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +46,7 @@ public class EidteGoogleVerifier implements EidteVerifier {
         }
         if (googleIdToken == null) {
             logger.debug("Provided expired or unvalid id_token, rejecting EIDTE exchange");
-            OAuth2Error error = new OAuth2Error(
-                OAuth2ErrorCodes.INVALID_TOKEN,
-                HttpErrorMessages.INVALID_EIDTE_TOKEN,
-                null
-            );
-            throw new InvalidEidteTokenException(error);
+            throw new InvalidEidteTokenException(EidteErrorCodes.INVALID_EIDTE_TOKEN);
         }
         // ---------------------- GoogleIdToken Destructuring ------------------------------
        GoogleIdToken.Payload payload = googleIdToken.getPayload();
