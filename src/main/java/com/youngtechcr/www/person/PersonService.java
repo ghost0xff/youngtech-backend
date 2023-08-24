@@ -1,6 +1,6 @@
 package com.youngtechcr.www.person;
 
-import com.youngtechcr.www.user.User;
+import com.youngtechcr.www.security.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +14,18 @@ public class PersonService {
     }
 
     @Transactional
-    public Person createPersonFromUser(User user) {
-        Person toBeCreated = new Person(user);
+    public Person create(User user) {
+        Person toBeCreated = Person
+                .builder()
+                .user(user)
+                .build();
         var created = personRepository.save(toBeCreated);
         return created;
+    }
+
+    @Transactional
+    public Person create(Person person) {
+        return personRepository.save(person);
     }
 
 }

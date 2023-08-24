@@ -1,11 +1,16 @@
 package com.youngtechcr.www.user.role;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.youngtechcr.www.security.user.role.Role;
+import com.youngtechcr.www.security.user.role.RoleOption;
+import com.youngtechcr.www.security.user.role.RoleRepository;
+import com.youngtechcr.www.security.user.role.RoleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -30,19 +35,22 @@ class RoleServiceTest {
         // preparing mock
        Role expectedUserRole = new Role(1, "ROLE_USER");
        Role expectedCustomerRole = new Role(2, "ROLE_CUSTOMER");
-       Role expectedStudentRole = new Role(3, "ROLE_STUDENT");
+       Role expectedEmployeeRole = new Role(3, "ROLE_EMPLOYEE");
+       Role expectedAdminRole = new Role(4, "ROLE_ADMIN");
 
         // whens
-       when(roleRepository.findByName("USER")).thenReturn(Optional.of(expectedUserRole));
-       when(roleRepository.findByName("CUSTOMER")).thenReturn(Optional.of(expectedCustomerRole));
-       when(roleRepository.findByName("STUDENT")).thenReturn(Optional.of(expectedStudentRole));
+       when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(expectedUserRole));
+       when(roleRepository.findByName("ROLE_CUSTOMER")).thenReturn(Optional.of(expectedCustomerRole));
+        when(roleRepository.findByName("ROLE_EMPLOYEE")).thenReturn(Optional.of(expectedEmployeeRole));
+        when(roleRepository.findByName("ROLE_ADMIN")).thenReturn(Optional.of(expectedAdminRole));
 
        // operations
         List<Role> roles = roleService.
                 mapOptionsToRoles(
                         RoleOption.USER,
                         RoleOption.CUSTOMER,
-                        RoleOption.STUDENT
+                        RoleOption.EMPLOYEE,
+                        RoleOption.ADMIN
                 );
 
         // assertions

@@ -1,4 +1,4 @@
-package com.youngtechcr.www.user.role;
+package com.youngtechcr.www.security.user.role;
 
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
@@ -46,7 +46,7 @@ public class RoleService {
         List<Role> existingRoles = new ArrayList<>();
         for (int i = 0; i < roleOptions.length; i++) {
             var currentOption = roleOptions[i];
-            Role toBeAdded = findRoleByName(currentOption.name());
+            Role toBeAdded = findRoleByName(currentOption.getIdentifier());
             existingRoles.add(toBeAdded);
         }
         return existingRoles;

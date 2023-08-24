@@ -8,12 +8,12 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.youngtechcr.www.api.ApiProperties;
 import com.youngtechcr.www.http.HttpUtils;
-import com.youngtechcr.www.security.auth.AuthClientRepository;
-import com.youngtechcr.www.security.auth.JpaRegisteredClientRepository;
 import com.youngtechcr.www.security.crypto.AsymmetricKeyType;
 import com.youngtechcr.www.security.crypto.CryptoUtils;
 import com.youngtechcr.www.security.crypto.CryptoProps;
 import com.youngtechcr.www.security.eidte.*;
+import com.youngtechcr.www.security.idp.IdentityProviderRepository;
+import com.youngtechcr.www.security.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -25,19 +25,13 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -47,7 +41,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,13 +51,17 @@ public class SecurityConfig {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
     private final ApiProperties apiProperties;
     private final CryptoProps cryptoProps;
+    private final IdentityProviderRepository idpRepository;
+    private final UserService userService;
 
     public SecurityConfig(
             ApiProperties apiProperties,
-            CryptoProps cryptoProps
-    ) {
+            CryptoProps cryptoProps,
+            IdentityProviderRepository idpRepository, UserService userService) {
         this.apiProperties = apiProperties;
         this.cryptoProps = cryptoProps;
+        this.idpRepository = idpRepository;
+        this.userService = userService;
     }
 
     @Bean
@@ -86,11 +83,16 @@ public class SecurityConfig {
                 .tokenEndpoint( tokenEndpoint ->
                         tokenEndpoint
                                 .accessTokenRequestConverters( converters -> {
-                                    converters.add(new EidteAuthenticationConverter(registeredClientRepository));
+                                    converters.add(new EidteAuthenticationConverter(
+                                            registeredClientRepository,
+                                            this.idpRepository
+                                    ));
                                 })
                                 .authenticationProviders( providers -> {
                                    providers.add(new EidteAuthenticationProvider(
-                                           authorizationService, tokenGenerator
+                                           authorizationService,
+                                           tokenGenerator,
+                                           this.userService
                                    ));
                                 })
                 );
@@ -99,9 +101,9 @@ public class SecurityConfig {
                 .securityMatcher(endpointsMatcher)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .csrf( csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .csrf( csrf -> csrf.disable())
-//                 Accept access tokens for User Info and/or Client Registration
+                .csrf( csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+//                .csrf( csrf -> csrf.disable())
+//                 Accept access tokens for User InfZZo and/or Client Registration
                 .oauth2ResourceServer((resourceServer) -> resourceServer
                         .jwt(Customizer.withDefaults())
                 )

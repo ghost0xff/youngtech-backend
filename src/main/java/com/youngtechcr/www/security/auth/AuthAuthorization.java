@@ -24,7 +24,7 @@ public class AuthAuthorization {
     private String authorizationGrantType;
     @Column(length = 1000, name = "authorized_scopes")
     private String authorizedScopes;
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String attributes;
 
     @Column(length = 500)

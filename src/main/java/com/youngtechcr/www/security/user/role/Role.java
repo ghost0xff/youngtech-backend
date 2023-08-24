@@ -1,4 +1,4 @@
-package com.youngtechcr.www.user.role;
+package com.youngtechcr.www.security.user.role;
 
 
 import com.youngtechcr.www.domain.Timestamped;
@@ -60,11 +60,11 @@ public class Role implements Timestamped {
         this.roleId = roleId;
     }
 
-    public String getRoleName() {
+    public String getName() {
         return name;
     }
 
-    public void setRoleName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 

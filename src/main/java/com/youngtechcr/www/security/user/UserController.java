@@ -1,4 +1,4 @@
-package com.youngtechcr.www.user;
+package com.youngtechcr.www.security.user;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +18,6 @@ public class UserController {
         this.userToUserDtoConverter = userToUserDtoConverter;
     }
 
-    @PostMapping
-    public ResponseEntity<?> createBasicUser( @RequestBody BasicUser user) {
-        userService.createUserFromBasicInfo(user);
-        return null;
-    }
 
 
 }

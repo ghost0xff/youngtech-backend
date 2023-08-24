@@ -1,6 +1,6 @@
 package com.youngtechcr.www.customer;
 
-import com.youngtechcr.www.user.User;
+import com.youngtechcr.www.security.user.User;
 import org.springframework.stereotype.Service;
 
 @Service

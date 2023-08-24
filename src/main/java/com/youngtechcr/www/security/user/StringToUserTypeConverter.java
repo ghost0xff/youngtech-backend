@@ -1,7 +1,6 @@
-package com.youngtechcr.www.user;
+package com.youngtechcr.www.security.user;
 
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

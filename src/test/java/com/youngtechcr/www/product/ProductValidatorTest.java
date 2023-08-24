@@ -63,11 +63,11 @@ class ProductValidatorTest {
 
         // Assertions
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withNullishName));
+                () -> productValidator.isValid(withNullishName, false));
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withTooShortName));
+                () -> productValidator.isValid(withTooShortName, false));
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withTooLongName));
+                () -> productValidator.isValid(withTooLongName, false));
     }
 
     @Test
@@ -77,7 +77,7 @@ class ProductValidatorTest {
         var withValidName = ProductValidatorTestUtils
                 .withAllValid();
         // Assertions
-        assertTrue(productValidator.isValid(withValidName));
+        assertTrue(productValidator.isValid(withValidName, false));
     }
 
     @Test
@@ -88,7 +88,7 @@ class ProductValidatorTest {
                 .withInvalidStock(ValidationOption.TOO_SHORT);
         // Assertions
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withStockTooShort));
+                () -> productValidator.isValid(withStockTooShort, false));
     }
 
     @Test
@@ -98,7 +98,7 @@ class ProductValidatorTest {
         var withValidStock = ProductValidatorTestUtils
                 .withAllValid();
         // Assertions
-        assertTrue(productValidator.isValid(withValidStock));
+        assertTrue(productValidator.isValid(withValidStock, false));
     }
 
     @Test
@@ -115,11 +115,11 @@ class ProductValidatorTest {
 
         // Assertions
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withDescriptionTooShort));
+                () -> productValidator.isValid(withDescriptionTooShort,false));
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withDescriptionTooLong));
+                () -> productValidator.isValid(withDescriptionTooLong, false));
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withNullishDescription));
+                () -> productValidator.isValid(withNullishDescription, false));
     }
 
     @Test
@@ -128,7 +128,7 @@ class ProductValidatorTest {
         // Preparing Data
         var withValidDescription = ProductValidatorTestUtils.withAllValid();
         // Assertions
-        assertTrue(productValidator.isValid(withValidDescription));
+        assertTrue(productValidator.isValid(withValidDescription, false));
     }
 
     @Test
@@ -139,7 +139,7 @@ class ProductValidatorTest {
                 .withInvalidPrice(ValidationOption.TOO_SHORT);
         // Assertions
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withPriceTooLow));
+                () -> productValidator.isValid(withPriceTooLow, false));
     }
 
     @Test
@@ -148,7 +148,7 @@ class ProductValidatorTest {
         // Prepating Data
         var withValidPrice = ProductValidatorTestUtils.withAllValid();
         //Assertions
-        assertTrue(productValidator.isValid(withValidPrice));
+        assertTrue(productValidator.isValid(withValidPrice, false));
     }
 
 
@@ -165,9 +165,9 @@ class ProductValidatorTest {
 
         // Assertions
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withDiscountBelowZero));
+                () -> productValidator.isValid(withDiscountBelowZero, false));
         assertThrows(InvalidElementException.class,
-                () -> productValidator.isValid(withDiscountEqualsZero));
+                () -> productValidator.isValid(withDiscountEqualsZero, false));
     }
 
     @Test
@@ -176,7 +176,7 @@ class ProductValidatorTest {
         // Prepating Data
         var withValidPrice = ProductValidatorTestUtils.withAllValid();
         //Assertions
-        assertTrue(productValidator.isValid(withValidPrice));
+        assertTrue(productValidator.isValid(withValidPrice, false));
     }
 
     @Test
@@ -185,7 +185,7 @@ class ProductValidatorTest {
         // Prepating Data
         var withExistingBrand = ProductValidatorTestUtils.withAllValid();
         //Assertions
-        assertTrue(productValidator.isValid(withExistingBrand));
+        assertTrue(productValidator.isValid(withExistingBrand, false));
     }
 
 //    @Test

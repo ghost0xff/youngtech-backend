@@ -2,6 +2,9 @@ package com.youngtechcr.www.security.eidte;
 
 
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
+import com.youngtechcr.www.security.idp.IdentityProvider;
+import com.youngtechcr.www.security.user.User;
+import com.youngtechcr.www.security.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,7 +22,6 @@ import org.springframework.security.oauth2.server.authorization.context.Authoriz
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.Assert;
 
 import java.security.Principal;
@@ -30,11 +32,13 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(EidteAuthenticationProvider.class);
     private final OAuth2AuthorizationService authorizationService;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
+    private final UserService userService;
 
     public EidteAuthenticationProvider(
             OAuth2AuthorizationService authorizationService,
-            OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator
-    ) {
+            OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
+            UserService userService) {
+        this.userService = userService;
         // Yeah, I absolutely copy pasted this 2 assertions above
         Assert.notNull(authorizationService, "authorizationService cannot be null");
         Assert.notNull(tokenGenerator, "tokenGenerator cannot be null");
@@ -45,40 +49,50 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        EidteAuthentication eidteAuthentication = (EidteAuthentication) authentication;
-        Map<String, Object> claims = eidteAuthentication.getTokenAttributes();
+       EidteAuthentication eidteAuthentication = (EidteAuthentication) authentication;
+       RegisteredClient registeredClient = eidteAuthentication.getRegisteredClient();
+       Map<String, Object> claims = eidteAuthentication.getTokenAttributes();
+       OidcIdToken eidteToken = eidteAuthentication.getToken();
+       IdentityProvider identityProvider = eidteAuthentication.getIdentityProvider();
 
-        // TODO #1 Verify Client is Authenticated
-       String providerId = (String) claims.get(CommonClaimNames.SUBJECT);
+//       AnonymousAuthenticationToken principal =
+//               (AnonymousAuthenticationToken) eidteAuthentication.getPrincipal();
 
-       // -------------------------------------------------------
-       //  register user here if not already :)
-       // ------------------------------------------------------
-
-       OAuth2ClientAuthenticationToken clientPrincipal =
+       OAuth2ClientAuthenticationToken clientAuthToken =
                getAuthenticatedClientElseThrowInvalidClient(eidteAuthentication);
+        logger.trace("clientAuthToken -> " +  clientAuthToken);
 
-       RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
-       OAuth2TokenContext accessTokenContext = contextFromParams(
-               OAuth2TokenType.ACCESS_TOKEN, registeredClient,
-               clientPrincipal, eidteAuthentication
+//       // ------------------------------------------------------
+//       //  #1 Register user here if not already :v
+//       // ------------------------------------------------------
+       User user = userService.createFromEidteExchange(eidteToken, identityProvider);
+       EidteAuthenticationPrincipal authPrincipal =
+               new EidteAuthenticationPrincipal(user);
+//
+//
+       // #2 Generate tokens
+       OAuth2TokenContext accessTokenContext = contextFromParams (
+               OAuth2TokenType.ACCESS_TOKEN, eidteAuthentication, registeredClient, clientAuthToken
        );
-        OAuth2TokenContext refreshTokenContext = contextFromParams(
-                OAuth2TokenType.REFRESH_TOKEN, registeredClient,
-                clientPrincipal, eidteAuthentication
+        OAuth2TokenContext refreshTokenContext = contextFromParams (
+                OAuth2TokenType.REFRESH_TOKEN, eidteAuthentication, registeredClient, clientAuthToken
         );
         OAuth2AccessToken accessToken = (OAuth2AccessToken) tokenFromContext(accessTokenContext);
         OAuth2RefreshToken refreshToken = (OAuth2RefreshToken) tokenFromContext(refreshTokenContext);
 
 
+
+
+        // #3 Build and save authorization
+
         OAuth2Authorization authorizationBuilder = OAuth2Authorization
                 .withRegisteredClient(registeredClient)
-                .principalName(clientPrincipal.getName())
+                .principalName(String.valueOf(authPrincipal.getName()))
                 .authorizationGrantType(EidteParameters.GRANT_TYPE_INSTANCE)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .attribute(Principal.class.getName(), clientPrincipal)
+                .attribute(Principal.class.getName(), authPrincipal)
                 // ^^^ this mf attribute up here is important as hell,
                 // had to deal with a NullPointerException because of this crap.
                 // guess I just need to re-write everything in Rust
@@ -88,14 +102,15 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
         logger.info("yeeeeeiii we authenticated a user!!!!");
         return new OAuth2AccessTokenAuthenticationToken(
                 registeredClient,
-                clientPrincipal,
+                clientAuthToken,
                 accessToken,
                 refreshToken
         );
+
 //         Generatedtokens ^^^^
 //        generate access_token() -> done
 //        generate refresh_token() -> done
-//        generate id_token() -> how
+//        generate id_token() -> how ???
     }
 
     @Override
@@ -105,17 +120,17 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
 
     public OAuth2TokenContext contextFromParams(
             OAuth2TokenType tokenType,
+            Authentication representationOfAuthzGrant,
             RegisteredClient registeredClient,
-            Authentication clientPrincipal,
-            Authentication representationOfAuthzGrant
+            OAuth2ClientAuthenticationToken clientPrincipal
     ) {
         return DefaultOAuth2TokenContext.builder()
-                .registeredClient(registeredClient)
-                .principal(clientPrincipal)
                 .authorizationServerContext(AuthorizationServerContextHolder.getContext())
                 .tokenType(tokenType)
                 .authorizationGrantType(EidteParameters.GRANT_TYPE_INSTANCE)
                 .authorizationGrant(representationOfAuthzGrant)
+                .registeredClient(registeredClient)
+                .principal(clientPrincipal)
                 .build();
     }
 
@@ -150,13 +165,14 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
     }
 
 
-    public static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(
-            Authentication authentication
+    public static OAuth2ClientAuthenticationToken
+    getAuthenticatedClientElseThrowInvalidClient(
+            EidteAuthentication authentication
     ) {
         OAuth2ClientAuthenticationToken clientPrincipal = null;
-        Class principalsAuthnClass = authentication.getPrincipal().getClass();
-        if (OAuth2ClientAuthenticationToken.class.isAssignableFrom(principalsAuthnClass)) {
-            clientPrincipal = (OAuth2ClientAuthenticationToken) authentication.getPrincipal();
+        Class clientPrincipalsAuthnClass = authentication.getClientPrincipal().getClass();
+        if (OAuth2ClientAuthenticationToken.class.isAssignableFrom(clientPrincipalsAuthnClass)) {
+            clientPrincipal = (OAuth2ClientAuthenticationToken) authentication.getClientPrincipal();
         }
         if (clientPrincipal != null && clientPrincipal.isAuthenticated()) {
             return clientPrincipal;

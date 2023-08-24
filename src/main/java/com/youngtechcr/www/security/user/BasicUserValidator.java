@@ -1,4 +1,4 @@
-package com.youngtechcr.www.user;
+package com.youngtechcr.www.security.user;
 
 import com.youngtechcr.www.domain.Validator;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;

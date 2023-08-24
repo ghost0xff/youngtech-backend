@@ -1,4 +1,4 @@
-package com.youngtechcr.www.user.role;
+package com.youngtechcr.www.security.user.role;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

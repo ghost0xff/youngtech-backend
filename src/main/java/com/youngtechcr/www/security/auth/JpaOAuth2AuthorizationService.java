@@ -1,10 +1,14 @@
 package com.youngtechcr.www.security.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.boot.model.internal.CollectionSecondPass;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.security.jackson2.CoreJackson2Module;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -46,6 +50,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
         List<Module> securityModules = SecurityJackson2Modules.getModules(classLoader);
         this.objectMapper.registerModules(securityModules);
         this.objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
+        this.objectMapper.registerModules(new CoreJackson2Module());
+
 
     }
 
@@ -266,12 +272,13 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
 //                    this.objectMapper.readValue(data, new TypeReference<Map<String, Object>>() { })
 //            );
             return this.objectMapper.readValue(data, new TypeReference<Map<String, Object>>() { });
-        } catch (Exception ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
-        }
+
+            } catch (Exception ex) {
+                throw new IllegalArgumentException(ex.getMessage(), ex);
+            }
     }
 
-    private String writeMap(Map<String, Object> metadata) {
+        private String writeMap(Map<String, Object> metadata) {
         try {
             return this.objectMapper.writeValueAsString(metadata);
         } catch (Exception ex) {

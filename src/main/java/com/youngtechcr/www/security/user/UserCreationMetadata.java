@@ -1,4 +1,4 @@
-package com.youngtechcr.www.user;
+package com.youngtechcr.www.security.user;
 
 import com.youngtechcr.www.person.Person;
 

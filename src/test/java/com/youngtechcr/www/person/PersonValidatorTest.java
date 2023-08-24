@@ -26,13 +26,15 @@ class PersonValidatorTest {
     void given_Valid_Person_Should_Return_True() {
 
         //Preparing data for assertions
-        Person personToBeValidated = new Person();
-        personToBeValidated.setFirstname("Samuel");
-        personToBeValidated.setLastname(null);
-        personToBeValidated.setAge(78);
+        Person personToBeValidated = Person
+                .builder()
+                .firstnames("samuel")
+                .lastnames(null)
+                .age(78)
+                .build();
 
         //Assetions
-        assertTrue(this.personValidator.isValid(personToBeValidated));
+        assertTrue(this.personValidator.isValid(personToBeValidated, false));
 
     }
 
@@ -41,14 +43,16 @@ class PersonValidatorTest {
     void given_Invalid_Person_Age_Too_Old_Should_Throw_InvalidElementException() {
 
         //Preparing data for assertions
-        Person personToBeValidated = new Person();
-        personToBeValidated.setFirstname("Samuel");
-        personToBeValidated.setLastname(null);
-        personToBeValidated.setAge(100); // min:1 & max:99
+        Person personToBeValidated = Person
+                .builder()
+                .firstnames("samuel")
+                .lastnames(null)
+                .age(100)
+                .build();
 
         //Assetions
         assertThrows(InvalidElementException.class, () -> {
-            personValidator.isValid(personToBeValidated);
+            personValidator.isValid(personToBeValidated, false);
         });
 
     }
@@ -58,28 +62,34 @@ class PersonValidatorTest {
     void given_Invalid_Person_Age_Too_Young_Should_Throw_InvalidElementException() {
 
         //Preparing data for assertions
-        Person personToBeValidated = new Person();
-        personToBeValidated.setFirstname("Samuel");
-        personToBeValidated.setLastname(null);
-        personToBeValidated.setAge(-2);// min:1 & max:99
+        Person personToBeValidated = Person
+                .builder()
+                .firstnames("samuel")
+                .lastnames(null)
+                .age(-2)
+                .build();
 
         //Assetions
         assertThrows(InvalidElementException.class, () -> {
-            personValidator.isValid(personToBeValidated);
+            personValidator.isValid(personToBeValidated, false);
         });
     }
 
     @Test
     @DisplayName("Invalid name (too short) should throw InvalidElementException")
     void given_Invalid_Short_Name_Should_Throw_InvalidElementException() {
+
         //Preparing data for assertions
-        Person personToBeValidated = new Person();
-        personToBeValidated.setFirstname("a"); // 1 char & min 3 chars
-        personToBeValidated.setLastname(null);
-        personToBeValidated.setAge(12);
+        Person personToBeValidated = Person
+                .builder()
+                .firstnames("a")
+                .lastnames(null)
+                .age(12)
+                .build();
+
         //Assetions
         assertThrows(InvalidElementException.class, () -> {
-                personValidator.isValid(personToBeValidated);
+                personValidator.isValid(personToBeValidated, false);
             });
         }
 
@@ -87,13 +97,15 @@ class PersonValidatorTest {
     @DisplayName("Invalid name (too long) should throw InvalidElementException")
     void given_Invalid_Long_Name_Should_Throw_InvalidElementException() {
         //Preparing data for assertions
-        Person personToBeValidated = new Person();
-        personToBeValidated.setFirstname("aaaaaaaaaaaaaaaaaaaaA"); //21 chars & max 20
-        personToBeValidated.setLastname("Flo");
-        personToBeValidated.setAge(12);
+        Person personToBeValidated = Person
+                .builder()
+                .firstnames("aaaaaaaaaaaaaaaaaaaaA")
+                .lastnames("Flo")
+                .age(12)
+                .build();
         //Assetions
         assertThrows(InvalidElementException.class, () -> {
-            personValidator.isValid(personToBeValidated);
+            personValidator.isValid(personToBeValidated, false);
         });
     }
 
@@ -101,13 +113,15 @@ class PersonValidatorTest {
     @DisplayName("Invalid person with too long name should throw InvalidElementException")
     void given_Invalid_Name_With_Numbers_Or_Chars_Should_Throw_InvalidElementException() {
         //Preparing data for assertions
-        Person personToBeValidated = new Person();
-        personToBeValidated.setFirstname("aA1234&*("); //only aplhabetic chars permitted
-        personToBeValidated.setLastname(null);
-        personToBeValidated.setAge(12);
+        Person personToBeValidated = Person
+                .builder()
+                .firstnames("aA1234&*(")
+                .lastnames(null)
+                .age(12)
+                .build();
         //Assetions
         assertThrows(InvalidElementException.class, () -> {
-            personValidator.isValid(personToBeValidated);
+            personValidator.isValid(personToBeValidated, false);
         });
     }
 

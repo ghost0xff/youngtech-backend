@@ -24,8 +24,8 @@ public class PersonValidator implements Validator<Person> {
         if (personToBeValidated == null) {
             throw new InvalidElementException(HttpErrorMessages.INVALID_PERSON_REASON_NULL);
         }
-        String firstname = personToBeValidated.getFirstname();
-        String lastname = personToBeValidated.getLastname();
+        String firstname = personToBeValidated.getFirstnames();
+        String lastname = personToBeValidated.getLastnames();
         int age = personToBeValidated.getAge();
 
         if(isUpdate) {
