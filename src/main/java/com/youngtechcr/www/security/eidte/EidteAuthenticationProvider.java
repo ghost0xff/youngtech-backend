@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -25,11 +28,17 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.util.Assert;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EidteAuthenticationProvider implements AuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(EidteAuthenticationProvider.class);
+    private static final OAuth2TokenType ID_TOKEN_TOKEN_TYPE = new OAuth2TokenType(OidcParameterNames.ID_TOKEN);
+    private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
     private final OAuth2AuthorizationService authorizationService;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
     private final UserService userService;
@@ -49,68 +58,153 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-       EidteAuthentication eidteAuthentication = (EidteAuthentication) authentication;
-       RegisteredClient registeredClient = eidteAuthentication.getRegisteredClient();
-       Map<String, Object> claims = eidteAuthentication.getTokenAttributes();
-       OidcIdToken eidteToken = eidteAuthentication.getToken();
-       IdentityProvider identityProvider = eidteAuthentication.getIdentityProvider();
+        EidteAuthentication eidteAuthentication = (EidteAuthentication) authentication;
+        RegisteredClient registeredClient = eidteAuthentication.getRegisteredClient();
+        Map<String, Object> claims = eidteAuthentication.getTokenAttributes();
+        OidcIdToken eidteToken = eidteAuthentication.getToken();
+        IdentityProvider identityProvider = eidteAuthentication.getIdentityProvider();
 
-//       AnonymousAuthenticationToken principal =
-//               (AnonymousAuthenticationToken) eidteAuthentication.getPrincipal();
-
-       OAuth2ClientAuthenticationToken clientAuthToken =
-               getAuthenticatedClientElseThrowInvalidClient(eidteAuthentication);
-        logger.trace("clientAuthToken -> " +  clientAuthToken);
+        OAuth2ClientAuthenticationToken clientAuthToken =
+                getAuthenticatedClientElseThrowInvalidClient(eidteAuthentication);
+        logger.trace("clientAuthToken -> " + clientAuthToken);
 
 
-//       // ------------------------------------------------------
-//       //  #1 Register user here if not already :v
-//       // ------------------------------------------------------
-       User user = userService.createFromEidteExchange(eidteToken, identityProvider);
-       EidteAuthenticationPrincipal authPrincipal =
-               new EidteAuthenticationPrincipal(user);
-//
-//
-       // #2 Generate tokens
-       OAuth2TokenContext accessTokenContext = contextFromParams (
-               OAuth2TokenType.ACCESS_TOKEN, eidteAuthentication, registeredClient, clientAuthToken
-       );
-        OAuth2TokenContext refreshTokenContext = contextFromParams (
-                OAuth2TokenType.REFRESH_TOKEN, eidteAuthentication, registeredClient, clientAuthToken
-        );
-        OAuth2AccessToken accessToken = (OAuth2AccessToken) tokenFromContext(accessTokenContext);
-        OAuth2RefreshToken refreshToken = (OAuth2RefreshToken) tokenFromContext(refreshTokenContext);
+        // ------------------------------------------------------
+        //  #1 Register user here if not already :v
+        // ------------------------------------------------------
+        User user = userService.createFromEidteExchange(eidteToken, identityProvider);
+        EidteAuthenticationPrincipal authPrincipal =
+                new EidteAuthenticationPrincipal(user);
 
 
+        // -----------------------------------------------
+        // #2 Prepare parameters for building tokens and authorization
+        // -----------------------------------------------
+        Set<String> authorizedScopes = user.getRoles()
+                .stream().map(role -> role.getName()).collect(Collectors.toSet());
 
+        DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
+                .registeredClient(registeredClient)
+                .principal(authPrincipal)
+                .authorizationServerContext(AuthorizationServerContextHolder.getContext())
+                .authorizedScopes(authorizedScopes)
+                .authorizationGrantType(EidteParameters.GRANT_TYPE_INSTANCE)
+                .authorizationGrant(eidteAuthentication);
 
-        // #3 Build and save authorization
-
-        OAuth2Authorization authorizationBuilder = OAuth2Authorization
+        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization
                 .withRegisteredClient(registeredClient)
                 .principalName(String.valueOf(authPrincipal.getName()))
                 .authorizationGrantType(EidteParameters.GRANT_TYPE_INSTANCE)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .authorizedScopes(authorizedScopes)
                 .attribute(Principal.class.getName(), authPrincipal)
                 // ^^^ this mf attribute up here is important as hell,
                 // had to deal with a NullPointerException because of this crap.
                 // guess I just need to re-write everything in Rust
-                .build();
+                ;
 
-        this.authorizationService.save(authorizationBuilder);
-        logger.info("yeeeeeiii we authenticated a user!!!!");
+        // -----------------------------------------------
+        // #3 Access Token
+        // -----------------------------------------------
+        OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
+        OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);
+        if (generatedAccessToken == null) {
+            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
+                    "The token generator failed to generate the access token.", ERROR_URI);
+            throw new OAuth2AuthenticationException(error);
+        }
+        if (this.logger.isTraceEnabled()) this.logger.trace("Generated access token");
+
+        OAuth2AccessToken accessToken = new OAuth2AccessToken(
+                OAuth2AccessToken.TokenType.BEARER, generatedAccessToken.getTokenValue(),
+                generatedAccessToken.getIssuedAt(), generatedAccessToken.getExpiresAt(),
+                tokenContext.getAuthorizedScopes());
+        if (generatedAccessToken instanceof ClaimAccessor) {
+            authorizationBuilder.token(accessToken, (metadata) -> {
+                metadata.put(
+                        OAuth2Authorization.Token.CLAIMS_METADATA_NAME,
+                        ((ClaimAccessor) generatedAccessToken).getClaims()
+                );
+                metadata.put(
+                        OAuth2Authorization.Token.INVALIDATED_METADATA_NAME, false);
+            });
+        } else {
+            authorizationBuilder.accessToken(accessToken);
+        }
+
+        // -----------------------------------------------
+        // #3 Refresh Token
+        // -----------------------------------------------
+        tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
+        OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
+        if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
+            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
+                    "The token generator failed to generate the refresh token.", ERROR_URI);
+            throw new OAuth2AuthenticationException(error);
+        }
+        if (this.logger.isTraceEnabled()) this.logger.trace("Generated access token");
+        OAuth2RefreshToken refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
+        authorizationBuilder.refreshToken(refreshToken);
+
+
+        // -----------------------------------------------
+        // #3 Id Token
+        // -----------------------------------------------
+        OidcIdToken idToken;
+        if (registeredClient.getScopes().contains(OidcScopes.OPENID)) {
+            tokenContext = tokenContextBuilder
+                    .tokenType(ID_TOKEN_TOKEN_TYPE)
+                    .authorization(authorizationBuilder.build())
+                    // ^^^^^ ID token customizer may need access to
+                    // the access token and/or refresh token
+                    .build();
+            OAuth2Token generatedIdToken = this.tokenGenerator.generate(tokenContext);
+            if (!(generatedIdToken instanceof Jwt)) {
+                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
+                        "The token generator failed to generate the ID token.", ERROR_URI);
+                throw new OAuth2AuthenticationException(error);
+            }
+            if (this.logger.isTraceEnabled()) this.logger.trace("Generated id token");
+
+            idToken = new OidcIdToken(generatedIdToken.getTokenValue(), generatedIdToken.getIssuedAt(),
+                    generatedIdToken.getExpiresAt(), ((Jwt) generatedIdToken).getClaims());
+            authorizationBuilder.token(idToken, (metadata) ->
+                    metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, idToken.getClaims()));
+
+        } else {
+            idToken = null;
+        }
+
+        // -----------------------------------------------
+        // #4 Savbe authorization object
+        // -----------------------------------------------
+        OAuth2Authorization authorization = authorizationBuilder.build();
+        this.authorizationService.save(authorization);
+        if (this.logger.isTraceEnabled()) {
+            this.logger.trace("Saved authorization");
+            this.logger.trace("yeeeeeiii we authenticated a user!!!!");
+        }
+
+        // -----------------------------------------------
+        // #5 Add id_token to additionalParameters so it gets sent in the response
+        // -----------------------------------------------
+        Map<String, Object> additionalParameters = Collections.emptyMap();
+        if(idToken != null) {
+            additionalParameters = new HashMap<>();
+            additionalParameters.put(OidcParameterNames.ID_TOKEN, idToken.getTokenValue());
+        }
+        if (this.logger.isTraceEnabled()) this.logger.trace("Authenticated token request");
         return new OAuth2AccessTokenAuthenticationToken(
                 registeredClient,
                 clientAuthToken,
                 accessToken,
-                refreshToken
+                refreshToken,
+                additionalParameters
         );
 
 //         Generatedtokens ^^^^
 //        generate access_token() -> done
 //        generate refresh_token() -> done
-//        generate id_token() -> how ???
+//        generate id_token() -> done
     }
 
     @Override
@@ -129,39 +223,10 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
                 .tokenType(tokenType)
                 .authorizationGrantType(EidteParameters.GRANT_TYPE_INSTANCE)
                 .authorizationGrant(representationOfAuthzGrant)
+//                .authorizedScopes()
                 .registeredClient(registeredClient)
                 .principal(clientPrincipal)
                 .build();
-    }
-
-
-    public OAuth2Token tokenFromContext(OAuth2TokenContext context) {
-        OAuth2Token generatedToken = this.tokenGenerator.generate(context);
-        if(generatedToken == null) {
-            OAuth2Error error = new OAuth2Error(
-                    OAuth2ErrorCodes.SERVER_ERROR,
-                    HttpErrorMessages.FAILED_GENERATE_TOKEN,
-                    null);
-            throw new OAuth2AuthenticationException(error);
-        }
-       OAuth2TokenType tokenType = context.getTokenType();
-       OAuth2Token actualToken = null;
-       if(tokenType.equals(OAuth2TokenType.ACCESS_TOKEN)) {
-            actualToken = new OAuth2AccessToken(
-                    OAuth2AccessToken.TokenType.BEARER,
-                    generatedToken.getTokenValue(),
-                    generatedToken.getIssuedAt(),
-                    generatedToken.getExpiresAt()
-            );
-       }
-       else if (tokenType.equals(OAuth2TokenType.REFRESH_TOKEN)) {
-           actualToken = new OAuth2RefreshToken(
-                   generatedToken.getTokenValue(),
-                   generatedToken.getIssuedAt(),
-                   generatedToken.getExpiresAt()
-           );
-       }
-       return actualToken;
     }
 
 

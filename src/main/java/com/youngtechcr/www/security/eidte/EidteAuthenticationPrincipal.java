@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
+import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class EidteAuthenticationPrincipal implements Authentication {
     private Collection<? extends GrantedAuthority> authorities;
     private boolean authenticated = false;
 
-    public EidteAuthenticationPrincipal() {}
+    public EidteAuthenticationPrincipal() { }
 
     public EidteAuthenticationPrincipal(
             User user,

@@ -109,7 +109,6 @@ public class UserService implements UserDetailsService {
                            .idpExternalIdentifier(externalIdentifier)
                            .signedUpAt(LocalDateTime.now())
                            .lastUpdateAt(LocalDateTime.now())
-                           .lastAccessTokenRequest(LocalDateTime.now())
                            .email(token.getEmail())
                            .roles(basicRoles);
 

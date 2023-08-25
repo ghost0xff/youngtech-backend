@@ -14,6 +14,7 @@ import org.springframework.util.Assert;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 public class EidteAuthentication extends AbstractOAuth2TokenAuthenticationToken<OidcIdToken> {
     private OidcIdToken token;
@@ -21,7 +22,6 @@ public class EidteAuthentication extends AbstractOAuth2TokenAuthenticationToken<
     private IdentityProvider identityProvider;
     private RegisteredClient registeredClient;
     private OAuth2ClientAuthenticationToken clientPrincipal;
-
     protected EidteAuthentication(
             OidcIdToken token,
             OAuth2ClientAuthenticationToken clientPrincipal,
@@ -33,6 +33,7 @@ public class EidteAuthentication extends AbstractOAuth2TokenAuthenticationToken<
         this.clientPrincipal = clientPrincipal;
         this.identityProvider = identityProvider;
         this.registeredClient = registeredClient;
+
     }
 
     @Override

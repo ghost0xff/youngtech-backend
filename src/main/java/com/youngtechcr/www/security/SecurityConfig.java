@@ -14,6 +14,7 @@ import com.youngtechcr.www.security.crypto.CryptoProps;
 import com.youngtechcr.www.security.eidte.*;
 import com.youngtechcr.www.security.idp.IdentityProviderRepository;
 import com.youngtechcr.www.security.user.UserService;
+import com.youngtechcr.www.utils.DsaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -25,14 +26,23 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -42,6 +52,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -126,18 +137,48 @@ public class SecurityConfig {
                                 .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf.disable())
-                .oauth2ResourceServer(oauth2 ->  oauth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(
+//                        jwt -> {
+//                            jwt.authenticationManager(null);
+//                            jwt.jwtAuthenticationConverter(null);
+//                            jwt.jwkSetUri(null);
+//                        }
+                        Customizer.withDefaults()
+                ))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .build();
     }
 
-//    @Bean
-//    public EidteVerifier eidteVerifier() {
-//        return new EidteVerifierManager();
-//    }
 
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+//        grantedAuthoritiesConverter.setAuthoritiesClaimName(CustomClaims.ROLES);
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
+    }
+
+
+//    @Bean
+//    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+//        return context -> {
+//            JwtClaimsSet.Builder claims = context.getClaims();
+//            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
+//                // Customize headers/claims for access_token
+//               Set<String> roles = context.getAuthorizedScopes();
+//               claims.claims(claimMap -> {
+//                   claimMap.put(CustomClaims.ROLES, DsaUtils.spaceSeparated(roles));
+//               });
+//            } else if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)) {
+//                // Customize headers/claims for id_token
+//
+//            }
+//        };
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

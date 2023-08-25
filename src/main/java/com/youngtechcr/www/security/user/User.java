@@ -40,8 +40,6 @@ public class User {
     private LocalDateTime signedUpAt;
     @Column(name = "last_update_at")
     private LocalDateTime lastUpdateAt;
-    @Column(name = "last_access_token_request")
-    private LocalDateTime lastAccessTokenRequest;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -67,7 +65,6 @@ public class User {
             String email,
             LocalDateTime signedUpAt,
             LocalDateTime lastUpdateAt,
-            LocalDateTime lastAccessTokenRequest,
             List<Role> roles,
             Person person,
             Profile profile
@@ -78,7 +75,6 @@ public class User {
         this.email = email;
         this.signedUpAt = signedUpAt;
         this.lastUpdateAt = lastUpdateAt;
-        this.lastAccessTokenRequest = lastAccessTokenRequest;
         this.roles = roles;
         this.person = person;
         this.profile = profile;
@@ -99,10 +95,6 @@ public class User {
 
     public LocalDateTime getSignedUpAt() {
         return signedUpAt;
-    }
-
-    public LocalDateTime getLastAccessTokenRequest() {
-        return lastAccessTokenRequest;
     }
 
     public LocalDateTime getLastUpdateAt() {
@@ -136,12 +128,22 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(identityProvider, user.identityProvider) && Objects.equals(idpExternalIdentifier, user.idpExternalIdentifier) && Objects.equals(email, user.email) && Objects.equals(signedUpAt, user.signedUpAt) && Objects.equals(lastAccessTokenRequest, user.lastAccessTokenRequest) && Objects.equals(lastUpdateAt, user.lastUpdateAt) && Objects.equals(roles, user.roles) && Objects.equals(person, user.person) && Objects.equals(profile, user.profile);
+        return Objects.equals(id, user.id) && Objects.equals(identityProvider, user.identityProvider) && Objects.equals(idpExternalIdentifier, user.idpExternalIdentifier) && Objects.equals(email, user.email) && Objects.equals(signedUpAt, user.signedUpAt)  && Objects.equals(lastUpdateAt, user.lastUpdateAt) && Objects.equals(roles, user.roles) && Objects.equals(person, user.person) && Objects.equals(profile, user.profile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, identityProvider, idpExternalIdentifier, email, signedUpAt, lastAccessTokenRequest, lastUpdateAt, roles, person, profile);
+        return Objects.hash(
+                id,
+                identityProvider,
+                idpExternalIdentifier,
+                email,
+                signedUpAt,
+                lastUpdateAt,
+                roles,
+                person,
+                profile
+        );
     }
 
     public static Builder builder() {
@@ -157,7 +159,6 @@ public class User {
                 ", idpExternalIdentifier='" + idpExternalIdentifier + '\'' +
                 ", email='" + email + '\'' +
                 ", signedUpAt=" + signedUpAt +
-                ", lastLoginAt=" + lastAccessTokenRequest +
                 ", lastUpdateAt=" + lastUpdateAt +
 //                ", roles=" + roles +
                 ", person=" + person +
@@ -175,7 +176,6 @@ public class User {
        private String email;
        private LocalDateTime signedUpAt;
        private LocalDateTime lastUpdateAt;
-       private LocalDateTime lastAccessTokenRequest;
        private List<Role> roles;
        private Person person;
        private Profile profile;
@@ -208,11 +208,6 @@ public class User {
 
       public Builder lastUpdateAt(LocalDateTime lastUpdateAt) {
            this.lastUpdateAt = lastUpdateAt;
-           return this;
-      }
-
-      public Builder lastAccessTokenRequest(LocalDateTime lastAccessTokenRequest) {
-           this.lastAccessTokenRequest = lastAccessTokenRequest;
            return this;
       }
 
@@ -252,7 +247,6 @@ public class User {
           Assert.notNull(this.lastUpdateAt, "lastupdateAt can't be null");
           Assert.notNull(this.roles, "roles provider can't be null");
 
-          // THIS CAN ACTUAlly be null -> lastAccessTokenRequest
           return new User (
              this.id,
              this.identityProvider,
@@ -260,7 +254,6 @@ public class User {
              this.email,
              this.signedUpAt ,
              this.lastUpdateAt ,
-             this.lastAccessTokenRequest,
              this.roles,
              this.person,
              this.profile

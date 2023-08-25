@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.AbstractAuditable_;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -33,13 +35,12 @@ public class QuickTestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> viewClientRepoOperations() {
-
-        List<RegisteredClient> registeredClients = this.clientRepo.findAll();
-
-        return ResponseEntity.ok(registeredClients);
+    public ResponseEntity<?> viewClientRepoOperations(
+            Principal principal
+    ) {
+        return ResponseEntity.ok(principal);
     }
-
+//
 //    @PostMapping
 //    public ResponseEntity<?> registerWebClient() {
 //        String id = UUID.randomUUID().toString();
@@ -55,7 +56,15 @@ public class QuickTestController {
 //               .clientName("YoungTech's E-commerce Web Application")
 //               .clientId("young-tech-web")
 //               .clientSecret("{noop}secret")
-//               .scope("all")
+//               .scopes( scopes -> {
+//                   scopes.add(OidcScopes.OPENID);
+//                   scopes.add(OidcScopes.PROFILE);
+//                   scopes.add(OidcScopes.EMAIL);
+//                   scopes.add(OidcScopes.ADDRESS);
+//                   scopes.add(OidcScopes.ADDRESS);
+//                   scopes.add(OidcScopes.PHONE);
+//                   scopes.add("all");
+//               })
 //               .tokenSettings(tokenSettings)
 //               .clientAuthenticationMethods( methods -> {
 //                   methods.add(ClientAuthenticationMethod.CLIENT_SECRET_POST);
