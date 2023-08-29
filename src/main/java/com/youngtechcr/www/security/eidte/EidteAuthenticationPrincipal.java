@@ -95,7 +95,7 @@ public class EidteAuthenticationPrincipal implements Authentication {
 
     @Override
     public String getName() {
-        return this.name;
+        return String.valueOf(this.id);
     }
 
     public Integer getId() {

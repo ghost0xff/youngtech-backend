@@ -4,9 +4,7 @@ public enum RoleOption {
 
     ADMIN("ROLE_ADMIN"),
     EMPLOYEE("ROLE_EMPLOYEE"),
-    CUSTOMER("ROLE_CUSTOMER"),
-    USER("ROLE_USER"),
-    ;
+    CUSTOMER("ROLE_CUSTOMER");
 
     private String identifier;
     RoleOption(String identifier) {

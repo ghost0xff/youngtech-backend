@@ -9,7 +9,7 @@ public class UserDtoToUserConverter implements Converter<UserDto, User> {
     public User convert(UserDto source) {
         return new User(
                 source.email(),
-                source.roleList()
+                source.roles()
         );
     }
 }

@@ -2,6 +2,7 @@ package com.youngtechcr.www.customer;
 
 import com.youngtechcr.www.security.user.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomerService {
@@ -13,8 +14,8 @@ public class CustomerService {
     }
 
 
-    public Customer createCustomerFromUser(User user) {
-//        Customer customerToBePersisted = new
-        return null;
+    @Transactional
+    public Customer create(Customer customer) {
+        return customerRepository.save(customer);
     }
 }

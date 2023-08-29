@@ -32,10 +32,11 @@ public class Person  {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthdate;
+
     @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
-    private List<Order> orderList;
+    private List<Order> orders;
     @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
-    private List<Sale> saleList;
+    private List<Sale> sales;
 
     public Person() { }
 
@@ -46,8 +47,8 @@ public class Person  {
             String lastnames,
             int age,
             LocalDate birthdate,
-            List<Order> orderList,
-            List<Sale> saleList
+            List<Order> orders,
+            List<Sale> sales
     ) {
         this.id = id;
         this.user = user;
@@ -55,8 +56,8 @@ public class Person  {
         this.lastnames = lastnames;
         this.age = age;
         this.birthdate = birthdate;
-        this.orderList = orderList;
-        this.saleList = saleList;
+        this.orders = orders;
+        this.sales = sales;
     }
 
     public Person(User user) {
@@ -91,13 +92,13 @@ public class Person  {
 
 
     @JsonManagedReference(value = "person-order")
-    public List<Order> getOrderList() {
-        return orderList;
+    public List<Order> getOrders() {
+        return orders;
     }
 
     @JsonManagedReference(value = "person-sale")
-    public List<Sale> getSaleList() {
-        return saleList;
+    public List<Sale> getSales() {
+        return sales;
     }
 
 
@@ -113,12 +114,12 @@ public class Person  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return age == person.age && Objects.equals(id, person.id) && Objects.equals(user, person.user) && Objects.equals(firstnames, person.firstnames) && Objects.equals(lastnames, person.lastnames) && Objects.equals(birthdate, person.birthdate) && Objects.equals(orderList, person.orderList) && Objects.equals(saleList, person.saleList);
+        return age == person.age && Objects.equals(id, person.id) && Objects.equals(user, person.user) && Objects.equals(firstnames, person.firstnames) && Objects.equals(lastnames, person.lastnames) && Objects.equals(birthdate, person.birthdate) && Objects.equals(orders, person.orders) && Objects.equals(sales, person.sales);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, firstnames, lastnames, age, birthdate, orderList, saleList);
+        return Objects.hash(id, user, firstnames, lastnames, age, birthdate, orders, sales);
     }
 
     @Override

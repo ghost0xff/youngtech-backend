@@ -13,8 +13,8 @@ import com.youngtechcr.www.security.crypto.CryptoUtils;
 import com.youngtechcr.www.security.crypto.CryptoProps;
 import com.youngtechcr.www.security.eidte.*;
 import com.youngtechcr.www.security.idp.IdentityProviderRepository;
+import com.youngtechcr.www.security.oidc.OidcUserInfoService;
 import com.youngtechcr.www.security.user.UserService;
-import com.youngtechcr.www.utils.DsaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -23,27 +23,34 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
-import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -52,11 +59,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -64,15 +72,21 @@ public class SecurityConfig {
     private final CryptoProps cryptoProps;
     private final IdentityProviderRepository idpRepository;
     private final UserService userService;
+    private final OidcUserInfoService userInfoService;
 
     public SecurityConfig(
             ApiProperties apiProperties,
             CryptoProps cryptoProps,
-            IdentityProviderRepository idpRepository, UserService userService) {
-        this.apiProperties = apiProperties;
+            IdentityProviderRepository idpRepository,
+            UserService userService,
+            OidcUserInfoService oidcUserInfoService
+//            ,
+//            SessionRegistry sessionRegistry
+    ) { this.apiProperties = apiProperties;
         this.cryptoProps = cryptoProps;
         this.idpRepository = idpRepository;
         this.userService = userService;
+        this.userInfoService = oidcUserInfoService;
     }
 
     @Bean
@@ -83,14 +97,21 @@ public class SecurityConfig {
             OAuth2TokenGenerator<?> tokenGenerator,
             RegisteredClientRepository registeredClientRepository
     ) throws Exception {
-//       OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
 
-//       http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+        Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
+            OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
+            JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
+            int id = Integer.parseInt(principal.getToken().getSubject());
+            OidcUserInfo info = userInfoService.loadUserById(id);
+            return info;
+        };
+
         authorizationServerConfigurer
-                .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
+//                .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
+                .oidc(oidc -> oidc
+                        .userInfoEndpoint( (userInfo) -> userInfo.userInfoMapper(userInfoMapper)))
                 .tokenEndpoint( tokenEndpoint ->
                         tokenEndpoint
                                 .accessTokenRequestConverters( converters -> {
@@ -104,14 +125,16 @@ public class SecurityConfig {
                                            authorizationService,
                                            tokenGenerator,
                                            this.userService
+//                                           ,
+//                                           sessionRegistry()
                                    ));
                                 })
                 );
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
         http
                 .securityMatcher(endpointsMatcher)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf( csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
 //                .csrf( csrf -> csrf.disable())
 //                 Accept access tokens for User InfZZo and/or Client Registration
@@ -134,9 +157,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET,"/products").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/test").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/test").permitAll()
+//                                .requestMatchers(HttpMethod.GET, "/person/**").hasRole("CUSTOMER")
                                 .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
 //                        jwt -> {
 //                            jwt.authenticationManager(null);
@@ -148,6 +171,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .csrf(csrf -> csrf.disable())
                 .build();
     }
 
@@ -162,33 +186,51 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-
-//    @Bean
-//    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
-//        return context -> {
-//            JwtClaimsSet.Builder claims = context.getClaims();
-//            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
-//                // Customize headers/claims for access_token
-//               Set<String> roles = context.getAuthorizedScopes();
-//               claims.claims(claimMap -> {
-//                   claimMap.put(CustomClaims.ROLES, DsaUtils.spaceSeparated(roles));
-//               });
-//            } else if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)) {
-//                // Customize headers/claims for id_token
-//
-//            }
-//        };
-//    }
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-//        corsConfiguration.setAllowedOrigins(Arrays.asList(this.apiProperties.webClient()));
-        corsConfiguration.addAllowedOrigin(this.apiProperties.webClient());
-        corsConfiguration.setAllowedMethods(HttpUtils.getCommonHttpMethods());
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
+        return context -> {
+            logger.trace("HELLO FROM TOKEN CUSTOMIZER &$#*(& %*$_()#&%($#)&%(*)#%*()");
+            JwtClaimsSet.Builder claims = context.getClaims();
+            claims.claim("random","this is a random test claims");
+            if(
+                    context.getAuthorizationGrantType().getValue()
+                    .equals(EidteParameters.GRANT_TYPE_VALUE)
+                    &&
+                    context.getTokenType().getValue()
+                    .equals(OidcParameterNames.ID_TOKEN)
+            ){
+                SessionInformation sessionInformation = context.get(SessionInformation.class);
+                if(sessionInformation != null) {
+                    claims.claim("sid", sessionInformation.getSessionId());
+                    claims.build();
+                } else {
+                    OAuth2Error error = new OAuth2Error(
+                            OAuth2ErrorCodes.SERVER_ERROR,
+                            "Failed to set sid claim to id_token from and EIDTE exchange",
+                            null
+                    );
+                    throw new OAuth2AuthenticationException(error);
+                }
+            } else {
+                OAuth2Error error = new OAuth2Error(
+                        OAuth2ErrorCodes.SERVER_ERROR,
+                        "Failed to set sid claim to id_token from and EIDTE exchange",
+                        null
+                );
+                throw new OAuth2AuthenticationException(error);
+            }
+        };
     }
 
     @Bean
@@ -200,6 +242,17 @@ public class SecurityConfig {
                 jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.setAllowedOrigins(Arrays.asList(this.apiProperties.webClient()));
+        corsConfiguration.addAllowedOrigin(this.apiProperties.webClient());
+        corsConfiguration.setAllowedMethods(HttpUtils.getCommonHttpMethods());
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // TODO" CHANGE THIS BEFIRE DEPLOYING TO PRODUCTION
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
+    }
 
      @Bean
      public JWKSource<SecurityContext> jwkSource() {

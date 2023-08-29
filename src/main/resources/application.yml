@@ -42,6 +42,7 @@ logging:
         web: TRACE
 
 
+
 api:
   version: 1
   base-url: /api/v1

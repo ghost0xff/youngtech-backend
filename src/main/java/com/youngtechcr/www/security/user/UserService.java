@@ -1,5 +1,6 @@
 package com.youngtechcr.www.security.user;
 
+import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.customer.CustomerService;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
@@ -19,9 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -60,8 +63,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void addRoles(User user, RoleOption... roleOptions) {
-        List<Role> rolesToBeAdded = roleService.mapOptionsToRoles(roleOptions);
-        List<Role> currentRoles = user.getRoles();
+        Set<Role> rolesToBeAdded = roleService.mapOptionsToRoles(roleOptions);
+        Set<Role> currentRoles = user.getRoles();
         currentRoles.addAll(rolesToBeAdded);
         userRepository.save(user);
         return;
@@ -86,6 +89,10 @@ public class UserService implements UserDetailsService {
     }
 
 
+    /*
+    * Add EMAIL only if id_token.emailVerified is TRUE
+    * should have a flow that verifies user email
+    * */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public User createFromEidteExchange(
             OidcIdToken token,
@@ -97,9 +104,8 @@ public class UserService implements UserDetailsService {
                .findByIdpExternalIdentifier(externalIdentifier)
                .orElseGet( () -> {
 
-                   // #1 Get some basic roles for the mf, just
-                   List<Role> basicRoles = roleService.mapOptionsToRoles(
-                           RoleOption.USER,
+                   // #1 Get some basic roles for the mf user
+                   Set<Role> basicRoles = roleService.mapOptionsToRoles(
                            RoleOption.CUSTOMER
                    );
                    // #2 Create user object with all desired attributes
@@ -110,13 +116,14 @@ public class UserService implements UserDetailsService {
                            .signedUpAt(LocalDateTime.now())
                            .lastUpdateAt(LocalDateTime.now())
                            .email(token.getEmail())
+                           .emailVerified(token.getEmailVerified())
                            .roles(basicRoles);
 
                    // #3 persist some user info
                   User createdUser = userRepository.save(userBuilder.build());
 
                    // #4 Build person based on claims and recently created user
-                   var newPerson = Person
+                   var person = Person
                            .builder()
                            .user(createdUser)
                            .firstnames(token.getGivenName())
@@ -124,13 +131,22 @@ public class UserService implements UserDetailsService {
                            .build();
 
                    // #5 Construct profile using image provided by the identity provider
-                   var newProfile = Profile
+                   var profile = Profile
                            .builder()
                            .user(createdUser)
                            .build();
 
-                   this.personService.create(createdUser);
-                   this.profileService.create(createdUser);
+                   // #6 Persist data up to this moment
+                   this.personService.create(person);
+                   this.profileService.create(profile);
+
+                   // #6 Build customer based on previously created objs and save
+                   var customer =  new Customer();
+                   customer.setCreatedAt(LocalDateTime.now());
+                   customer.setUpdatedAt(LocalDateTime.now());
+                   customer.setPerson(person);
+                   customerService.create(customer);
+
                    return createdUser;
                });
     }

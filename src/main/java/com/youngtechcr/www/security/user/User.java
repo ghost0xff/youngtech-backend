@@ -12,10 +12,7 @@ import jakarta.persistence.*;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "tbl_user")
@@ -36,6 +33,9 @@ public class User {
 
 
     private String email;
+    @Column(name = "email_verified")
+    private boolean emailVerified;
+
     @Column(name = "signed_up_at")
     private LocalDateTime signedUpAt;
     @Column(name = "last_update_at")
@@ -48,7 +48,7 @@ public class User {
             joinColumns = @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "fk_id_role", referencedColumnName = "id_role")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Person person;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -57,15 +57,19 @@ public class User {
 
     public User() {
     }
+    public User(Integer id){
+        this.id = id;
+    }
 
     private User(
             Integer id,
             IdentityProvider identityProvider,
             String idpExternalIdentifier,
             String email,
+            boolean emailVerified,
             LocalDateTime signedUpAt,
             LocalDateTime lastUpdateAt,
-            List<Role> roles,
+            Set<Role> roles,
             Person person,
             Profile profile
     ) {
@@ -82,7 +86,7 @@ public class User {
 
     public User(String email, Collection<Role> roles) {
         this.email = email;
-        this.roles = (List<Role>) roles;
+        this.roles = (Set<Role>) roles;
     }
 
     public Integer getId() {
@@ -101,7 +105,7 @@ public class User {
         return lastUpdateAt;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
@@ -122,34 +126,30 @@ public class User {
         return identityProvider;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(identityProvider, user.identityProvider) && Objects.equals(idpExternalIdentifier, user.idpExternalIdentifier) && Objects.equals(email, user.email) && Objects.equals(signedUpAt, user.signedUpAt)  && Objects.equals(lastUpdateAt, user.lastUpdateAt) && Objects.equals(roles, user.roles) && Objects.equals(person, user.person) && Objects.equals(profile, user.profile);
+    public String getIdpExternalIdentifier() {
+        return idpExternalIdentifier;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                id,
-                identityProvider,
-                idpExternalIdentifier,
-                email,
-                signedUpAt,
-                lastUpdateAt,
-                roles,
-                person,
-                profile
-        );
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return emailVerified == user.emailVerified && Objects.equals(id, user.id) && Objects.equals(identityProvider, user.identityProvider) && Objects.equals(idpExternalIdentifier, user.idpExternalIdentifier) && Objects.equals(email, user.email) && Objects.equals(signedUpAt, user.signedUpAt) && Objects.equals(lastUpdateAt, user.lastUpdateAt) && Objects.equals(roles, user.roles) && Objects.equals(person, user.person) && Objects.equals(profile, user.profile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, identityProvider, idpExternalIdentifier, email, emailVerified, signedUpAt, lastUpdateAt, roles, person, profile);
+    }
 
     @Override
     public String toString() {
@@ -158,6 +158,7 @@ public class User {
                 ", identityProvider=" + identityProvider +
                 ", idpExternalIdentifier='" + idpExternalIdentifier + '\'' +
                 ", email='" + email + '\'' +
+                ", emailVerified='" + emailVerified + '\'' +
                 ", signedUpAt=" + signedUpAt +
                 ", lastUpdateAt=" + lastUpdateAt +
 //                ", roles=" + roles +
@@ -174,9 +175,10 @@ public class User {
        private IdentityProvider identityProvider;
        private String idpExternalIdentifier; // commonly the "sub" claim in an id_token
        private String email;
+       private boolean emailVerified;
        private LocalDateTime signedUpAt;
        private LocalDateTime lastUpdateAt;
-       private List<Role> roles;
+       private Set<Role> roles;
        private Person person;
        private Profile profile;
 
@@ -200,6 +202,10 @@ public class User {
            this.email = email;
            return this;
       }
+      public Builder emailVerified(boolean emailVerified) {
+           this.emailVerified = emailVerified;
+           return this;
+       }
 
       public Builder signedUpAt(LocalDateTime signedUpAt) {
            this.signedUpAt = signedUpAt;
@@ -213,7 +219,7 @@ public class User {
 
       public Builder role(Role role) {
            if(this.roles == null) {
-               this.roles = new ArrayList<>();
+               this.roles = new HashSet<>();
            }
            this.roles.add(role);
            return this;
@@ -222,7 +228,7 @@ public class User {
       /* TODO: Implement this but with Consumer<>
             obj so it's nicier to set roles
       */
-      public Builder roles(List<Role> roles) {
+      public Builder roles(Set<Role> roles) {
            this.roles = roles;
            return this;
       }
@@ -252,6 +258,7 @@ public class User {
              this.identityProvider,
              this.idpExternalIdentifier,
              this.email,
+             this.emailVerified,
              this.signedUpAt ,
              this.lastUpdateAt ,
              this.roles,

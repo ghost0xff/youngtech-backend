@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class RoleService {
@@ -24,7 +25,7 @@ public class RoleService {
     public boolean doThisRolesExist(List<Role> roleList) {
         return roleList
                 .stream()
-                .allMatch(role -> this.roleRepository.existsById(role.getRoleId()));
+                .allMatch(role -> this.roleRepository.existsById(role.getId()));
     }
 
     @Transactional(readOnly = true)
@@ -42,8 +43,8 @@ public class RoleService {
 
 
     @Transactional(readOnly = true)
-    public List<Role> mapOptionsToRoles(RoleOption... roleOptions) {
-        List<Role> existingRoles = new ArrayList<>();
+    public Set<Role> mapOptionsToRoles(RoleOption... roleOptions) {
+        Set<Role> existingRoles = new HashSet<>();
         for (int i = 0; i < roleOptions.length; i++) {
             var currentOption = roleOptions[i];
             Role toBeAdded = findRoleByName(currentOption.getIdentifier());
