@@ -46,20 +46,20 @@ public class ProductImageService {
 
     @Transactional(readOnly = true)
     public List<ProductImage> getProductImagesMetadataById(Integer productId) {
-        return productService.findProductById(productId).getImageList();
+        return productService.findById(productId).getImages();
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public ProductImage uploadProductImageByProduct(
         Integer productId, MultipartFile image, @Nullable boolean main) {
-        Product relatedProduct = productService.findProductById(productId);
+        Product relatedProduct = productService.findById(productId);
         if(main && productService.hasMainImage(relatedProduct)) {
            throw new AlreadyExistsException(
                    HttpErrorMessages.CANT_CREATE_DUPLICATE_MAIN_IMAGE
            );
         }
         ProductImage storedImage = imageStorageService.store(relatedProduct, image);
-        storedImage.setIsMain(main);
+        storedImage.main(main);
         ProductImage modifiedImage = productImageRepo.save(storedImage);
         log.info("Modified recently stored file, from this -> " + storedImage + " ,to this -> " + modifiedImage);
         return modifiedImage;
@@ -83,16 +83,16 @@ public class ProductImageService {
 
     @Transactional(readOnly = true)
     public DualNameFileCarrier downloadMainImageByProduct(Integer productId) {
-        var productToBeInspected = productService.findProductById(productId);
+        var productToBeInspected = productService.findById(productId);
         if(productService.hasMainImage(productToBeInspected)) {
-            ProductImage mainImage = this.obtainMainImage(productToBeInspected);
-            String originaImageName = mainImage.getOriginalName();
-            MediaType imageMediaType = MediaType.parseMediaType(mainImage.getMimeType());
+            ProductImage mainImg = this.obtainMainImage(productToBeInspected);
+            String originalImgName = mainImg.getOriginalName();
+            MediaType imageMediaType = MediaType.parseMediaType(mainImg.getMimeType());
             Resource obtainedImageResource = this.
-                    imageStorageService.obtain(mainImage);
-            log.debug("Downloaded image with metadata -> " + mainImage);
+                    imageStorageService.obtain(mainImg);
+            log.debug("Downloaded image with metadata -> " + mainImg);
             return new DualNameFileCarrier(obtainedImageResource,
-                    originaImageName, imageMediaType);
+                    originalImgName, imageMediaType);
         }
         throw new NoDataFoundException(HttpErrorMessages.NO_MAIN_ELEMENT_WAS_FOUND);
     }
@@ -112,9 +112,9 @@ public class ProductImageService {
 
     public ProductImage obtainMainImage(Product product) {
         return product
-                .getImageList()
+                .getImages()
                 .stream()
-                .filter( image -> image.isMain())
+                .filter( image -> image.main())
                 .findAny()
                 .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages
                         .NO_MAIN_ELEMENT_WAS_FOUND));

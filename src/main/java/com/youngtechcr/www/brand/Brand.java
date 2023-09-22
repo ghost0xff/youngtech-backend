@@ -23,7 +23,7 @@ public class Brand implements Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "brand")
+    @OneToMany(mappedBy = "brand", fetch = FetchType.EAGER)
     @JsonProperty("products")
     private List<Product> productList;
 

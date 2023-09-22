@@ -2,6 +2,6 @@ package com.youngtechcr.www.domain;
 
 public interface OneAmongMany {
 
-    boolean isMain();
-    void setIsMain(boolean main);
+    boolean main();
+    void main(boolean main);
 }

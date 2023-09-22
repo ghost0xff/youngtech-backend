@@ -41,7 +41,7 @@ public class ProductImageStorageService implements StorageService<ProductImage, 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ProductImage store(Product relatedProduct, MultipartFile image) {
-        Integer productId = relatedProduct.getProductId();
+        Integer productId = relatedProduct.getId();
         Path relatedProductDir = Paths
                 .get(StorageUtils.PRODUCT_DIRECTORY).resolve(productId.toString())
                 .resolve(StorageUtils.IMAGE_DIRECTORY).toAbsolutePath().normalize();
@@ -50,12 +50,12 @@ public class ProductImageStorageService implements StorageService<ProductImage, 
         String serverName = StorageUtils.generateServerName(productId, image, FileType.IMAGE);
         Path imagePath = relatedProductDir.resolve(serverName);
         ProductImage toBeStored = ProductImage.builder()
-                .withServerName(serverName)
-                .withOriginalName(image.getOriginalFilename())
-                .withRelativePath(imagePath.toString())
-                .withMimeType(image.getContentType())
-                .withSizeInBytes(image.getSize())
-                .withProduct(relatedProduct)
+                .serverName(serverName)
+                .originalName(image.getOriginalFilename())
+                .relativePath(imagePath.toString())
+                .mimeType(image.getContentType())
+                .sizeInBytes(image.getSize())
+                .product(relatedProduct)
                 .build();
         TimestampedUtils.setTimestampsToNow(toBeStored);
         StorageUtils.saveFileOrReplaceIfExisting(image, imagePath);
@@ -92,7 +92,7 @@ public class ProductImageStorageService implements StorageService<ProductImage, 
             e.printStackTrace();
             throw new FileOperationException(HttpErrorMessages.UNABLE_TO_DELETE_REQUESTED_FILE);
         }
-        this.productImageRepo.deleteById(productImage.getProductImageId());
+        this.productImageRepo.deleteById(productImage.getId());
     }
 
 }

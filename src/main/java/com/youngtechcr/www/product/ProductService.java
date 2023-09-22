@@ -1,5 +1,4 @@
 package com.youngtechcr.www.product;
-
 import com.youngtechcr.www.brand.Brand;
 import com.youngtechcr.www.brand.BrandService;
 import com.youngtechcr.www.exceptions.custom.*;
@@ -45,7 +44,7 @@ public class ProductService {
    }
 
     @Transactional(readOnly = true)
-    public Product findProductById(Integer productId) {
+    public Product findById(Integer productId) {
         return this
                 .productRepository
                 .findById(productId)
@@ -53,9 +52,18 @@ public class ProductService {
                         NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public Product findByName(String name) {
+        return this
+                .productRepository
+                .findByName(name)
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.
+                        NO_ELEMENT_WITH_THE_REQUESTED_NAME_WAS_FOUND));
+    }
+
     @Transactional
     public Product createProduct(Product productToBeCreated) {
-        Integer productId = productToBeCreated.getProductId();
+        Integer productId = productToBeCreated.getId();
         if (productId != null) {
             throw new InvalidElementException(
                     HttpErrorMessages.CANT_PROVIDE_ID_DURING_ELEMENT_CREATION
@@ -72,8 +80,8 @@ public class ProductService {
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Product updateProductById(Integer productId, Product productToBeUpdated) {
-        if(productId.equals(productToBeUpdated.getProductId()) ){
-            Product existingProduct = findProductById(productId);
+        if(productId.equals(productToBeUpdated.getId()) ){
+            Product existingProduct = findById(productId);
             Product updatedProduct = null;
             if(productValidator.isValid(productToBeUpdated, true)) {
                 LocalDateTime currentCreatedAt = existingProduct.getCreatedAt();
@@ -86,8 +94,8 @@ public class ProductService {
                 .PROVIDED_IDS_DONT_MATCH); }
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void deleteProductById(Integer productId) {
-        Product toBeDeleted = findProductById(productId);
-        productRepository.deleteById(toBeDeleted.getProductId());
+        Product toBeDeleted = findById(productId);
+        productRepository.deleteById(toBeDeleted.getId());
         log.info("Deleted product: " + toBeDeleted);
         return;
     }
@@ -95,7 +103,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Product findProductByBrandId(Integer productId, Integer brandId) {
         Brand requestedBrand = brandService.findById(brandId);
-        Product requestedProduct = findProductById(productId);
+        Product requestedProduct = findById(productId);
         if(requestedProduct.getBrand().equals(requestedBrand)) {
             return requestedProduct; } throw new ValueMismatchException(HttpErrorMessages .REQUESTED_CHILD_ELEMENT_DOESNT_EXIST); }
 
@@ -107,9 +115,9 @@ public class ProductService {
 
     public boolean hasMainImage(Product product) {
         return product
-                .getImageList()
+                .getImages()
                 .stream()
-                .anyMatch((image) -> image.isMain());
+                .anyMatch((image) -> image.main());
     }
 
 }

@@ -154,9 +154,9 @@ public class SecurityConfig {
 //                .securityMatcher("/api/**")
                 .authorizeHttpRequests((authorize) ->
                         authorize
-                                .requestMatchers(HttpMethod.GET,"/products").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/test").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/test").permitAll()
+//                                .requestMatchers(HttpMethod.GET,"/products").authenticated()
+//                                .requestMatchers(HttpMethod.GET, "/test").permitAll()
+//                                .requestMatchers(HttpMethod.POST, "/test").permitAll()
 //                                .requestMatchers(HttpMethod.GET, "/person/**").hasRole("CUSTOMER")
                                 .anyRequest().permitAll()
                 )

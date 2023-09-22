@@ -19,8 +19,8 @@ class ProductImageTest {
         assertDoesNotThrow( () -> {
                 ProductImage image = ProductImage
                         .builder()
-                        .withOriginalName("dfasa fedjksakldm tt.txt")
-                        .withServerName("server_name_1231321.txt")
+                        .originalName("dfasa fedjksakldm tt.txt")
+                        .serverName("server_name_1231321.txt")
                         .build();
                 log.info("Created product image: " + image);
         });

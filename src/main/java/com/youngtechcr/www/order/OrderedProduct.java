@@ -1,6 +1,7 @@
 package com.youngtechcr.www.order;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
@@ -83,7 +84,7 @@ public class OrderedProduct implements Timestamped {
         this.order = order;
     }
 
-    @JsonBackReference(value = "product-ordered_products")
+    @JsonManagedReference(value = "product-ordered_products")
     public Product getProduct() {
         return product;
     }

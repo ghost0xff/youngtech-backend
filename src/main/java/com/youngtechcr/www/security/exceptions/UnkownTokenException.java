@@ -1,18 +1,20 @@
-package com.youngtechcr.www.exceptions.custom;
+package com.youngtechcr.www.security.exceptions;
 
 import com.youngtechcr.www.exceptions.AbstractRuntimeException;
 import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import com.youngtechcr.www.exceptions.ErrorCode;
 import org.springframework.http.HttpStatus;
 
-public class InvalidElementException extends AbstractRuntimeException {
-    public InvalidElementException(
+public class UnkownTokenException extends AbstractRuntimeException {
+
+
+    public UnkownTokenException(
             String detail
     ) {
         super(
-                "Incomplete, invalid or faulty element in HTTP body",
-                ErrorCode.from(6),
-                HttpStatus.BAD_REQUEST,
+                "Unkown user read from request",
+                ErrorCode.from(7),
+                HttpStatus.UNAUTHORIZED,
                 detail
         );
     }

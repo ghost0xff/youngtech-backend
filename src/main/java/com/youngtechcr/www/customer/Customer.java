@@ -1,10 +1,15 @@
 package com.youngtechcr.www.customer;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.Timestamped;
+import com.youngtechcr.www.order.Order;
 import com.youngtechcr.www.person.Person;
+import com.youngtechcr.www.sale.Sale;
+import com.youngtechcr.www.shoppingcart.ShoppingCart;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,7 +19,7 @@ public class Customer implements Timestamped {
     @Id
     @Column(name = "id_customer")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer customerId;
+    private Integer id;
 
     @OneToOne
     @JoinColumn(name = "fk_id_person", referencedColumnName = "id_person")
@@ -24,13 +29,36 @@ public class Customer implements Timestamped {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    private List<Order> orders;
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    private List<Sale> sales;
 
-    public Integer getCustomerId() {
-        return customerId;
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ShoppingCart shoppingCart;
+
+
+    @JsonManagedReference(value = "customer-sale")
+    public List<Sale> getSales() {
+        return sales;
     }
 
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
+    @JsonManagedReference(value = "customer-order")
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Person getPerson() {
@@ -59,26 +87,16 @@ public class Customer implements Timestamped {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Customer customer = (Customer) o;
-        return Objects.equals(customerId, customer.customerId) && Objects.equals(person, customer.person) && Objects.equals(createdAt, customer.createdAt) && Objects.equals(updatedAt, customer.updatedAt);
+    public void setSales(List<Sale> sales) {
+        this.sales = sales;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(customerId, person, createdAt, updatedAt);
+    @JsonManagedReference(value = "customer-cart")
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
     }
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", person=" + person +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 }

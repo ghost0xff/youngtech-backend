@@ -1,8 +1,9 @@
 package com.youngtechcr.www.sale;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.domain.Timestamped;
-import com.youngtechcr.www.person.Person;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
 
@@ -25,8 +26,9 @@ public class Sale implements Timestamped {
     @JoinColumn(name = "fk_id_product", referencedColumnName = "id_product")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "fk_id_person", referencedColumnName = "id_person")
-    private Person person;
+    @JoinColumn(name = "fk_id_customer",
+            referencedColumnName = "id_customer")
+    private Customer customer;
 
     public Sale() {
     }
@@ -63,22 +65,22 @@ public class Sale implements Timestamped {
         this.idSale = idSale;
     }
 
-    @JsonBackReference(value = "product-sale")
+    @JsonManagedReference(value = "product-sale")
     public Product getProduct() {
         return product;
     }
 
-    @JsonBackReference(value = "person-sale")
-    public Person getPerson() {
-        return person;
+    @JsonBackReference(value = "customer-sale")
+    public Customer getCustomer() {
+        return customer;
     }
 
     public void setProduct(Product product) {
         this.product = product;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     @Override
@@ -86,12 +88,12 @@ public class Sale implements Timestamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sale sale = (Sale) o;
-        return Objects.equals(idSale, sale.idSale) && Objects.equals(createdAt, sale.createdAt) && Objects.equals(updatedAt, sale.updatedAt) && Objects.equals(product, sale.product) && Objects.equals(person, sale.person);
+        return Objects.equals(idSale, sale.idSale) && Objects.equals(createdAt, sale.createdAt) && Objects.equals(updatedAt, sale.updatedAt) && Objects.equals(product, sale.product) && Objects.equals(customer, sale.customer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idSale, createdAt, updatedAt, product, person);
+        return Objects.hash(idSale, createdAt, updatedAt, product, customer);
     }
 
     @Override
@@ -101,7 +103,7 @@ public class Sale implements Timestamped {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", product=" + product +
-                ", user=" + person +
+                ", customer=" + customer +
                 '}';
     }
 }

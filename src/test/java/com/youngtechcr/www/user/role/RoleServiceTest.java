@@ -11,8 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,34 +35,27 @@ class RoleServiceTest {
     @DisplayName("Valid options should map to existing roles")
     void given_Valid_Options_Should_Return_Valid_Roles(){
         // preparing mock
-       Role expectedUserRole = new Role(1, "ROLE_USER");
        Role expectedCustomerRole = new Role(2, "ROLE_CUSTOMER");
        Role expectedEmployeeRole = new Role(3, "ROLE_EMPLOYEE");
        Role expectedAdminRole = new Role(4, "ROLE_ADMIN");
 
         // whens
-       when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(expectedUserRole));
        when(roleRepository.findByName("ROLE_CUSTOMER")).thenReturn(Optional.of(expectedCustomerRole));
         when(roleRepository.findByName("ROLE_EMPLOYEE")).thenReturn(Optional.of(expectedEmployeeRole));
         when(roleRepository.findByName("ROLE_ADMIN")).thenReturn(Optional.of(expectedAdminRole));
 
        // operations
-        List<Role> roles = roleService.
+        Set<Role> roles = roleService.
                 mapOptionsToRoles(
-                        RoleOption.USER,
                         RoleOption.CUSTOMER,
                         RoleOption.EMPLOYEE,
                         RoleOption.ADMIN
                 );
 
         // assertions
-        assertTrue(roles.containsAll(
-                List.of(
-                        expectedCustomerRole,
-                        expectedUserRole,
-                        expectedUserRole)
-                )
-        );
+        assertTrue(roles.contains(expectedCustomerRole));
+        assertTrue(roles.contains(expectedEmployeeRole));
+        assertTrue(roles.contains(expectedAdminRole));
 
 
 

@@ -12,6 +12,9 @@ import com.youngtechcr.www.security.idp.IdentityProvider;
 import com.youngtechcr.www.security.user.role.Role;
 import com.youngtechcr.www.security.user.role.RoleOption;
 import com.youngtechcr.www.security.user.role.RoleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +22,7 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,7 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final BasicUserValidator basicUserValidator;
     private final UserRepository userRepository;
@@ -35,6 +39,7 @@ public class UserService implements UserDetailsService {
     private final ProfileService profileService;
     private final PersonService personService;
     private final RoleService roleService;
+    private final static Logger logger = LoggerFactory.getLogger(UserService.class);
     public UserService(
             BasicUserValidator basicUserValidator,
             UserRepository userRepository,
@@ -83,11 +88,17 @@ public class UserService implements UserDetailsService {
     }
 
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Transactional
+    public  User toUser(Authentication authn) {
+        int id = Integer.parseInt(authn.getName());
+        userRepository
+                .findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("Somehow received token with unkown user id");
+                    return null;
+                });
         return null;
     }
-
 
     /*
     * Add EMAIL only if id_token.emailVerified is TRUE

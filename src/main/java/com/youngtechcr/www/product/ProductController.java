@@ -5,7 +5,6 @@ import com.youngtechcr.www.storage.DualNameFileCarrier;
 import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.http.ResponseEntityUtils;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,20 +25,29 @@ public class ProductController {
         this.productImageService = productImageService;
     }
 
+
     // TODO: Implement Pagination to improve clients
     @GetMapping
-    public ResponseEntity<Page<Product>> findSomeProucts(
-            @RequestParam(value = "page", defaultValue = "0")  int pageNum,
-            @RequestParam(value = "size", defaultValue = "10") int pageSize
+    public ResponseEntity<List<Product>> findSomeProucts(
+            @RequestParam(value = "page", defaultValue = "0", required = false)  int pageNum,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int pageSize
     ) {
-        Page<Product> someProucts = productService.findSomeProducts(pageNum, pageSize);
+        List<Product> someProucts = productService
+                .findSomeProducts(pageNum, pageSize)
+                .getContent();
         return ResponseEntity.ok(someProucts);
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Product> findProductById(@PathVariable("id") Integer productId) {
-        Product fetchedProduct = this.productService.findProductById(productId);
-        return ResponseEntity.ok().body(fetchedProduct);
+    @GetMapping(path = "/{attr}")
+    public ResponseEntity<Product> findProductByAttr(
+            @PathVariable("attr") String attr,
+            @RequestParam("type") ProductAttribute type
+    ) {
+        Product prod = switch (type) {
+            case ID -> productService.findById(Integer.parseInt(attr));
+            case NAME -> productService.findByName(attr);
+        };
+        return ResponseEntity.ok(prod);
     }
 
     @PostMapping
@@ -67,10 +75,10 @@ public class ProductController {
     public ResponseEntity<ProductImage> uploadImageByProductId(
             @PathVariable("id") Integer productId,
             @RequestPart(name = "file-data") MultipartFile imageToBeUploaded,
-            @RequestParam(value = "main", required = false) boolean isMain
+            @RequestParam(value = "main", required = false) boolean main
     ) {
         ProductImage uploadedImage = productImageService.uploadProductImageByProduct(
-                productId, imageToBeUploaded, isMain);
+                productId, imageToBeUploaded, main);
         return ResponseEntityUtils.created(uploadedImage);
     }
 

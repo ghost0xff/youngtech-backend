@@ -58,7 +58,8 @@ public class QuickTestController {
     @GetMapping
     @RequestMapping(path = "/principal")
     public ResponseEntity<?> viewPrincipal(Principal principal) {
-        return ResponseEntity.ok(principal);
+//        return ResponseEntity.ok(principal);
+        return ResponseEntity.ok(principal.getName());
     }
 
     @GetMapping
@@ -87,30 +88,35 @@ public class QuickTestController {
 
     public static record Person(String name){}
 
+    /*
+    *
+    * TODO: DELETE THIS LINES BEFORE DEPLOYING TO PRODUCTION
+    *
+    * */
     @PostMapping
     public ResponseEntity<?> registerWebClient() {
         String id = UUID.randomUUID().toString();
         TokenSettings tokenSettings = TokenSettings
-                .builder()
-                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-                .accessTokenTimeToLive(Duration.ofMinutes(20))
-                .refreshTokenTimeToLive(Duration.ofDays(15))
-                .build();
+            .builder()
+            .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+            .accessTokenTimeToLive(Duration.ofMinutes(20))
+            .refreshTokenTimeToLive(Duration.ofDays(30))
+            .build();
        RegisteredClient registeredClient = RegisteredClient
-               .withId(id)
-               .clientIdIssuedAt(Instant.now())
-               .clientName("YoungTech's E-commerce Web Application")
-               .clientId("web")
-               .clientSecret("{noop}secret")
-               .scopes( scopes -> {
-                   scopes.add(OidcScopes.OPENID);
-                   scopes.add(OidcScopes.PROFILE);
-                   scopes.add(OidcScopes.EMAIL);
-                   scopes.add(OidcScopes.ADDRESS);
-                   scopes.add(OidcScopes.ADDRESS);
-                   scopes.add(OidcScopes.PHONE);
-                   scopes.add("all");
-               })
+           .withId(id)
+           .clientIdIssuedAt(Instant.now())
+           .clientName("YoungTech's E-commerce Web Application")
+           .clientId("web")
+           .clientSecret("{noop}secret")
+           .scopes( scopes -> {
+               scopes.add(OidcScopes.OPENID);
+               scopes.add(OidcScopes.PROFILE);
+               scopes.add(OidcScopes.EMAIL);
+               scopes.add(OidcScopes.ADDRESS);
+               scopes.add(OidcScopes.ADDRESS);
+               scopes.add(OidcScopes.PHONE);
+               scopes.add("all");
+           })
                .tokenSettings(tokenSettings)
                .clientAuthenticationMethods( methods -> {
                    methods.add(ClientAuthenticationMethod.CLIENT_SECRET_POST);

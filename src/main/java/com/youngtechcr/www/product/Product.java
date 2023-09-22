@@ -2,6 +2,7 @@ package com.youngtechcr.www.product;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.brand.Brand;
@@ -11,6 +12,8 @@ import com.youngtechcr.www.order.OrderedProduct;
 import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.sale.Sale;
 import com.youngtechcr.www.category.subcategory.Subcategory;
+import com.youngtechcr.www.shoppingcart.ShoppingCart;
+import com.youngtechcr.www.shoppingcart.ShoppingCartItem;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +26,7 @@ public class Product implements Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_product")
-    private Integer productId;
+    private Integer id;
     private String name;
     private int stock;
     private String description;
@@ -45,21 +48,25 @@ public class Product implements Timestamped {
     private Subcategory subcategory;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonProperty("images")
-    private List<ProductImage> imageList;
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    private List<ProductImage> images;
+    @OneToMany(mappedBy = "product")
     @JsonProperty("sales")
     private List<Sale> saleList;
+    @OneToMany(mappedBy = "product")
+    @JsonIgnore
+    private List<ShoppingCartItem> shoppingCartItems;
 
-    // TODO: IS THIS OBJECT NECESARY FOR THE APP?
+    // TODO: IS THIS OBJECT NECESARY OR IS IT ONLY EATING MEMORY???
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     @JsonProperty("orderedProducts")
     private List<OrderedProduct> orderedProductsList;
+
 
     public Product() {
     }
 
     public Product(Integer productId) {
-        this.productId = productId;
+        this.id = productId;
     }
 
     @Override
@@ -82,12 +89,12 @@ public class Product implements Timestamped {
         this.updatedAt = timestamp;
     }
 
-    public Integer getProductId() {
-        return productId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setProductId(Integer productId) {
-        this.productId = productId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -158,14 +165,14 @@ public class Product implements Timestamped {
     }
 
     @JsonManagedReference(value = "product-image")
-    public List<ProductImage> getImageList() {
-        return imageList;
+    public List<ProductImage> getImages() {
+        return images;
     }
-    public void setImageList(List<ProductImage> imageList) {
-        this.imageList = imageList;
+    public void setImages(List<ProductImage> images) {
+        this.images = images;
     }
 
-    @JsonManagedReference(value = "product-sale")
+    @JsonBackReference(value = "product-sale")
     public List<Sale> getSaleList() {
         return saleList;
     }
@@ -174,7 +181,7 @@ public class Product implements Timestamped {
         this.saleList = saleList;
     }
 
-    @JsonManagedReference(value = "product-ordered_products")
+    @JsonBackReference(value = "product-ordered_products")
     public List<OrderedProduct> getOrderedProductsList() {
         return orderedProductsList;
     }
@@ -182,23 +189,32 @@ public class Product implements Timestamped {
         this.orderedProductsList = orderedProductsList;
     }
 
+    @JsonBackReference(value = "product-cart_item")
+    public List<ShoppingCartItem> getShoppingCartItems() {
+        return shoppingCartItems;
+    }
+
+    public void setShoppingCartItems(List<ShoppingCartItem> shoppingCartItems) {
+        this.shoppingCartItems = shoppingCartItems;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return stock == product.stock && Float.compare(product.price, price) == 0 && Float.compare(product.discountPercentage, discountPercentage) == 0 && Objects.equals(productId, product.productId) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(imageList, product.imageList) && Objects.equals(saleList, product.saleList) && Objects.equals(orderedProductsList, product.orderedProductsList);
+        return stock == product.stock && Float.compare(price, product.price) == 0 && Float.compare(discountPercentage, product.discountPercentage) == 0 && Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(images, product.images) && Objects.equals(saleList, product.saleList) && Objects.equals(shoppingCartItems, product.shoppingCartItems) && Objects.equals(orderedProductsList, product.orderedProductsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, imageList, saleList, orderedProductsList);
+        return Objects.hash(id, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, images, saleList, shoppingCartItems, orderedProductsList);
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "productId=" + productId +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", stock=" + stock +
                 ", description='" + description + '\'' +
@@ -209,8 +225,9 @@ public class Product implements Timestamped {
                 ", brand=" + brand +
                 ", category=" + category +
                 ", subcategory=" + subcategory +
-//                ", productImageFileDataList=" + productImageFileDataList +
+//                ", images=" + images +
 //                ", saleList=" + saleList +
+//                ", shoppingCartItems=" + shoppingCartItems +
 //                ", orderedProductsList=" + orderedProductsList +
                 '}';
     }

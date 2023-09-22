@@ -15,10 +15,15 @@ public final class ResponseEntityUtils {
         return responseEntity;
     }
 
-    public static <T extends Resource> ResponseEntity<T> downloadedFileWithMetaDataCarrier(DualNameFileCarrier dualNameFileCarrier) {
+    public static <T extends Resource> ResponseEntity<T>
+    downloadedFileWithMetaDataCarrier(DualNameFileCarrier dualNameFileCarrier) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("File-Name", dualNameFileCarrier.secondFilename());
-        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name=" + dualNameFileCarrier.secondFilename());
+        httpHeaders.add(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment;"
+                         + "File-Name=" + dualNameFileCarrier.secondFilename()
+        );
         ResponseEntity responseEntity = ResponseEntity
                 .ok()
                 .contentType(dualNameFileCarrier.fileMediaType())

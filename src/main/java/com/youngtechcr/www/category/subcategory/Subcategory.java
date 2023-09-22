@@ -28,7 +28,7 @@ public class Subcategory implements Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "subcategory")
+    @OneToMany(mappedBy = "subcategory", fetch = FetchType.EAGER)
     @JsonProperty("products")
     private List<Product> productList;
 

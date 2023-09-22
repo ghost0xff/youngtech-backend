@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.youngtechcr.www.order.Order;
-import com.youngtechcr.www.sale.Sale;
 import com.youngtechcr.www.security.user.User;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,23 +30,14 @@ public class Person  {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthdate;
-
-    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
-    private List<Order> orders;
-    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
-    private List<Sale> sales;
-
     public Person() { }
-
     private Person(
             Integer id,
             User user,
             String firstnames,
             String lastnames,
             int age,
-            LocalDate birthdate,
-            List<Order> orders,
-            List<Sale> sales
+            LocalDate birthdate
     ) {
         this.id = id;
         this.user = user;
@@ -56,8 +45,6 @@ public class Person  {
         this.lastnames = lastnames;
         this.age = age;
         this.birthdate = birthdate;
-        this.orders = orders;
-        this.sales = sales;
     }
 
     public Person(User user) {
@@ -90,19 +77,6 @@ public class Person  {
         return birthdate;
     }
 
-
-    @JsonManagedReference(value = "person-order")
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    @JsonManagedReference(value = "person-sale")
-    public List<Sale> getSales() {
-        return sales;
-    }
-
-
-
     public static Builder builder() {
         return new Builder();
     }
@@ -114,12 +88,12 @@ public class Person  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return age == person.age && Objects.equals(id, person.id) && Objects.equals(user, person.user) && Objects.equals(firstnames, person.firstnames) && Objects.equals(lastnames, person.lastnames) && Objects.equals(birthdate, person.birthdate) && Objects.equals(orders, person.orders) && Objects.equals(sales, person.sales);
+        return age == person.age && Objects.equals(id, person.id) && Objects.equals(user, person.user) && Objects.equals(firstnames, person.firstnames) && Objects.equals(lastnames, person.lastnames) && Objects.equals(birthdate, person.birthdate) ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, firstnames, lastnames, age, birthdate, orders, sales);
+        return Objects.hash(id, user, firstnames, lastnames, age, birthdate);
     }
 
     @Override
@@ -131,8 +105,6 @@ public class Person  {
                 ", lastname='" + lastnames + '\'' +
                 ", age=" + age +
                 ", birthdate=" + birthdate +
-//                ", orderList=" + orderList +
-//                ", saleList=" + saleList +
                 '}';
     }
 
@@ -145,8 +117,6 @@ public class Person  {
         private String lastnames;
         private int age;
         private LocalDate birthdate;
-        private List<Order> orderList;
-        private List<Sale> saleList;
 
         public Builder id(Integer id) {
             this.id = id;
@@ -178,16 +148,6 @@ public class Person  {
             return this;
         }
 
-        public Builder orderList(List<Order> orderList) {
-            this.orderList = orderList;
-            return this;
-        }
-
-        public Builder saleList(List<Sale> saleList) {
-            this.saleList = saleList;
-            return this;
-        }
-
         public Person build() {
             return new Person(
                 this.id,
@@ -195,9 +155,7 @@ public class Person  {
                 this.firstnames,
                 this.lastnames,
                 this.age,
-                this.birthdate,
-                this.orderList,
-                this.saleList
+                this.birthdate
             );
         }
     }

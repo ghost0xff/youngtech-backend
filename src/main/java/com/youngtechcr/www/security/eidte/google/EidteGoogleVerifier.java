@@ -8,14 +8,13 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.webtoken.JsonWebToken;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.FailedExternalHttpConnectionException;
-import com.youngtechcr.www.exceptions.custom.InvalidEidteTokenException;
+import com.youngtechcr.www.security.eidte.InvalidEidteTokenException;
 import com.youngtechcr.www.security.eidte.CommonClaimNames;
 import com.youngtechcr.www.security.eidte.EidteErrorCodes;
 import com.youngtechcr.www.security.eidte.EidteVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 

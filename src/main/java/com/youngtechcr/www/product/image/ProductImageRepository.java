@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface ProductImageRepository extends JpaRepository<ProductImage, Integer> {
 
 
-    Optional<ProductImage> findByIsMain(boolean isMain);
-    boolean existsByIsMain(boolean isMain);
+    Optional<ProductImage> findByMain(boolean isMain);
+    boolean existsByMain(boolean isMain);
 
 }

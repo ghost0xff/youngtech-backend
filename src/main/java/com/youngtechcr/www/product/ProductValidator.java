@@ -42,7 +42,7 @@ public class ProductValidator implements Validator<Product> {
 
     @Override
     public boolean isValid(Product product, boolean isUpdate) throws InvalidElementException {
-        Integer productId = product.getProductId();
+        Integer productId = product.getId();
         String name = product.getName();
         int stock = product.getStock();
         String description = product.getDescription();
@@ -51,7 +51,7 @@ public class ProductValidator implements Validator<Product> {
         Brand brand = product.getBrand();
         Category category = product.getCategory();
         Subcategory subcategory = product.getSubcategory();
-        List<ProductImage> imageList = product.getImageList();
+        List<ProductImage> imageList = product.getImages();
         List<Sale> salesList = product.getSaleList();
         List<OrderedProduct> orderedProductsList = product.getOrderedProductsList();
 

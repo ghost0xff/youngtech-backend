@@ -30,16 +30,16 @@ logging:
       springframework:
 
         #INFO LOGGING
-#        security: INFO
-#        web: INFO
+        security: INFO
+        web: INFO
 
         #DEBUG LOGGING
 #        security: DEBUG
 #        web: DEBUG
 
         #TRACE LOGGING
-        security: TRACE
-        web: TRACE
+#        security: TRACE
+#        web: TRACE
 
 
 
