@@ -1,36 +1,19 @@
 package com.youngtechcr.www.regex;
 
-import com.youngtechcr.www.exceptions.CustomRuntimeException;
+import com.youngtechcr.www.exceptions.AbstractRuntimeException;
 import com.youngtechcr.www.exceptions.ErrorCode;
 import org.springframework.http.HttpStatus;
 
-public class RegexMatchingException extends RuntimeException implements CustomRuntimeException {
+public class RegexMatchingException extends AbstractRuntimeException {
 
-    private String defaultTitle = "Internal error while matching element";
-    private ErrorCode customErrorCode = ErrorCode.from(7);
-    private HttpStatus defaultHttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-
-    public RegexMatchingException(String detail) {
-        super(detail);
-    }
-
-    @Override
-    public String getDefaultTitle() {
-        return this.defaultTitle;
-    }
-
-    @Override
-    public ErrorCode getCustomErrorCode() {
-        return this.customErrorCode;
-    }
-
-    @Override
-    public HttpStatus getDefaultHttpStatus() {
-        return this.defaultHttpStatus;
-    }
-
-    @Override
-    public String getDetail() {
-        return this.getMessage();
+    public RegexMatchingException(
+            String detail
+    ) {
+        super(
+                "Internal error while matching element",
+                ErrorCode.from(10),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                detail
+        );
     }
 }

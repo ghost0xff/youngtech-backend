@@ -5,6 +5,7 @@ import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.order.Order;
 import com.youngtechcr.www.person.Person;
 import com.youngtechcr.www.sale.Sale;
+import com.youngtechcr.www.security.user.User;
 import com.youngtechcr.www.shoppingcart.ShoppingCart;
 import jakarta.persistence.*;
 
@@ -22,16 +23,17 @@ public class Customer implements Timestamped {
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "fk_id_person", referencedColumnName = "id_person")
-    private Person person;
+    @JoinColumn(name = "fk_id_user",
+            referencedColumnName = "id_user")
+    private User user;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Order> orders;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Sale> sales;
 
     @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
@@ -61,12 +63,12 @@ public class Customer implements Timestamped {
         this.id = id;
     }
 
-    public Person getPerson() {
-        return person;
+    public User getUser() {
+        return user;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -98,5 +100,27 @@ public class Customer implements Timestamped {
 
     public void setShoppingCart(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(id, customer.id) && Objects.equals(user, customer.user) && Objects.equals(createdAt, customer.createdAt) && Objects.equals(updatedAt, customer.updatedAt) && Objects.equals(orders, customer.orders) && Objects.equals(sales, customer.sales) && Objects.equals(shoppingCart, customer.shoppingCart);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, user, createdAt, updatedAt, orders, sales, shoppingCart);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

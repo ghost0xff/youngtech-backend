@@ -45,7 +45,7 @@ class ProductValidatorTest {
 
 
         when(brandRepository.existsById(
-                ProductValidatorTestUtils.withAllValid().getBrand().getBrandId()
+                ProductValidatorTestUtils.withAllValid().getBrand().getId()
         )).thenReturn(true);
     }
 

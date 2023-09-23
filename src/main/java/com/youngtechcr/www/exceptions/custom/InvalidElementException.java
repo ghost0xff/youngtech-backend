@@ -1,7 +1,6 @@
 package com.youngtechcr.www.exceptions.custom;
 
 import com.youngtechcr.www.exceptions.AbstractRuntimeException;
-import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import com.youngtechcr.www.exceptions.ErrorCode;
 import org.springframework.http.HttpStatus;
 

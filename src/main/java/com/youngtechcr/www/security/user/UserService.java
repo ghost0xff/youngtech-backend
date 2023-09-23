@@ -8,6 +8,7 @@ import com.youngtechcr.www.person.Person;
 import com.youngtechcr.www.person.PersonService;
 import com.youngtechcr.www.profile.Profile;
 import com.youngtechcr.www.profile.ProfileService;
+import com.youngtechcr.www.security.exceptions.UnkownTokenException;
 import com.youngtechcr.www.security.idp.IdentityProvider;
 import com.youngtechcr.www.security.user.role.Role;
 import com.youngtechcr.www.security.user.role.RoleOption;
@@ -15,19 +16,12 @@ import com.youngtechcr.www.security.user.role.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -88,16 +82,19 @@ public class UserService {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public  User toUser(Authentication authn) {
         int id = Integer.parseInt(authn.getName());
-        userRepository
+        return userRepository
                 .findById(id)
                 .orElseThrow(() -> {
-                    logger.warn("Somehow received token with unkown user id");
-                    return null;
+                    logger.warn(
+                            "Somehow received token with unkown user id, got hacked??" +
+                            " or error on authz server signing tokens???" +
+                            " or did user delete account/user data???");
+                    return new UnkownTokenException(
+                            "Heyy!! how do you have a signed token with and unvalid user id??? is this user deleted??");
                 });
-        return null;
     }
 
     /*
@@ -155,7 +152,8 @@ public class UserService {
                    var customer =  new Customer();
                    customer.setCreatedAt(LocalDateTime.now());
                    customer.setUpdatedAt(LocalDateTime.now());
-                   customer.setPerson(person);
+                   customer.setUser(createdUser);
+                   // save customer
                    customerService.create(customer);
 
                    return createdUser;

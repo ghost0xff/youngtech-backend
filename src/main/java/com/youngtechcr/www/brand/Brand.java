@@ -17,20 +17,20 @@ public class Brand implements Timestamped {
     @Id
     @Column(name = "id_brand")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer brandId;
+    private Integer id;
     private String name;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "brand", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     @JsonProperty("products")
-    private List<Product> productList;
+    private List<Product> products;
 
     public Brand() {
     }
-    public Brand(Integer brandId){
-        this.brandId = brandId;
+    public Brand(Integer id){
+        this.id = id;
     }
 
     @Override
@@ -53,12 +53,12 @@ public class Brand implements Timestamped {
         this.updatedAt = timestamp;
     }
 
-    public Integer getBrandId() {
-        return brandId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setBrandId(Integer brandId) {
-        this.brandId = brandId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -70,12 +70,12 @@ public class Brand implements Timestamped {
     }
 
     @JsonManagedReference(value = "product-brand")
-    public List<Product> getProductList() {
-        return productList;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     @Override
@@ -83,22 +83,21 @@ public class Brand implements Timestamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Brand brand = (Brand) o;
-        return Objects.equals(brandId, brand.brandId) && Objects.equals(name, brand.name) && Objects.equals(createdAt, brand.createdAt) && Objects.equals(updatedAt, brand.updatedAt) && Objects.equals(productList, brand.productList);
+        return Objects.equals(id, brand.id) && Objects.equals(name, brand.name) && Objects.equals(createdAt, brand.createdAt) && Objects.equals(updatedAt, brand.updatedAt) && Objects.equals(products, brand.products);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(brandId, name, createdAt, updatedAt, productList);
+        return Objects.hash(id, name, createdAt, updatedAt, products);
     }
 
     @Override
     public String toString() {
         return "Brand{" +
-                "brandId=" + brandId +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-//                ", productList=" + productList +
                 '}';
     }
 }

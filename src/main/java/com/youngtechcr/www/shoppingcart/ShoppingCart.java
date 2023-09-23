@@ -86,7 +86,7 @@ public class ShoppingCart implements Timestamped {
     public String toString() {
         return "ShoppingCart{" +
                 "id=" + id +
-                ", customer=" + customer +
+//                ", customer=" + customer +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
 //                ", items=" + items +

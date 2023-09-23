@@ -39,9 +39,11 @@ public class Product implements Timestamped {
     private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "fk_id_brand", referencedColumnName = "id_brand")
+    @JsonIgnore
     private Brand brand;
     @ManyToOne
     @JoinColumn(name = "fk_id_category", referencedColumnName = "id_category")
+    @JsonIgnore
     private Category category;
     @ManyToOne
     @JoinColumn(name = "fk_id_subcategory", referencedColumnName = "id_subcategory")
@@ -51,14 +53,15 @@ public class Product implements Timestamped {
     private List<ProductImage> images;
     @OneToMany(mappedBy = "product")
     @JsonProperty("sales")
+    @JsonIgnore
     private List<Sale> saleList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ShoppingCartItem> shoppingCartItems;
 
     // TODO: IS THIS OBJECT NECESARY OR IS IT ONLY EATING MEMORY???
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
-    @JsonProperty("orderedProducts")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<OrderedProduct> orderedProductsList;
 
 
@@ -145,7 +148,6 @@ public class Product implements Timestamped {
     public void setBrand(Brand brand) {
         this.brand = brand;
     }
-
     @JsonBackReference(value = "product-category")
     public Category getCategory() {
         return category;
@@ -222,13 +224,6 @@ public class Product implements Timestamped {
                 ", discountPercentage=" + discountPercentage +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", brand=" + brand +
-                ", category=" + category +
-                ", subcategory=" + subcategory +
-//                ", images=" + images +
-//                ", saleList=" + saleList +
-//                ", shoppingCartItems=" + shoppingCartItems +
-//                ", orderedProductsList=" + orderedProductsList +
                 '}';
     }
 }

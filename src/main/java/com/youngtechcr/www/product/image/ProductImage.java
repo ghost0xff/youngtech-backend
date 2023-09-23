@@ -152,7 +152,6 @@ public class ProductImage implements Storable, Timestamped, OneAmongMany {
                 ", sizeInBytes=" + sizeInBytes +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", product=" + product +
                 '}';
     }
 

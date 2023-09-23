@@ -43,7 +43,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
 
     @Override
     public Subcategory updateById(Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
-        if(subcategoryId.equals(subcategoryToBeUpdated.getSubcategoryId())){
+        if(subcategoryId.equals(subcategoryToBeUpdated.getId())){
             LocalDateTime storedCreatedAtTimestamp = this.findById(subcategoryId).getCreatedAt();
             TimestampedUtils.updateTimeStamps(subcategoryToBeUpdated, storedCreatedAtTimestamp);
             var updatedSubcategory = this.subcategoryRepository.save(subcategoryToBeUpdated);

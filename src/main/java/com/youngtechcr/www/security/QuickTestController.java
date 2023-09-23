@@ -2,6 +2,8 @@ package com.youngtechcr.www.security;
 
 import com.youngtechcr.www.security.auth.JpaRegisteredClientRepository;
 import com.youngtechcr.www.security.eidte.EidteParameters;
+import com.youngtechcr.www.security.user.User;
+import com.youngtechcr.www.security.user.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
@@ -29,12 +31,17 @@ public class QuickTestController {
     private final JpaRegisteredClientRepository clientRepo;
     private final OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer;
     private final SessionRegistry sessionRegistry;
+    private final UserService userService;
     public QuickTestController(
             JpaRegisteredClientRepository clientRepo,
-            OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer, SessionRegistry sessionRegistry){
+            OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer,
+            SessionRegistry sessionRegistry,
+            UserService userService
+    ){
         this.clientRepo = clientRepo;
         this.tokenCustomizer = tokenCustomizer;
         this.sessionRegistry = sessionRegistry;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -57,9 +64,11 @@ public class QuickTestController {
 
     @GetMapping
     @RequestMapping(path = "/principal")
-    public ResponseEntity<?> viewPrincipal(Principal principal) {
+    public ResponseEntity<?> viewPrincipal(Authentication authentication) {
 //        return ResponseEntity.ok(principal);
-        return ResponseEntity.ok(principal.getName());
+//        return ResponseEntity.ok(principal.getName());
+        User u = userService.toUser(authentication);
+        return ResponseEntity.ok(u);
     }
 
     @GetMapping

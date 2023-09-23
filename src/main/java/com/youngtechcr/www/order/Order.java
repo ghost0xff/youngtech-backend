@@ -35,7 +35,7 @@ private LocalDateTime deliveryDate;
 private LocalDateTime createdAt;
 @Column(name = "updated_at")
 private LocalDateTime updatedAt;
-@ManyToOne
+@ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "fk_id_customer", referencedColumnName = "id_customer")
 private Customer customer;
 @OneToMany(mappedBy = "order")
@@ -176,8 +176,6 @@ public String toString() {
             ", deliveryDate=" + deliveryDate +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
-            ", customer=" + customer +
-//                ", orderedProductsList=" + orderedProductsList +
                 '}';
     }
 }

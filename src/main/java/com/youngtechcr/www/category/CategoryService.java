@@ -57,7 +57,7 @@ public class CategoryService {
 
     @Transactional
     public Category updateCategoryById(Integer categoryId, Category categoryToBeUpdated) {
-        if (categoryId.equals(categoryToBeUpdated.getCategoryId())) {
+        if (categoryId.equals(categoryToBeUpdated.getId())) {
                 LocalDateTime storedCreatedAtTimestamp = this.findCategoryById(categoryId).getCreatedAt();
             TimestampedUtils.updateTimeStamps(categoryToBeUpdated, storedCreatedAtTimestamp);
             Category updatedCategory = this.categoryRepository.save(categoryToBeUpdated);
@@ -83,7 +83,7 @@ public class CategoryService {
                 .categoryRepository
                 .findById(categoryId)
                 .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND));
-        return requestedCategory.getSubcategoryList();
+        return requestedCategory.getSubcategories();
     }
 
 
@@ -109,7 +109,7 @@ public class CategoryService {
     @Transactional
     public Subcategory updateSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
         Category categoryWhosSubcategoryWillBeModified = this.findCategoryById(categoryId);
-        if(subcategoryToBeUpdated.getCategory().getCategoryId().equals(categoryWhosSubcategoryWillBeModified.getCategoryId())) {
+        if(subcategoryToBeUpdated.getCategory().getId().equals(categoryWhosSubcategoryWillBeModified.getId())) {
             var updatedSubcategory = subcategoryService.updateById(subcategoryId, subcategoryToBeUpdated);
             log.info("Updated subcategory: " + updatedSubcategory + "in category: " + categoryWhosSubcategoryWillBeModified);
             return updatedSubcategory;
@@ -121,7 +121,7 @@ public class CategoryService {
     public void deleteSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId) {
         Category categoryWhosSubcategotyWillBeDeleted = this.findCategoryById(categoryId);
         Subcategory subcategoryToBeDeleted = this.subcategoryService.findById(subcategoryId);
-        if(subcategoryToBeDeleted.getCategory().getCategoryId().equals(categoryWhosSubcategotyWillBeDeleted.getCategoryId())) {
+        if(subcategoryToBeDeleted.getCategory().getId().equals(categoryWhosSubcategotyWillBeDeleted.getId())) {
             this.subcategoryService.deleteById(subcategoryId);
             log.info("Deleted subcategory: " + subcategoryToBeDeleted + " from category " + categoryWhosSubcategotyWillBeDeleted);
             return;
@@ -132,7 +132,7 @@ public class CategoryService {
    @Transactional(readOnly = true)
    public List<Product> findProductsByCategory(Integer categoryId) {
    	var categoryWhoseProductsWillBeObtained = this.findCategoryById(categoryId);
-   	List<Product> productsFound = categoryWhoseProductsWillBeObtained.getProductList();
+   	List<Product> productsFound = categoryWhoseProductsWillBeObtained.getProducts();
 	if(!productsFound.isEmpty()) return productsFound;
 	throw new NoDataFoundException(HttpErrorMessages.NO_ELEMENTS_FOUND_IN_SERVER);
    }

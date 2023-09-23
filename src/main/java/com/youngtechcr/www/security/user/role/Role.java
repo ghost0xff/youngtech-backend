@@ -1,6 +1,7 @@
 package com.youngtechcr.www.security.user.role;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.youngtechcr.www.domain.Timestamped;
 import jakarta.persistence.*;
 
@@ -14,12 +15,15 @@ public class Role implements Timestamped {
     @Id
     @Column(name = "id_role")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer id;
     @Column(name = "name")
     private String name;
     @Column(name = "created_at")
+    @JsonIgnore
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
+    @JsonIgnore
     private LocalDateTime updatedAt;
 
     public Role() {

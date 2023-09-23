@@ -14,8 +14,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ToManyElementsRequestedException.class)
-    public ProblemDetail handleEmptyRepositoryException(ToManyElementsRequestedException exception) {
+    @ExceptionHandler(QuantityOfElementsException.class)
+    public ProblemDetail handleEmptyRepositoryException(QuantityOfElementsException exception) {
         return ExceptionUtils.handle(exception);
     }
     @ExceptionHandler(NoDataFoundException.class)

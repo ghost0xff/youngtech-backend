@@ -22,10 +22,10 @@ public class Sale implements Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_id_product", referencedColumnName = "id_product")
     private Product product;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_id_customer",
             referencedColumnName = "id_customer")
     private Customer customer;
@@ -102,8 +102,6 @@ public class Sale implements Timestamped {
                 "idSale=" + idSale +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", product=" + product +
-                ", customer=" + customer +
                 '}';
     }
 }

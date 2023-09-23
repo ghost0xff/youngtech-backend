@@ -122,7 +122,7 @@ public class ProductValidator implements Validator<Product> {
 
     @Transactional(readOnly = true)
     private boolean isBrandValid(Brand brand) {
-        if(brand != null && brandService.existsById(brand.getBrandId())) {
+        if(brand != null && brandService.existsById(brand.getId())) {
             return true;
         } throw new InvalidElementException(
                 HttpErrorMessages.INVALID_PRODUCT_REASON_BRAND);
@@ -130,14 +130,14 @@ public class ProductValidator implements Validator<Product> {
 
     @Transactional(readOnly = true)
     private boolean isCategoryValid(Category category) {
-        if(category != null && categoryService.existsById(category.getCategoryId())) {
+        if(category != null && categoryService.existsById(category.getId())) {
             return true;
         } throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_CATEGORY);
     }
 
     @Transactional(readOnly = true)
     private boolean isSubcategoryValid(Subcategory subcategory) {
-        if(subcategory != null && subcategoryService.existsById(subcategory.getSubcategoryId())) {
+        if(subcategory != null && subcategoryService.existsById(subcategory.getId())) {
             return true;
         } throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT_REASON_SUBCATEGORY);
     }

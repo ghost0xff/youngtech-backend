@@ -5,6 +5,11 @@ public final class HttpErrorMessages {
     //REGEX EXCEPTION
     public static final String NULL_REGEX_PATTERN_OR_TEXT_VALUE= "An internal error occurred while matching/validating element or value";
 
+    // SHOPPING_CART && ORDERS
+    public static final String INSUFFICIENT_STOCK = "There are not enough elements. Elements out of stock";
+    public static final String CANT_DELETE_ITEM_IF_NOT_PRESENT = "Can´t delete element from storage if it doesn´t exist.";
+    public static final String CANT_DELETE_MORE_ITEMS_THAN_ARE_AVAILABLE = "Can´t delete element(s) if quantity to be deleted exceeds stored quantity of elements";
+
 
     // PRODUCT VALIDATION
     public static final String INVALID_PRODUCT = "Error on product creation: product element in request body is not valid.";
@@ -30,7 +35,6 @@ public final class HttpErrorMessages {
 
 
     // ELEMENT VALIDATION
-
     public static final String PROVIDED_IDS_DONT_MATCH = "Can't proceed with operation because path/url id and element id provided don't match.";
     public static final String NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND = "No element with the requested id was found.";
     public static final String NO_ELEMENT_WITH_THE_REQUESTED_NAME_WAS_FOUND = "No element with the requested name was found.";

@@ -2,18 +2,17 @@ package com.youngtechcr.www.exceptions.custom;
 
 import com.youngtechcr.www.exceptions.AbstractRuntimeException;
 import com.youngtechcr.www.exceptions.ErrorCode;
-import com.youngtechcr.www.exceptions.CustomRuntimeException;
 import org.springframework.http.HttpStatus;
 
 
-public class ToManyElementsRequestedException extends AbstractRuntimeException {
-    public ToManyElementsRequestedException(
+public class QuantityOfElementsException extends AbstractRuntimeException {
+    public QuantityOfElementsException(
             String detail
     ) {
         super(
                 "Too much elements requested",
                 ErrorCode.from(1),
-                HttpStatus.TOO_MANY_REQUESTS,
+                HttpStatus.BAD_REQUEST,
                 detail
         );
     }

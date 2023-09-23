@@ -19,8 +19,8 @@ public class Subcategory implements Timestamped {
     @Id
     @Column(name = "id_subcategory")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer subcategoryId;
-    @ManyToOne
+    private Integer id;
+    @ManyToOne(fetch = FetchType.LAZY )
     @JoinColumn(name = "fk_id_category", referencedColumnName = "id_category")
     private Category category;
     private String name;
@@ -28,15 +28,15 @@ public class Subcategory implements Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "subcategory", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "subcategory", fetch = FetchType.LAZY)
     @JsonProperty("products")
-    private List<Product> productList;
+    private List<Product> products;
 
     public Subcategory() {
     }
 
-    public Subcategory(Integer subcategoryId) {
-        this.subcategoryId = subcategoryId;
+    public Subcategory(Integer id) {
+        this.id = id;
     }
 
     @Override
@@ -57,12 +57,12 @@ public class Subcategory implements Timestamped {
         this.updatedAt = timestamp;
     }
 
-    public Integer getSubcategoryId() {
-        return subcategoryId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setSubcategoryId(Integer subcategoryId) {
-        this.subcategoryId = subcategoryId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -83,12 +83,12 @@ public class Subcategory implements Timestamped {
     }
 
     @JsonManagedReference(value = "product-subcategory")
-    public List<Product> getProductList() {
-        return productList;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     @Override
@@ -96,23 +96,21 @@ public class Subcategory implements Timestamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subcategory that = (Subcategory) o;
-        return Objects.equals(subcategoryId, that.subcategoryId) && Objects.equals(category, that.category) && Objects.equals(name, that.name) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(productList, that.productList);
+        return Objects.equals(id, that.id) && Objects.equals(category, that.category) && Objects.equals(name, that.name) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(products, that.products);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subcategoryId, category, name, createdAt, updatedAt, productList);
+        return Objects.hash(id, category, name, createdAt, updatedAt, products);
     }
 
     @Override
     public String toString() {
         return "Subcategory{" +
-                "subcategoryId=" + subcategoryId +
-                ", category=" + category +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", productList=" + productList +
                 '}';
     }
 }

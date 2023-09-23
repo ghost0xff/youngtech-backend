@@ -49,7 +49,7 @@ public class BrandService implements BasicCrudService<Brand> {
     @Override
     @Transactional
     public Brand updateById(Integer brandId, Brand brandToBeUpdated) {
-        if (brandId.equals(brandToBeUpdated.getBrandId())) {
+        if (brandId.equals(brandToBeUpdated.getId())) {
             LocalDateTime storedCreatedAtTimeStamp = this.findById(brandId).getCreatedAt();
             TimestampedUtils.updateTimeStamps(brandToBeUpdated, storedCreatedAtTimeStamp);
             Brand updatedBrand = this.brandRepository.save(brandToBeUpdated);
@@ -73,7 +73,7 @@ public class BrandService implements BasicCrudService<Brand> {
     @Transactional(readOnly = true)
     public List<Product> findAllProductsByBrandId(Integer brandId) {
         var requestedBrand = this.findById(brandId);
-        return requestedBrand.getProductList();
+        return requestedBrand.getProducts();
     }
 
     @Transactional(readOnly = true)

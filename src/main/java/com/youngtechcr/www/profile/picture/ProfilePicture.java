@@ -14,7 +14,7 @@ public class ProfilePicture implements Storable, Timestamped {
     @Id
     @Column(name = "id_profile_picture")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer profilePictureId;
+    private Integer id;
     @Column(name = "server_name")
     private String serverName;
     @Column(name = "original_name")
@@ -29,15 +29,15 @@ public class ProfilePicture implements Storable, Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @OneToOne(mappedBy = "profilePicture")
+    @OneToOne(mappedBy = "profilePicture", fetch = FetchType.LAZY)
     private Profile profile;
 
-    public Integer getProfilePictureId() {
-        return profilePictureId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setProfilePictureId(Integer profilePictureId) {
-        this.profilePictureId = profilePictureId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class ProfilePicture implements Storable, Timestamped {
     @Override
     public String toString() {
         return "ProfilePicture{" +
-                "profilePictureId=" + profilePictureId +
+                "profilePictureId=" + id +
                 ", serverName='" + serverName + '\'' +
                 ", originalName='" + originalName + '\'' +
                 ", relativePath='" + relativePath + '\'' +
@@ -122,7 +122,6 @@ public class ProfilePicture implements Storable, Timestamped {
                 ", sizeInBytes=" + sizeInBytes +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", profile=" + profile +
                 '}';
     }
 }

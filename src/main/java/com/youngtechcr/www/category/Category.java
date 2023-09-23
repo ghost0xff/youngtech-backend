@@ -1,5 +1,6 @@
 package com.youngtechcr.www.category;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.category.subcategory.Subcategory;
@@ -18,7 +19,7 @@ public class Category implements Timestamped {
     @Id
     @Column(name = "id_category")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer categoryId;
+    private Integer id;
     private String name;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -26,23 +27,23 @@ public class Category implements Timestamped {
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "category")
     @JsonProperty("products")
-    List<Product> productList;
+    List<Product> products;
     @OneToMany(mappedBy = "category")
     @JsonProperty("subcategories")
-    List<Subcategory> subcategoryList;
+    List<Subcategory> subcategories;
 
     public Category() {}
 
-    public Category(int categoryId) {
-        this.categoryId = categoryId;
+    public Category(int id) {
+        this.id = id;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -74,21 +75,21 @@ public class Category implements Timestamped {
     }
 
     @JsonManagedReference(value = "product-category")
-    public List<Product> getProductList() {
-        return productList;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
-    @JsonManagedReference(value = "category-subcategory")
-    public List<Subcategory> getSubcategoryList() {
-        return subcategoryList;
+    @JsonBackReference(value = "category-subcategory")
+    public List<Subcategory> getSubcategories() {
+        return subcategories;
     }
 
-    public void setSubcategoryList(List<Subcategory> subcategoryList) {
-        this.subcategoryList = subcategoryList;
+    public void setSubcategories(List<Subcategory> subcategories) {
+        this.subcategories = subcategories;
     }
 
     @Override
@@ -96,23 +97,21 @@ public class Category implements Timestamped {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Category category = (Category) o;
-        return Objects.equals(categoryId, category.categoryId) && Objects.equals(name, category.name) && Objects.equals(createdAt, category.createdAt) && Objects.equals(updatedAt, category.updatedAt) && Objects.equals(productList, category.productList) && Objects.equals(subcategoryList, category.subcategoryList);
+        return Objects.equals(id, category.id) && Objects.equals(name, category.name) && Objects.equals(createdAt, category.createdAt) && Objects.equals(updatedAt, category.updatedAt) && Objects.equals(products, category.products) && Objects.equals(subcategories, category.subcategories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryId, name, createdAt, updatedAt, productList, subcategoryList);
+        return Objects.hash(id, name, createdAt, updatedAt, products, subcategories);
     }
 
     @Override
     public String toString() {
         return "Category{" +
-                "categoryId=" + categoryId +
+                "categoryId=" + id +
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", productList=" + productList +
-                ", subcategoryList=" + subcategoryList +
                 '}';
     }
 }

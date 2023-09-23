@@ -14,8 +14,12 @@ public final class TimestampedUtils {
     * "storedCreatedAtTimestamp" parameter is usually the current createdAt property (stored in DB)
     * of the TimeStamped object who is being updated
     * */
-    public static void updateTimeStamps(Timestamped timestampedToBeUpdated, LocalDateTime storedCreatedAtTimestamp) {
+    // CHANGE THIS THING!!!!!! second arg MIGHT be unnecesary
+    public static void updateTimeStamps(
+            Timestamped timestampedToBeUpdated,
+            LocalDateTime storedCreatedAtTimestamp) {
         timestampedToBeUpdated.setUpdatedAt(LocalDateTime.now());
         timestampedToBeUpdated.setCreatedAt(storedCreatedAtTimestamp);
+        // this above makes sense, trust me  :v
     }
 }

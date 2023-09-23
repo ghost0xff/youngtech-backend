@@ -34,7 +34,7 @@ public class ProductService {
 
    public Page<Product> findSomeProducts(int pageNum, int pageSize) {
         if (pageSize > 1_000) {
-            throw new ToManyElementsRequestedException(
+            throw new QuantityOfElementsException(
                     HttpErrorMessages.REQUESTED_TOO_MUCH_ENTITIES
             );
         }
@@ -61,7 +61,7 @@ public class ProductService {
                         NO_ELEMENT_WITH_THE_REQUESTED_NAME_WAS_FOUND));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Product createProduct(Product productToBeCreated) {
         Integer productId = productToBeCreated.getId();
         if (productId != null) {
@@ -73,7 +73,7 @@ public class ProductService {
             TimestampedUtils.setTimestampsToNow(productToBeCreated);
             var createdProduct = this.productRepository.save(productToBeCreated);
             log.info("Created new product" + createdProduct);
-            return productToBeCreated;
+            return createdProduct;
         }
         throw new InvalidElementException(HttpErrorMessages.INVALID_PRODUCT);
     }
