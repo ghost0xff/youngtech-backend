@@ -9,6 +9,7 @@ public final class HttpErrorMessages {
     public static final String INSUFFICIENT_STOCK = "There are not enough elements. Elements out of stock";
     public static final String CANT_DELETE_ITEM_IF_NOT_PRESENT = "Can´t delete element from storage if it doesn´t exist.";
     public static final String CANT_DELETE_MORE_ITEMS_THAN_ARE_AVAILABLE = "Can´t delete element(s) if quantity to be deleted exceeds stored quantity of elements";
+    public static final String CANT_ORDER_EMPTY_SHOPPING_CART = "Shopping Cart must contain items before placing an order.";
 
 
     // PRODUCT VALIDATION

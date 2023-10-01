@@ -1,6 +1,8 @@
 package com.youngtechcr.www.product;
 import com.youngtechcr.www.brand.Brand;
 import com.youngtechcr.www.brand.BrandService;
+import com.youngtechcr.www.category.CategoryService;
+import com.youngtechcr.www.category.subcategory.SubcategoryService;
 import com.youngtechcr.www.exceptions.custom.*;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.domain.TimestampedUtils;
@@ -14,6 +16,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -22,17 +28,24 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductValidator productValidator;
     private final BrandService brandService;
+    private final CategoryService categoryService;
+    private final SubcategoryService subcategoryService;
 
     public ProductService(
             ProductRepository productRepository,
             ProductValidator productValidator,
-            BrandService brandService) {
+            BrandService brandService,
+            CategoryService categoryService,
+            SubcategoryService subcategoryService
+    ) {
         this.productRepository = productRepository;
         this.productValidator = productValidator;
         this.brandService = brandService;
+        this.categoryService = categoryService;
+        this.subcategoryService = subcategoryService;
     }
 
-   public Page<Product> findSomeProducts(int pageNum, int pageSize) {
+   public List<Product> findSomeProducts(int pageNum, int pageSize) {
         if (pageSize > 1_000) {
             throw new QuantityOfElementsException(
                     HttpErrorMessages.REQUESTED_TOO_MUCH_ENTITIES
@@ -40,7 +53,7 @@ public class ProductService {
         }
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Product> someProducts = productRepository.findAll(pageable);
-        return someProducts;
+        return someProducts.getContent();
    }
 
     @Transactional(readOnly = true)
@@ -113,11 +126,40 @@ public class ProductService {
                 .existsById(productId);
     }
 
-    public boolean hasMainImage(Product product) {
-        return product
-                .getImages()
+    public Set<Product> relatedProducts(Product product, int quantity) {
+        Set<Product> mergedProds = new HashSet<>();
+
+        // find first related prods by subcategory
+        Set<Product> prodsFromSubcateg = product
+                .getSubcategory()
+                .getProducts()
                 .stream()
-                .anyMatch((image) -> image.main());
+                .collect(Collectors.toSet());
+        mergedProds.addAll(prodsFromSubcateg);
+
+        // if less than requested find by category
+        if(mergedProds.size() < quantity) {
+            Set<Product> prodsFromCateg = product
+                    .getCategory()
+                    .getProducts()
+                    .stream()
+                    .collect(Collectors.toSet());
+            mergedProds.addAll(prodsFromCateg);
+        };
+
+       // if less than requested find by brand
+        if(mergedProds.size() < quantity) {
+            Set<Product> prodsFromCateg = product
+                    .getCategory()
+                    .getProducts()
+                    .stream()
+                    .collect(Collectors.toSet());
+           mergedProds.addAll(prodsFromCateg);
+        }
+
+        mergedProds.removeIf(prod -> prod.getId().equals(product.getId()));
+        return mergedProds;
     }
+
 
 }

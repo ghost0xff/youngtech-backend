@@ -10,32 +10,45 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/products")
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductImageService productImageService;
+    private final ProductImageService imageService;
 
     public ProductController(
             ProductService productService,
-            ProductImageService productImageService) {
+            ProductImageService imageService) {
         this.productService = productService;
-        this.productImageService = productImageService;
+        this.imageService = imageService;
     }
 
 
-    // TODO: Implement Pagination to improve clients
     @GetMapping
     public ResponseEntity<List<Product>> findSomeProucts(
             @RequestParam(value = "page", defaultValue = "0", required = false)  int pageNum,
             @RequestParam(value = "size", defaultValue = "10", required = false) int pageSize
     ) {
-        List<Product> someProucts = productService
-                .findSomeProducts(pageNum, pageSize)
-                .getContent();
+        List<Product> someProucts = productService.findSomeProducts(pageNum, pageSize);
         return ResponseEntity.ok(someProucts);
+    }
+
+    @GetMapping(path = "/{attr}/related")
+    public ResponseEntity<Set<Product>> findRelatedProducts(
+            @PathVariable("attr") String attr,
+            @RequestParam(value = "type", defaultValue = "ID",required = false) ProductAttribute type,
+            @RequestParam(value = "quantity", defaultValue = "10", required = false) int quantity
+    ) {
+        Product prod = switch (type) {
+            case ID -> productService.findById(Integer.parseInt(attr));
+            case NAME -> productService.findByName(attr);
+        };
+
+        var prods =  productService.relatedProducts(prod, quantity);
+        return ResponseEntity.ok(prods);
     }
 
     @GetMapping(path = "/{attr}")
@@ -77,24 +90,34 @@ public class ProductController {
             @RequestPart(name = "file-data") MultipartFile imageToBeUploaded,
             @RequestParam(value = "main", required = false) boolean main
     ) {
-        ProductImage uploadedImage = productImageService.uploadProductImageByProduct(
+        ProductImage uploadedImage = imageService.uploadProductImageByProduct(
                 productId, imageToBeUploaded, main);
         return ResponseEntityUtils.created(uploadedImage);
     }
 
-    @GetMapping(path = "/{id}/images")
+   @GetMapping(path = "/{id}/images/main")
+   public ResponseEntity<ProductImage> findMainImage(@PathVariable int id) {
+        return ResponseEntity.ok(imageService.obtainMainImage(id));
+   }
+
+
+    @GetMapping(path = "/{attr}/images")
     public ResponseEntity<?> downloadMainImageOrObtainImageMetaDataList(
-            @PathVariable("id") Integer productId,
-            @RequestParam(name = "main", required = false) boolean isMain) {
+            @PathVariable String attr,
+            @RequestParam(name = "main", required = false) boolean isMain,
+            @RequestParam(required = false, defaultValue = "ID") ProductAttribute type
+    ) {
+        Product product = switch (type) {
+            case ID -> productService.findById(Integer.parseInt(attr));
+            case NAME -> productService.findByName(attr);
+        };
         if(isMain) {
-            DualNameFileCarrier resourceWithSomeMetaData = productImageService.
-                    downloadMainImageByProduct(productId);
+            DualNameFileCarrier resourceWithSomeMetaData = imageService.
+                    downloadMainImageByProduct(product);
             return ResponseEntityUtils.downloadedFileWithMetaDataCarrier(
                     resourceWithSomeMetaData);
         }
-        List<ProductImage> imagesMetaData = productImageService
-                .getProductImagesMetadataById(productId);
-        return ResponseEntity.ok().body(imagesMetaData);
+        return ResponseEntity.ok().body(product.getImages());
     }
 
     @GetMapping(path = "/{productId}/images/{imageId}")
@@ -102,7 +125,7 @@ public class ProductController {
             @PathVariable Integer productId,
             @PathVariable("imageId") Integer productImageId
     ) {
-        DualNameFileCarrier resourceWithSomeMetaData = productImageService
+        DualNameFileCarrier resourceWithSomeMetaData = imageService
                 .downloadImageByProduct(productId, productImageId);
         return ResponseEntityUtils.
                 downloadedFileWithMetaDataCarrier(resourceWithSomeMetaData);
@@ -113,8 +136,9 @@ public class ProductController {
             @PathVariable Integer productId,
             @PathVariable("imageId") Integer productImageId
     ){
-        productImageService.deleteImageByProduct(productId, productImageId);
+        imageService.deleteImageByProduct(productId, productImageId);
         return ResponseEntity.noContent().build();
     }
+
 
 }

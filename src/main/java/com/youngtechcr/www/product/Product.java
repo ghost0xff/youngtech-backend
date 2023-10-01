@@ -8,12 +8,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.brand.Brand;
 import com.youngtechcr.www.category.Category;
 import com.youngtechcr.www.domain.*;
-import com.youngtechcr.www.order.OrderedProduct;
+import com.youngtechcr.www.order.item.OrderItem;
 import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.sale.Sale;
 import com.youngtechcr.www.category.subcategory.Subcategory;
-import com.youngtechcr.www.shoppingcart.ShoppingCart;
-import com.youngtechcr.www.shoppingcart.ShoppingCartItem;
+import com.youngtechcr.www.shoppingcart.item.ShoppingCartItem;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,7 +61,7 @@ public class Product implements Timestamped {
     // TODO: IS THIS OBJECT NECESARY OR IS IT ONLY EATING MEMORY???
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<OrderedProduct> orderedProductsList;
+    private List<OrderItem> orderedProductsList;
 
 
     public Product() {
@@ -72,7 +71,7 @@ public class Product implements Timestamped {
         this.id = productId;
     }
 
-    @Override
+  @Override
     public LocalDateTime getCreatedAt() {
         return this.createdAt;
     }
@@ -184,10 +183,10 @@ public class Product implements Timestamped {
     }
 
     @JsonBackReference(value = "product-ordered_products")
-    public List<OrderedProduct> getOrderedProductsList() {
+    public List<OrderItem> getOrderedProductsList() {
         return orderedProductsList;
     }
-    public void setOrderedProductsList(List<OrderedProduct> orderedProductsList) {
+    public void setOrderedProductsList(List<OrderItem> orderedProductsList) {
         this.orderedProductsList = orderedProductsList;
     }
 

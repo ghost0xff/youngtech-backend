@@ -5,7 +5,7 @@ spring:
     username: ${YOUNG_TECH_DB_USER}
     password: ${YOUNG_TECH_DB_PASSWORD}
   jpa:
-    show-sql: true
+#    show-sql: true
   servlet:
     multipart:
       max-file-size: 5MB
@@ -30,16 +30,16 @@ logging:
       springframework:
 
         #INFO LOGGING
-        security: INFO
-        web: INFO
+#        security: INFO
+#        web: INFO
 
         #DEBUG LOGGING
 #        security: DEBUG
 #        web: DEBUG
 
         #TRACE LOGGING
-#        security: TRACE
-#        web: TRACE
+        security: TRACE
+        web: TRACE
 
 
 

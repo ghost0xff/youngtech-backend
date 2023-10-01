@@ -247,6 +247,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 //        corsConfiguration.setAllowedOrigins(Arrays.asList(this.apiProperties.webClient()));
         corsConfiguration.addAllowedOrigin(this.apiProperties.webClient());
+//        corsConfiguration.setAllowedOrigins();
         corsConfiguration.setAllowedMethods(HttpUtils.getCommonHttpMethods());
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         // TODO" CHANGE THIS BEFIRE DEPLOYING TO PRODUCTION

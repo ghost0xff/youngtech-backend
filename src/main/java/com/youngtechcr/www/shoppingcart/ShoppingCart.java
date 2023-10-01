@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.domain.Timestamped;
+import com.youngtechcr.www.shoppingcart.item.ShoppingCartItem;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tbl_shopping_cart")
@@ -28,7 +29,7 @@ public class ShoppingCart implements Timestamped {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "shoppingCart")
-    private List<ShoppingCartItem> items;
+    private Set<ShoppingCartItem> items;
     public ShoppingCart() {
     }
 
@@ -63,11 +64,11 @@ public class ShoppingCart implements Timestamped {
     }
 
     @JsonManagedReference(value = "cart-item")
-    public List<ShoppingCartItem> getItems() {
+    public Set<ShoppingCartItem> getItems() {
         return items;
     }
 
-    public void setItems(List<ShoppingCartItem> items) {
+    public void setItems(Set<ShoppingCartItem> items) {
         this.items = items;
     }
 

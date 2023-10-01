@@ -1,5 +1,7 @@
-package com.youngtechcr.www.shoppingcart;
+package com.youngtechcr.www.shoppingcart.item;
 
+import com.youngtechcr.www.shoppingcart.ShoppingCart;
+import com.youngtechcr.www.shoppingcart.item.ShoppingCartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

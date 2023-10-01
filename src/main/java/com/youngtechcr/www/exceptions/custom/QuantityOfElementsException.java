@@ -10,7 +10,7 @@ public class QuantityOfElementsException extends AbstractRuntimeException {
             String detail
     ) {
         super(
-                "Too much elements requested",
+                "Unsupported quantity of elements requested",
                 ErrorCode.from(1),
                 HttpStatus.BAD_REQUEST,
                 detail

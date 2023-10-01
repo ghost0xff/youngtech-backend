@@ -45,15 +45,19 @@ public class ProductImageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductImage> getProductImagesMetadataById(Integer productId) {
+    public List<ProductImage> findImages(Integer productId) {
         return productService.findById(productId).getImages();
+    }
+    @Transactional(readOnly = true)
+    public List<ProductImage> findImages(String name) {
+        return productService.findByName(name).getImages();
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public ProductImage uploadProductImageByProduct(
         Integer productId, MultipartFile image, @Nullable boolean main) {
         Product relatedProduct = productService.findById(productId);
-        if(main && productService.hasMainImage(relatedProduct)) {
+        if(main && this.hasMainImage(relatedProduct)) {
            throw new AlreadyExistsException(
                    HttpErrorMessages.CANT_CREATE_DUPLICATE_MAIN_IMAGE
            );
@@ -82,9 +86,8 @@ public class ProductImageService {
     }
 
     @Transactional(readOnly = true)
-    public DualNameFileCarrier downloadMainImageByProduct(Integer productId) {
-        var productToBeInspected = productService.findById(productId);
-        if(productService.hasMainImage(productToBeInspected)) {
+    public DualNameFileCarrier downloadMainImageByProduct(Product productToBeInspected ) {
+        if(this.hasMainImage(productToBeInspected)) {
             ProductImage mainImg = this.obtainMainImage(productToBeInspected);
             String originalImgName = mainImg.getOriginalName();
             MediaType imageMediaType = MediaType.parseMediaType(mainImg.getMimeType());
@@ -112,6 +115,24 @@ public class ProductImageService {
 
     public ProductImage obtainMainImage(Product product) {
         return product
+                .getImages()
+                .stream()
+                .filter( image -> image.main())
+                .findAny()
+                .orElseThrow( () -> new NoDataFoundException(HttpErrorMessages
+                        .NO_MAIN_ELEMENT_WAS_FOUND));
+    }
+
+    public boolean hasMainImage(Product product) {
+        return product
+                .getImages()
+                .stream()
+                .anyMatch((image) -> image.main());
+    }
+
+    @Transactional(readOnly = true)
+    public ProductImage obtainMainImage(int id) {
+        return productService.findById(id)
                 .getImages()
                 .stream()
                 .filter( image -> image.main())

@@ -3,12 +3,12 @@ package com.youngtechcr.www.shoppingcart;
 import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
-import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.QuantityOfElementsException;
 import com.youngtechcr.www.product.Product;
 import com.youngtechcr.www.security.annotations.roles.CustomerRole;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
+import com.youngtechcr.www.shoppingcart.item.ShoppingCartItem;
+import com.youngtechcr.www.shoppingcart.item.ShoppingCartItemsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ShoppingCartService {
@@ -44,7 +44,7 @@ public class ShoppingCartService {
                 .orElseGet(() -> {
                     var cart = new ShoppingCart();
                     cart.setCustomer(customer);
-                    cart.setItems(Collections.emptyList());
+                    cart.setItems(Collections.emptySet());
                     TimestampedUtils.setTimestampsToNow(cart);
                     var created = cartRepo.save(cart);
                     logger.trace("Created new cart since none existed for customer with id " + customer.getId());
@@ -53,7 +53,7 @@ public class ShoppingCartService {
     }
     @CustomerRole
     @Transactional(readOnly = true)
-    public List<ShoppingCartItem> findItems(Customer customer) {
+    public Set<ShoppingCartItem> findItems(Customer customer) {
         var cart = this.findCart(customer);
         return cart.getItems();
     }
@@ -82,13 +82,6 @@ public class ShoppingCartService {
             ShoppingCartItem existingItem = optionalItem.orElseThrow();
             int newQuantity = existingItem.getQuantity() + quantity;
             int currentStock = product.getStock();
-
-            if (newQuantity > currentStock) {
-                throw new InvalidElementException(
-                        HttpErrorMessages
-                        .INSUFFICIENT_STOCK
-                );
-            }
 
             existingItem.setQuantity(newQuantity);
             ShoppingCartItem modifiedItem = itemsRepo.save(existingItem);
@@ -148,6 +141,7 @@ public class ShoppingCartService {
             return;
        }
        existinItem.setQuantity(newQuantity);
+       TimestampedUtils.updateTimeStamps(existinItem, existinItem.getCreatedAt() );
        itemsRepo.save(existinItem);
        logger.trace("Decreased quantity of one item in shopping cart with id " + cart.getId());
        return;

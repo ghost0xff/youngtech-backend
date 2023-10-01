@@ -1,9 +1,10 @@
-package com.youngtechcr.www.shoppingcart;
+package com.youngtechcr.www.shoppingcart.item;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.product.Product;
+import com.youngtechcr.www.shoppingcart.ShoppingCart;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

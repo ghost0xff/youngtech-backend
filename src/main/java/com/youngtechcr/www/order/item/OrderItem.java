@@ -1,8 +1,9 @@
-package com.youngtechcr.www.order;
+package com.youngtechcr.www.order.item;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.Timestamped;
+import com.youngtechcr.www.order.Order;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
 
@@ -10,14 +11,14 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tbl_ordered_product")
-public class OrderedProduct implements Timestamped {
+@Table(name = "tbl_order_item")
+public class OrderItem implements Timestamped {
 
 
     @Id
-    @Column(name = "id_ordered_product")
+    @Column(name = "id_order_item")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer orderedProductsId;
+    private Integer id;
     @Column(name = "is_delivered")
     private boolean isDelivered;
     @Column(name = "is_canceled")
@@ -26,6 +27,7 @@ public class OrderedProduct implements Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    private int quantity;
     @ManyToOne
     @JoinColumn(name = "fk_id_order", referencedColumnName = "id_order")
     private Order order;
@@ -51,12 +53,12 @@ public class OrderedProduct implements Timestamped {
         this.updatedAt = timestamp;
     }
 
-    public Integer getOrderedProductsId() {
-        return orderedProductsId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setOrderedProductsId(Integer orderedProductsId) {
-        this.orderedProductsId = orderedProductsId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public boolean isDelivered() {
@@ -93,29 +95,36 @@ public class OrderedProduct implements Timestamped {
         this.product = product;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderedProduct that = (OrderedProduct) o;
-        return isDelivered == that.isDelivered && isCanceled == that.isCanceled && Objects.equals(orderedProductsId, that.orderedProductsId) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(order, that.order) && Objects.equals(product, that.product);
+        OrderItem that = (OrderItem) o;
+        return isDelivered == that.isDelivered && isCanceled == that.isCanceled && quantity == that.quantity && Objects.equals(id, that.id) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(order, that.order) && Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderedProductsId, isDelivered, isCanceled, createdAt, updatedAt, order, product);
+        return Objects.hash(id, isDelivered, isCanceled, createdAt, updatedAt, quantity, order, product);
     }
 
     @Override
     public String toString() {
-        return "OrderedProducts{" +
-                "orderedProductsId=" + orderedProductsId +
+        return "OrderedProduct{" +
+                "orderedProductsId=" + id +
                 ", isDelivered=" + isDelivered +
                 ", isCanceled=" + isCanceled +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", order=" + order +
-                ", product=" + product +
+                ", quantity=" + quantity +
                 '}';
     }
 }

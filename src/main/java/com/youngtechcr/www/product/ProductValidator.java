@@ -10,7 +10,7 @@ import com.youngtechcr.www.category.subcategory.Subcategory;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.AlreadyExistsException;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
-import com.youngtechcr.www.order.OrderedProduct;
+import com.youngtechcr.www.order.item.OrderItem;
 import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.regex.RegexService;
 import com.youngtechcr.www.regex.Regexes;
@@ -29,10 +29,13 @@ public class ProductValidator implements Validator<Product> {
     private final RegexService regexService;
     private final CategoryService categoryService;
 
-    public ProductValidator(ProductRepository productRepository, BrandService brandService,
-                            RegexService regexService,
-                            SubcategoryService subcategoryService,
-                            CategoryService categoryService){
+    public ProductValidator(
+            ProductRepository productRepository,
+            BrandService brandService,
+            RegexService regexService,
+            SubcategoryService subcategoryService,
+            CategoryService categoryService
+    ){
         this.productRepository = productRepository;
         this.brandService = brandService;
         this.subcategoryService = subcategoryService;
@@ -53,7 +56,7 @@ public class ProductValidator implements Validator<Product> {
         Subcategory subcategory = product.getSubcategory();
         List<ProductImage> imageList = product.getImages();
         List<Sale> salesList = product.getSaleList();
-        List<OrderedProduct> orderedProductsList = product.getOrderedProductsList();
+        List<OrderItem> orderedProductsList = product.getOrderedProductsList();
 
         if(isUpdate) {
            validateExistingId(productId);
