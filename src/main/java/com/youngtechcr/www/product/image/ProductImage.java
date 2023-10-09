@@ -131,13 +131,34 @@ public class ProductImage implements Storable, Timestamped, OneAmongMany {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ProductImage that = (ProductImage) o;
-        return main == that.main && sizeInBytes == that.sizeInBytes && Objects.equals(id, that.id) && Objects.equals(serverName, that.serverName) && Objects.equals(originalName, that.originalName) && Objects.equals(relativePath, that.relativePath) && Objects.equals(mimeType, that.mimeType) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(product, that.product);
+
+        if (main != that.main) return false;
+        if (sizeInBytes != that.sizeInBytes) return false;
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(serverName, that.serverName)) return false;
+        if (!Objects.equals(originalName, that.originalName)) return false;
+        if (!Objects.equals(relativePath, that.relativePath)) return false;
+        if (!Objects.equals(mimeType, that.mimeType)) return false;
+        if (!Objects.equals(createdAt, that.createdAt)) return false;
+        if (!Objects.equals(updatedAt, that.updatedAt)) return false;
+        return Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, serverName, originalName, relativePath, main, mimeType, sizeInBytes, createdAt, updatedAt, product);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
+        result = 31 * result + (originalName != null ? originalName.hashCode() : 0);
+        result = 31 * result + (relativePath != null ? relativePath.hashCode() : 0);
+        result = 31 * result + (main ? 1 : 0);
+        result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+        result = 31 * result + (int) (sizeInBytes ^ (sizeInBytes >>> 32));
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (product != null ? product.hashCode() : 0);
+        return result;
     }
 
     @Override

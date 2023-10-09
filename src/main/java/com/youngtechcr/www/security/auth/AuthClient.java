@@ -160,17 +160,49 @@ public class AuthClient {
         return this;
     }
 
-    @Override
-    public boolean equals(Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         AuthClient that = (AuthClient) o;
-        return Objects.equals(id, that.id) && Objects.equals(clientId, that.clientId) && Objects.equals(clientIdIssuedAt, that.clientIdIssuedAt) && Objects.equals(clientSecret, that.clientSecret) && Objects.equals(clientSecretExpiresAt, that.clientSecretExpiresAt) && Objects.equals(clientName, that.clientName) && Objects.equals(clientAuthenticationMethods, that.clientAuthenticationMethods) && Objects.equals(authorizationGrantTypes, that.authorizationGrantTypes) && Objects.equals(redirectUris, that.redirectUris) && Objects.equals(postLogoutRedirectUris, that.postLogoutRedirectUris) && Objects.equals(scopes, that.scopes) && Objects.equals(clientSettings, that.clientSettings) && Objects.equals(tokenSettings, that.tokenSettings);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(clientId, that.clientId)) return false;
+        if (!Objects.equals(clientIdIssuedAt, that.clientIdIssuedAt))
+            return false;
+        if (!Objects.equals(clientSecret, that.clientSecret)) return false;
+        if (!Objects.equals(clientSecretExpiresAt, that.clientSecretExpiresAt))
+            return false;
+        if (!Objects.equals(clientName, that.clientName)) return false;
+        if (!Objects.equals(clientAuthenticationMethods, that.clientAuthenticationMethods))
+            return false;
+        if (!Objects.equals(authorizationGrantTypes, that.authorizationGrantTypes))
+            return false;
+        if (!Objects.equals(redirectUris, that.redirectUris)) return false;
+        if (!Objects.equals(postLogoutRedirectUris, that.postLogoutRedirectUris))
+            return false;
+        if (!Objects.equals(scopes, that.scopes)) return false;
+        if (!Objects.equals(clientSettings, that.clientSettings))
+            return false;
+        return Objects.equals(tokenSettings, that.tokenSettings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, clientId, clientIdIssuedAt, clientSecret, clientSecretExpiresAt, clientName, clientAuthenticationMethods, authorizationGrantTypes, redirectUris, postLogoutRedirectUris, scopes, clientSettings, tokenSettings);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (clientId != null ? clientId.hashCode() : 0);
+        result = 31 * result + (clientIdIssuedAt != null ? clientIdIssuedAt.hashCode() : 0);
+        result = 31 * result + (clientSecret != null ? clientSecret.hashCode() : 0);
+        result = 31 * result + (clientSecretExpiresAt != null ? clientSecretExpiresAt.hashCode() : 0);
+        result = 31 * result + (clientName != null ? clientName.hashCode() : 0);
+        result = 31 * result + (clientAuthenticationMethods != null ? clientAuthenticationMethods.hashCode() : 0);
+        result = 31 * result + (authorizationGrantTypes != null ? authorizationGrantTypes.hashCode() : 0);
+        result = 31 * result + (redirectUris != null ? redirectUris.hashCode() : 0);
+        result = 31 * result + (postLogoutRedirectUris != null ? postLogoutRedirectUris.hashCode() : 0);
+        result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
+        result = 31 * result + (clientSettings != null ? clientSettings.hashCode() : 0);
+        result = 31 * result + (tokenSettings != null ? tokenSettings.hashCode() : 0);
+        return result;
     }
 
     @Override

@@ -25,7 +25,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
     }
 
     @Override
-    public Subcategory findById(Integer subcategoryId) {
+    public Subcategory find(Integer subcategoryId) {
         return this
                 .subcategoryRepository
                 .findById(subcategoryId)
@@ -43,9 +43,9 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
     }
 
     @Override
-    public Subcategory updateById(Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
+    public Subcategory update(Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
         if(subcategoryId.equals(subcategoryToBeUpdated.getId())){
-            LocalDateTime storedCreatedAtTimestamp = this.findById(subcategoryId).getCreatedAt();
+            LocalDateTime storedCreatedAtTimestamp = this.find(subcategoryId).getCreatedAt();
             TimestampedUtils.updateTimeStamps(subcategoryToBeUpdated, storedCreatedAtTimestamp);
             var updatedSubcategory = this.subcategoryRepository.save(subcategoryToBeUpdated);
             return updatedSubcategory;
@@ -54,7 +54,7 @@ public class SubcategoryService implements BasicCrudService<Subcategory> {
     }
 
     @Override
-    public void deleteById(Integer categoryId) {
+    public void delete(Integer categoryId) {
         if(this.subcategoryRepository.existsById(categoryId)) {
             this.subcategoryRepository.deleteById(categoryId);
             return;

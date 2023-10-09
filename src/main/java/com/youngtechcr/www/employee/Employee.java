@@ -74,13 +74,24 @@ public class Employee implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Employee employee = (Employee) o;
-        return Float.compare(salary, employee.salary) == 0 && Objects.equals(id, employee.id) && Objects.equals(user, employee.user) && Objects.equals(createdAt, employee.createdAt) && Objects.equals(updatedAt, employee.updatedAt);
+
+        if (Float.compare(salary, employee.salary) != 0) return false;
+        if (!Objects.equals(id, employee.id)) return false;
+        if (!Objects.equals(user, employee.user)) return false;
+        if (!Objects.equals(createdAt, employee.createdAt)) return false;
+        return Objects.equals(updatedAt, employee.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, salary, createdAt, updatedAt);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (salary != 0.0f ? Float.floatToIntBits(salary) : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        return result;
     }
 
     @Override

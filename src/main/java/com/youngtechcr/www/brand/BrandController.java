@@ -4,12 +4,16 @@ package com.youngtechcr.www.brand;
 import com.youngtechcr.www.http.BasicCrudController;
 import com.youngtechcr.www.product.Product;
 import com.youngtechcr.www.http.ResponseEntityUtils;
+import com.youngtechcr.www.product.ProductAttribute;
 import com.youngtechcr.www.product.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.youngtechcr.www.product.ProductAttribute.ID;
+import static com.youngtechcr.www.product.ProductAttribute.NAME;
 
 @RestController
 @RequestMapping(path = "/brands")
@@ -24,10 +28,25 @@ public class BrandController implements BasicCrudController<Brand> {
         this.productService = productService;
     }
 
+
+    @GetMapping
+    public ResponseEntity<Brand> whatIsMyBrand(
+            @RequestParam("attr")
+            String attribute,
+            @RequestParam(name = "type", required = false, defaultValue = "ID")
+            ProductAttribute type
+    ) {
+        var prod = switch (type) {
+            case ID -> productService.findById(Integer.parseInt(attribute));
+            case NAME -> productService.findByName(attribute);
+        };
+        return ResponseEntity.ok(prod.getBrand());
+    }
+
     @Override
     @GetMapping(path = "/{id}")
     public ResponseEntity<Brand> findById(@PathVariable("id") Integer brandId) {
-        Brand fetchedBrand = this.brandService.findById(brandId);
+        Brand fetchedBrand = this.brandService.find(brandId);
         return ResponseEntity.ok().body(fetchedBrand);
     }
     @Override
@@ -43,14 +62,14 @@ public class BrandController implements BasicCrudController<Brand> {
             @Validated @PathVariable("id") Integer brandId,
             @RequestBody Brand brandToBeUpdated
     ) {
-        Brand updatedBrand = this.brandService.updateById(brandId, brandToBeUpdated);
+        Brand updatedBrand = this.brandService.update(brandId, brandToBeUpdated);
         return ResponseEntity.ok(updatedBrand);
     }
 
     @Override
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Brand> deleteById(@Validated @PathVariable("id") Integer brandId){
-        this.brandService.deleteById(brandId);
+        this.brandService.delete(brandId);
         return ResponseEntity.noContent().build();
     }
 

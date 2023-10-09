@@ -54,13 +54,20 @@ public class IdentityProvider {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         IdentityProvider that = (IdentityProvider) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(users, that.users);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        return Objects.equals(users, that.users);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, users);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (users != null ? users.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -68,7 +75,6 @@ public class IdentityProvider {
         return "IdentityProvider{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-//                ", users=" + users +
                 '}';
     }
 }

@@ -46,22 +46,17 @@ public class EidteAuthenticationProvider implements AuthenticationProvider {
     private final OAuth2AuthorizationService authorizationService;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
     private final UserService userService;
-//    private final SessionRegistry sessionRegistry;
 
     public EidteAuthenticationProvider(
             OAuth2AuthorizationService authorizationService,
             OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
             UserService userService
-//            ,
-//            SessionRegistry sessionRegistry
     ) {
         this.userService = userService;
-        // Yeah, I absolutely copy pasted this 2 assertions above
         Assert.notNull(authorizationService, "authorizationService cannot be null");
         Assert.notNull(tokenGenerator, "tokenGenerator cannot be null");
         this.authorizationService = authorizationService;
         this.tokenGenerator = tokenGenerator;
-//        this.sessionRegistry = sessionRegistry;
     }
 
 

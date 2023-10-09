@@ -2,6 +2,7 @@ package com.youngtechcr.www.security.user;
 
 import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.customer.CustomerService;
+import com.youngtechcr.www.domain.TimestampedUtils;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.person.Person;
@@ -150,8 +151,7 @@ public class UserService {
 
                    // #6 Build customer based on previously created objs and save
                    var customer =  new Customer();
-                   customer.setCreatedAt(LocalDateTime.now());
-                   customer.setUpdatedAt(LocalDateTime.now());
+                   TimestampedUtils.setTimestampsToNow(customer);
                    customer.setUser(createdUser);
                    // save customer
                    customerService.create(customer);

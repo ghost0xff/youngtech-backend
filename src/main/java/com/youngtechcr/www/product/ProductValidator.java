@@ -14,7 +14,6 @@ import com.youngtechcr.www.order.item.OrderItem;
 import com.youngtechcr.www.product.image.ProductImage;
 import com.youngtechcr.www.regex.RegexService;
 import com.youngtechcr.www.regex.Regexes;
-import com.youngtechcr.www.sale.Sale;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +54,6 @@ public class ProductValidator implements Validator<Product> {
         Category category = product.getCategory();
         Subcategory subcategory = product.getSubcategory();
         List<ProductImage> imageList = product.getImages();
-        List<Sale> salesList = product.getSaleList();
         List<OrderItem> orderedProductsList = product.getOrderedProductsList();
 
         if(isUpdate) {

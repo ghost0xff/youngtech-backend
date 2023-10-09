@@ -30,16 +30,21 @@ public class Order implements Timestamped {
     private boolean isCanceled;
     @Column(name = "order_date")
     private LocalDateTime orderDate;
-    @Column(name = "delivery_date")
-    private LocalDateTime deliveryDate;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "delivery_date_from")
+    private LocalDateTime deliveryFrom;
+    @Column(name = "delivery_date_to")
+    private LocalDateTime deliveryTo;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_id_customer", referencedColumnName = "id_customer")
     private Customer customer;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order")
     @JsonProperty("orderedProducts")
     private List<OrderItem> items;
 
@@ -121,14 +126,6 @@ public class Order implements Timestamped {
                                                             this.orderDate = orderDate;
                                                                                        }
 
-    public LocalDateTime getDeliveryDate() {
-                                                 return deliveryDate;
-                                                                     }
-
-    public void setDeliveryDate(LocalDateTime deliveryDate) {
-                                                                  this.deliveryDate = deliveryDate;
-                                                                                                   }
-
     @JsonBackReference(value = "customer-order")
     public Customer getCustomer() {
                                         return this.customer;
@@ -147,32 +144,76 @@ public class Order implements Timestamped {
         this.items = orderedProductsList;
     }
 
+    public LocalDateTime getDeliveryFrom() {
+        return deliveryFrom;
+    }
+
+    public void setDeliveryFrom(LocalDateTime deliveryFrom) {
+        this.deliveryFrom = deliveryFrom;
+    }
+
+    public LocalDateTime getDeliveryTo() {
+        return deliveryTo;
+    }
+
+    public void setDeliveryTo(LocalDateTime deliveryTo) {
+        this.deliveryTo = deliveryTo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Order order = (Order) o;
-        return Float.compare(order.total, total) == 0 && Float.compare(order.subtotal, subtotal) == 0 && ivaPercentage == order.ivaPercentage && isDelivered == order.isDelivered && isCanceled == order.isCanceled && Objects.equals(id, order.id) && Objects.equals(orderDate, order.orderDate) && Objects.equals(deliveryDate, order.deliveryDate) && Objects.equals(createdAt, order.createdAt) && Objects.equals(updatedAt, order.updatedAt) && Objects.equals(customer, order.customer) && Objects.equals(items, order.items);
+
+        if (Float.compare(total, order.total) != 0) return false;
+        if (Float.compare(subtotal, order.subtotal) != 0) return false;
+        if (Float.compare(ivaPercentage, order.ivaPercentage) != 0) return false;
+        if (isDelivered != order.isDelivered) return false;
+        if (isCanceled != order.isCanceled) return false;
+        if (!Objects.equals(id, order.id)) return false;
+        if (!Objects.equals(orderDate, order.orderDate)) return false;
+        if (!Objects.equals(createdAt, order.createdAt)) return false;
+        if (!Objects.equals(updatedAt, order.updatedAt)) return false;
+        if (!Objects.equals(deliveryFrom, order.deliveryFrom)) return false;
+        if (!Objects.equals(deliveryTo, order.deliveryTo)) return false;
+        if (!Objects.equals(customer, order.customer)) return false;
+        return Objects.equals(items, order.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, total, subtotal, ivaPercentage, isDelivered, isCanceled, orderDate, deliveryDate, createdAt, updatedAt, customer, items);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (total != 0.0f ? Float.floatToIntBits(total) : 0);
+        result = 31 * result + (subtotal != 0.0f ? Float.floatToIntBits(subtotal) : 0);
+        result = 31 * result + (ivaPercentage != 0.0f ? Float.floatToIntBits(ivaPercentage) : 0);
+        result = 31 * result + (isDelivered ? 1 : 0);
+        result = 31 * result + (isCanceled ? 1 : 0);
+        result = 31 * result + (orderDate != null ? orderDate.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (deliveryFrom != null ? deliveryFrom.hashCode() : 0);
+        result = 31 * result + (deliveryTo != null ? deliveryTo.hashCode() : 0);
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "id =" + id +
+                "id=" + id +
                 ", total=" + total +
                 ", subtotal=" + subtotal +
                 ", ivaPercentage=" + ivaPercentage +
                 ", isDelivered=" + isDelivered +
                 ", isCanceled=" + isCanceled +
                 ", orderDate=" + orderDate +
-                ", deliveryDate=" + deliveryDate +
+                ", deliveryFrom=" + deliveryFrom +
+                ", deliveryTo=" + deliveryTo +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                    '}';
-        }
+                '}';
+    }
 }

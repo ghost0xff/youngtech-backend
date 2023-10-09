@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.domain.Timestamped;
+import com.youngtechcr.www.order.Order;
 import com.youngtechcr.www.product.Product;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_sale")
@@ -17,24 +17,23 @@ public class Sale implements Timestamped {
     @Id
     @Column(name = "id_sale")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idSale;
+    private Integer id;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_id_product", referencedColumnName = "id_product")
-    private Product product;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_id_customer",
-            referencedColumnName = "id_customer")
-    private Customer customer;
+    private float reveneu;
+    @Column(name = "tax_debt")
+    private float taxDebt;
+    @OneToOne
+    @JoinColumn(name = "fk_id_order", referencedColumnName = "id_order")
+    private Order order;
 
     public Sale() {
     }
 
     public Sale(Integer idSale) {
-        this.idSale = idSale;
+        this.id = idSale;
     }
 
     @Override
@@ -51,55 +50,71 @@ public class Sale implements Timestamped {
     public LocalDateTime getUpdatedAt() {
         return this.updatedAt;
     }
-
     @Override
     public void setUpdatedAt(LocalDateTime timestamp) {
         this.updatedAt = timestamp;
     }
 
-    public Integer getIdSale() {
-        return idSale;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdSale(Integer idSale) {
-        this.idSale = idSale;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @JsonManagedReference(value = "product-sale")
-    public Product getProduct() {
-        return product;
+    public float getReveneu() {
+        return reveneu;
     }
 
-    @JsonBackReference(value = "customer-sale")
-    public Customer getCustomer() {
-        return customer;
+    public void setReveneu(float reveneu) {
+        this.reveneu = reveneu;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public float getTaxDebt() {
+        return taxDebt;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setTaxDebt(float taxDebt) {
+        this.taxDebt = taxDebt;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Sale sale = (Sale) o;
-        return Objects.equals(idSale, sale.idSale) && Objects.equals(createdAt, sale.createdAt) && Objects.equals(updatedAt, sale.updatedAt) && Objects.equals(product, sale.product) && Objects.equals(customer, sale.customer);
+        if (Float.compare(reveneu, sale.reveneu) != 0) return false;
+        if (Float.compare(taxDebt, sale.taxDebt) != 0) return false;
+        if (createdAt != null ? !createdAt.equals(sale.createdAt) : sale.createdAt != null) return false;
+        if (updatedAt != null ? !updatedAt.equals(sale.updatedAt) : sale.updatedAt != null) return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idSale, createdAt, updatedAt, product, customer);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (reveneu != 0.0f ? Float.floatToIntBits(reveneu) : 0);
+        result = 31 * result + (taxDebt != 0.0f ? Float.floatToIntBits(taxDebt) : 0);
+        result = 31 * result + (order != null ? order.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Sale{" +
-                "idSale=" + idSale +
+                "idSale=" + id +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

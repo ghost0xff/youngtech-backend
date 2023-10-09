@@ -26,7 +26,17 @@ public class ProductController {
         this.imageService = imageService;
     }
 
+    // SEARCH
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<Product>> search(
+            @RequestParam("q") String query
+    ) {
+        var prods = productService.search(query);
+        return ResponseEntity.ok(prods);
+    }
 
+
+    // PRODUCTS
     @GetMapping
     public ResponseEntity<List<Product>> findSomeProucts(
             @RequestParam(value = "page", defaultValue = "0", required = false)  int pageNum,
@@ -84,6 +94,9 @@ public class ProductController {
         this.productService.deleteProductById(productId);
         return ResponseEntity.noContent().build();
     }
+
+    // IMAGES
+
     @PostMapping(path = "/{id}/images")
     public ResponseEntity<ProductImage> uploadImageByProductId(
             @PathVariable("id") Integer productId,
@@ -139,6 +152,5 @@ public class ProductController {
         imageService.deleteImageByProduct(productId, productImageId);
         return ResponseEntity.noContent().build();
     }
-
 
 }

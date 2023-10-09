@@ -99,7 +99,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public Subcategory findSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId) {
         Category categoryToBeConsulted = this.findCategoryById(categoryId);
-        Subcategory requetedSubcategory = this.subcategoryService.findById(subcategoryId);
+        Subcategory requetedSubcategory = this.subcategoryService.find(subcategoryId);
         if(requetedSubcategory.getCategory() != null && requetedSubcategory.getCategory().equals(categoryToBeConsulted)) {
             return requetedSubcategory;
         }
@@ -110,7 +110,7 @@ public class CategoryService {
     public Subcategory updateSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId, Subcategory subcategoryToBeUpdated) {
         Category categoryWhosSubcategoryWillBeModified = this.findCategoryById(categoryId);
         if(subcategoryToBeUpdated.getCategory().getId().equals(categoryWhosSubcategoryWillBeModified.getId())) {
-            var updatedSubcategory = subcategoryService.updateById(subcategoryId, subcategoryToBeUpdated);
+            var updatedSubcategory = subcategoryService.update(subcategoryId, subcategoryToBeUpdated);
             log.info("Updated subcategory: " + updatedSubcategory + "in category: " + categoryWhosSubcategoryWillBeModified);
             return updatedSubcategory;
         }
@@ -120,9 +120,9 @@ public class CategoryService {
     @Transactional
     public void deleteSubcategoryByCategoryId(Integer categoryId, Integer subcategoryId) {
         Category categoryWhosSubcategotyWillBeDeleted = this.findCategoryById(categoryId);
-        Subcategory subcategoryToBeDeleted = this.subcategoryService.findById(subcategoryId);
+        Subcategory subcategoryToBeDeleted = this.subcategoryService.find(subcategoryId);
         if(subcategoryToBeDeleted.getCategory().getId().equals(categoryWhosSubcategotyWillBeDeleted.getId())) {
-            this.subcategoryService.deleteById(subcategoryId);
+            this.subcategoryService.delete(subcategoryId);
             log.info("Deleted subcategory: " + subcategoryToBeDeleted + " from category " + categoryWhosSubcategotyWillBeDeleted);
             return;
         }

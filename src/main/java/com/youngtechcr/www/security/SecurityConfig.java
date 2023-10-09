@@ -14,6 +14,8 @@ import com.youngtechcr.www.security.crypto.CryptoProps;
 import com.youngtechcr.www.security.eidte.*;
 import com.youngtechcr.www.security.idp.IdentityProviderRepository;
 import com.youngtechcr.www.security.oidc.OidcUserInfoService;
+import com.youngtechcr.www.security.passwd.PasswdAuthenticationConverter;
+import com.youngtechcr.www.security.passwd.PasswdAuthenticationProvider;
 import com.youngtechcr.www.security.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,15 +121,22 @@ public class SecurityConfig {
                                             registeredClientRepository,
                                             this.idpRepository
                                     ));
+                                    converters.add(new PasswdAuthenticationConverter(
+                                            registeredClientRepository,
+                                            this.idpRepository
+                                    ));
                                 })
                                 .authenticationProviders( providers -> {
                                    providers.add(new EidteAuthenticationProvider(
                                            authorizationService,
                                            tokenGenerator,
                                            this.userService
-//                                           ,
-//                                           sessionRegistry()
                                    ));
+                                    providers.add(new PasswdAuthenticationProvider(
+                                            authorizationService,
+                                            tokenGenerator,
+                                            this.userService
+                                    ));
                                 })
                 );
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();

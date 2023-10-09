@@ -142,28 +142,46 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
-        return emailVerified == user.emailVerified && Objects.equals(id, user.id) && Objects.equals(identityProvider, user.identityProvider) && Objects.equals(idpExternalIdentifier, user.idpExternalIdentifier) && Objects.equals(email, user.email) && Objects.equals(signedUpAt, user.signedUpAt) && Objects.equals(lastUpdateAt, user.lastUpdateAt) && Objects.equals(roles, user.roles) && Objects.equals(person, user.person) && Objects.equals(profile, user.profile);
+        if (emailVerified != user.emailVerified) return false;
+        if (!Objects.equals(id, user.id)) return false;
+        if (!Objects.equals(identityProvider, user.identityProvider))
+            return false;
+        if (!Objects.equals(idpExternalIdentifier, user.idpExternalIdentifier))
+            return false;
+        if (!Objects.equals(email, user.email)) return false;
+        if (!Objects.equals(signedUpAt, user.signedUpAt)) return false;
+        if (!Objects.equals(lastUpdateAt, user.lastUpdateAt)) return false;
+        if (!Objects.equals(roles, user.roles)) return false;
+        if (!Objects.equals(person, user.person)) return false;
+        return Objects.equals(profile, user.profile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, identityProvider, idpExternalIdentifier, email, emailVerified, signedUpAt, lastUpdateAt, roles, person, profile);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (identityProvider != null ? identityProvider.hashCode() : 0);
+        result = 31 * result + (idpExternalIdentifier != null ? idpExternalIdentifier.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (emailVerified ? 1 : 0);
+        result = 31 * result + (signedUpAt != null ? signedUpAt.hashCode() : 0);
+        result = 31 * result + (lastUpdateAt != null ? lastUpdateAt.hashCode() : 0);
+        result = 31 * result + (roles != null ? roles.hashCode() : 0);
+        result = 31 * result + (person != null ? person.hashCode() : 0);
+        result = 31 * result + (profile != null ? profile.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", identityProvider=" + identityProvider +
                 ", idpExternalIdentifier='" + idpExternalIdentifier + '\'' +
                 ", email='" + email + '\'' +
                 ", emailVerified='" + emailVerified + '\'' +
                 ", signedUpAt=" + signedUpAt +
                 ", lastUpdateAt=" + lastUpdateAt +
-//                ", roles=" + roles +
-                ", person=" + person +
-                ", profile=" + profile +
                 '}';
     }
 

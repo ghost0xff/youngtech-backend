@@ -76,13 +76,22 @@ public class Role implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Role role = (Role) o;
-        return Objects.equals(id, role.id) && Objects.equals(name, role.name) && Objects.equals(createdAt, role.createdAt) && Objects.equals(updatedAt, role.updatedAt);
+
+        if (!Objects.equals(id, role.id)) return false;
+        if (!Objects.equals(name, role.name)) return false;
+        if (!Objects.equals(createdAt, role.createdAt)) return false;
+        return Objects.equals(updatedAt, role.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, createdAt, updatedAt);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        return result;
     }
 
     @Override

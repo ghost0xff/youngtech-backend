@@ -50,10 +50,6 @@ public class Product implements Timestamped {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonProperty("images")
     private List<ProductImage> images;
-    @OneToMany(mappedBy = "product")
-    @JsonProperty("sales")
-    @JsonIgnore
-    private List<Sale> saleList;
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ShoppingCartItem> shoppingCartItems;
@@ -173,15 +169,6 @@ public class Product implements Timestamped {
         this.images = images;
     }
 
-    @JsonBackReference(value = "product-sale")
-    public List<Sale> getSaleList() {
-        return saleList;
-    }
-
-    public void setSaleList(List<Sale> saleList) {
-        this.saleList = saleList;
-    }
-
     @JsonBackReference(value = "product-ordered_products")
     public List<OrderItem> getOrderedProductsList() {
         return orderedProductsList;
@@ -203,13 +190,43 @@ public class Product implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Product product = (Product) o;
-        return stock == product.stock && Float.compare(price, product.price) == 0 && Float.compare(discountPercentage, product.discountPercentage) == 0 && Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(createdAt, product.createdAt) && Objects.equals(updatedAt, product.updatedAt) && Objects.equals(brand, product.brand) && Objects.equals(category, product.category) && Objects.equals(subcategory, product.subcategory) && Objects.equals(images, product.images) && Objects.equals(saleList, product.saleList) && Objects.equals(shoppingCartItems, product.shoppingCartItems) && Objects.equals(orderedProductsList, product.orderedProductsList);
+
+        if (stock != product.stock) return false;
+        if (Float.compare(price, product.price) != 0) return false;
+        if (Float.compare(discountPercentage, product.discountPercentage) != 0) return false;
+        if (!Objects.equals(id, product.id)) return false;
+        if (!Objects.equals(name, product.name)) return false;
+        if (!Objects.equals(description, product.description)) return false;
+        if (!Objects.equals(createdAt, product.createdAt)) return false;
+        if (!Objects.equals(updatedAt, product.updatedAt)) return false;
+        if (!Objects.equals(brand, product.brand)) return false;
+        if (!Objects.equals(category, product.category)) return false;
+        if (!Objects.equals(subcategory, product.subcategory)) return false;
+        if (!Objects.equals(images, product.images)) return false;
+        if (!Objects.equals(shoppingCartItems, product.shoppingCartItems))
+            return false;
+        return Objects.equals(orderedProductsList, product.orderedProductsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, stock, description, price, discountPercentage, createdAt, updatedAt, brand, category, subcategory, images, saleList, shoppingCartItems, orderedProductsList);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + stock;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (price != 0.0f ? Float.floatToIntBits(price) : 0);
+        result = 31 * result + (discountPercentage != 0.0f ? Float.floatToIntBits(discountPercentage) : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (brand != null ? brand.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (subcategory != null ? subcategory.hashCode() : 0);
+        result = 31 * result + (images != null ? images.hashCode() : 0);
+        result = 31 * result + (shoppingCartItems != null ? shoppingCartItems.hashCode() : 0);
+        result = 31 * result + (orderedProductsList != null ? orderedProductsList.hashCode() : 0);
+        return result;
     }
 
     @Override

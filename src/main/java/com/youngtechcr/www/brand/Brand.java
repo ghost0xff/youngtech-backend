@@ -1,5 +1,6 @@
 package com.youngtechcr.www.brand;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.youngtechcr.www.product.Product;
@@ -24,7 +25,7 @@ public class Brand implements Timestamped {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
-    @JsonProperty("products")
+
     private List<Product> products;
 
     public Brand() {
@@ -70,6 +71,7 @@ public class Brand implements Timestamped {
     }
 
     @JsonManagedReference(value = "product-brand")
+    @JsonIgnore
     public List<Product> getProducts() {
         return products;
     }
@@ -82,13 +84,24 @@ public class Brand implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Brand brand = (Brand) o;
-        return Objects.equals(id, brand.id) && Objects.equals(name, brand.name) && Objects.equals(createdAt, brand.createdAt) && Objects.equals(updatedAt, brand.updatedAt) && Objects.equals(products, brand.products);
+
+        if (!Objects.equals(id, brand.id)) return false;
+        if (!Objects.equals(name, brand.name)) return false;
+        if (!Objects.equals(createdAt, brand.createdAt)) return false;
+        if (!Objects.equals(updatedAt, brand.updatedAt)) return false;
+        return Objects.equals(products, brand.products);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, createdAt, updatedAt, products);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (products != null ? products.hashCode() : 0);
+        return result;
     }
 
     @Override

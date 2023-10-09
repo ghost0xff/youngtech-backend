@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.order.Order;
 import com.youngtechcr.www.person.Person;
-import com.youngtechcr.www.sale.Sale;
 import com.youngtechcr.www.security.user.User;
 import com.youngtechcr.www.shoppingcart.ShoppingCart;
 import jakarta.persistence.*;
@@ -30,21 +29,12 @@ public class Customer implements Timestamped {
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Order> orders;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    private List<Sale> sales;
-
     @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private ShoppingCart shoppingCart;
 
-
-    @JsonManagedReference(value = "customer-sale")
-    public List<Sale> getSales() {
-        return sales;
-    }
 
     @JsonManagedReference(value = "customer-order")
     public List<Order> getOrders() {
@@ -89,10 +79,6 @@ public class Customer implements Timestamped {
         this.updatedAt = updatedAt;
     }
 
-    public void setSales(List<Sale> sales) {
-        this.sales = sales;
-    }
-
     @JsonManagedReference(value = "customer-cart")
     public ShoppingCart getShoppingCart() {
         return shoppingCart;
@@ -106,13 +92,26 @@ public class Customer implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id) && Objects.equals(user, customer.user) && Objects.equals(createdAt, customer.createdAt) && Objects.equals(updatedAt, customer.updatedAt) && Objects.equals(orders, customer.orders) && Objects.equals(sales, customer.sales) && Objects.equals(shoppingCart, customer.shoppingCart);
+
+        if (!Objects.equals(id, customer.id)) return false;
+        if (!Objects.equals(user, customer.user)) return false;
+        if (!Objects.equals(createdAt, customer.createdAt)) return false;
+        if (!Objects.equals(updatedAt, customer.updatedAt)) return false;
+        if (!Objects.equals(orders, customer.orders)) return false;
+        return Objects.equals(shoppingCart, customer.shoppingCart);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, createdAt, updatedAt, orders, sales, shoppingCart);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (orders != null ? orders.hashCode() : 0);
+        result = 31 * result + (shoppingCart != null ? shoppingCart.hashCode() : 0);
+        return result;
     }
 
     @Override

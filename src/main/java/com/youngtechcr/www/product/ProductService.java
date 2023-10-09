@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,12 @@ public class ProductService {
         this.subcategoryService = subcategoryService;
     }
 
+    @Transactional(readOnly = true)
+    public List<Product> search(String query) {
+        return productRepository.search(query);
+    }
+
+   @Transactional(readOnly = true)
    public List<Product> findSomeProducts(int pageNum, int pageSize) {
         if (pageSize > 1_000) {
             throw new QuantityOfElementsException(
@@ -115,7 +122,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Product findProductByBrandId(Integer productId, Integer brandId) {
-        Brand requestedBrand = brandService.findById(brandId);
+        Brand requestedBrand = brandService.find(brandId);
         Product requestedProduct = findById(productId);
         if(requestedProduct.getBrand().equals(requestedBrand)) {
             return requestedProduct; } throw new ValueMismatchException(HttpErrorMessages .REQUESTED_CHILD_ELEMENT_DOESNT_EXIST); }

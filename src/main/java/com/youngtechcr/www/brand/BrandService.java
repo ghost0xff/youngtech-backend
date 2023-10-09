@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class BrandService implements BasicCrudService<Brand> {
+public class BrandService {
 
     private final BrandRepository brandRepository;
 
@@ -26,9 +26,14 @@ public class BrandService implements BasicCrudService<Brand> {
         this.brandRepository = brandRepository;
     }
 
-    @Override
+
     @Transactional(readOnly = true)
-    public Brand findById(Integer brandId) {
+    public Brand find(Product product) {
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    public Brand find(Integer brandId) {
         return this
                 .brandRepository
                 .findById(brandId)
@@ -46,11 +51,11 @@ public class BrandService implements BasicCrudService<Brand> {
         throw new AlreadyExistsException(HttpErrorMessages.CANT_CREATE_DUPLICATE_NAME);
     }
 
-    @Override
+
     @Transactional
-    public Brand updateById(Integer brandId, Brand brandToBeUpdated) {
+    public Brand update(Integer brandId, Brand brandToBeUpdated) {
         if (brandId.equals(brandToBeUpdated.getId())) {
-            LocalDateTime storedCreatedAtTimeStamp = this.findById(brandId).getCreatedAt();
+            LocalDateTime storedCreatedAtTimeStamp = this.find(brandId).getCreatedAt();
             TimestampedUtils.updateTimeStamps(brandToBeUpdated, storedCreatedAtTimeStamp);
             Brand updatedBrand = this.brandRepository.save(brandToBeUpdated);
             log.info("Updated brand: " + updatedBrand);
@@ -59,9 +64,9 @@ public class BrandService implements BasicCrudService<Brand> {
         throw new ValueMismatchException(HttpErrorMessages.PROVIDED_IDS_DONT_MATCH);
     }
 
-    @Override
+
     @Transactional
-    public void deleteById(Integer brandId) {
+    public void delete(Integer brandId) {
         if (existsById(brandId)) {
             this.brandRepository.deleteById(brandId);
             log.info("Deleted Brand with id: " + brandId);
@@ -72,7 +77,7 @@ public class BrandService implements BasicCrudService<Brand> {
 
     @Transactional(readOnly = true)
     public List<Product> findAllProductsByBrandId(Integer brandId) {
-        var requestedBrand = this.findById(brandId);
+        var requestedBrand = this.find(brandId);
         return requestedBrand.getProducts();
     }
 

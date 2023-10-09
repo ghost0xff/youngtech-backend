@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class ShoppingCartService {
                 .orElseGet(() -> {
                     var cart = new ShoppingCart();
                     cart.setCustomer(customer);
-                    cart.setItems(Collections.emptySet());
+                    cart.setItems(Collections.emptyList());
                     TimestampedUtils.setTimestampsToNow(cart);
                     var created = cartRepo.save(cart);
                     logger.trace("Created new cart since none existed for customer with id " + customer.getId());
@@ -53,7 +54,7 @@ public class ShoppingCartService {
     }
     @CustomerRole
     @Transactional(readOnly = true)
-    public Set<ShoppingCartItem> findItems(Customer customer) {
+    public List<ShoppingCartItem> findItems(Customer customer) {
         var cart = this.findCart(customer);
         return cart.getItems();
     }

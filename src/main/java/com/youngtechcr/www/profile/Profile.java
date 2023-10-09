@@ -57,13 +57,20 @@ public class Profile {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Profile profile = (Profile) o;
-        return Objects.equals(user, profile.user) && Objects.equals(profilePicture, profile.profilePicture);
+
+        if (!Objects.equals(id, profile.id)) return false;
+        if (!Objects.equals(user, profile.user)) return false;
+        return Objects.equals(profilePicture, profile.profilePicture);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, profilePicture);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (profilePicture != null ? profilePicture.hashCode() : 0);
+        return result;
     }
 
     @Override

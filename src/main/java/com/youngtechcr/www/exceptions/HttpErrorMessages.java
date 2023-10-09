@@ -10,6 +10,8 @@ public final class HttpErrorMessages {
     public static final String CANT_DELETE_ITEM_IF_NOT_PRESENT = "Can´t delete element from storage if it doesn´t exist.";
     public static final String CANT_DELETE_MORE_ITEMS_THAN_ARE_AVAILABLE = "Can´t delete element(s) if quantity to be deleted exceeds stored quantity of elements";
     public static final String CANT_ORDER_EMPTY_SHOPPING_CART = "Shopping Cart must contain items before placing an order.";
+    public static final String CANT_REMOVE_ORDER_ITEM_AFTER_DELIVER = "Can't remove orderitem if delivery date has past";
+    public static final String CANT_CANCEL_ORDER_AFTER_DELIVER = "Can't cancel an order if delivery date has past";
 
 
     // PRODUCT VALIDATION

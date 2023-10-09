@@ -92,13 +92,26 @@ public class ShoppingCartItem implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ShoppingCartItem that = (ShoppingCartItem) o;
-        return quantity == that.quantity && Objects.equals(id, that.id) && Objects.equals(product, that.product) && Objects.equals(shoppingCart, that.shoppingCart) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+
+        if (quantity != that.quantity) return false;
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(product, that.product)) return false;
+        if (!Objects.equals(shoppingCart, that.shoppingCart)) return false;
+        if (!Objects.equals(createdAt, that.createdAt)) return false;
+        return Objects.equals(updatedAt, that.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, product, shoppingCart, quantity, createdAt, updatedAt);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (product != null ? product.hashCode() : 0);
+        result = 31 * result + (shoppingCart != null ? shoppingCart.hashCode() : 0);
+        result = 31 * result + quantity;
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        return result;
     }
 
     @Override

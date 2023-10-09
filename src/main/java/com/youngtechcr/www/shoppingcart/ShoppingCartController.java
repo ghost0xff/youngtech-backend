@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -37,7 +38,7 @@ public class ShoppingCartController {
     }
 
     @GetMapping(path = "/items")
-    public ResponseEntity<Set<ShoppingCartItem>> findMyItems(
+    public ResponseEntity<List<ShoppingCartItem>> findMyItems(
             Authentication authn
     ) {
         var customer = authToCustomerConvt.convert(authn);

@@ -7,6 +7,7 @@ import com.youngtechcr.www.storage.Storable;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_profile_picture")
@@ -109,6 +110,38 @@ public class ProfilePicture implements Storable, Timestamped {
 
     public void setProfile(Profile profile) {
         this.profile = profile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProfilePicture that = (ProfilePicture) o;
+
+        if (sizeInBytes != that.sizeInBytes) return false;
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(serverName, that.serverName)) return false;
+        if (!Objects.equals(originalName, that.originalName)) return false;
+        if (!Objects.equals(relativePath, that.relativePath)) return false;
+        if (!Objects.equals(mimeType, that.mimeType)) return false;
+        if (!Objects.equals(createdAt, that.createdAt)) return false;
+        if (!Objects.equals(updatedAt, that.updatedAt)) return false;
+        return Objects.equals(profile, that.profile);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
+        result = 31 * result + (originalName != null ? originalName.hashCode() : 0);
+        result = 31 * result + (relativePath != null ? relativePath.hashCode() : 0);
+        result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+        result = 31 * result + (int) (sizeInBytes ^ (sizeInBytes >>> 32));
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (profile != null ? profile.hashCode() : 0);
+        return result;
     }
 
     @Override

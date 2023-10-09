@@ -95,13 +95,26 @@ public class Subcategory implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Subcategory that = (Subcategory) o;
-        return Objects.equals(id, that.id) && Objects.equals(category, that.category) && Objects.equals(name, that.name) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(products, that.products);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(category, that.category)) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(createdAt, that.createdAt)) return false;
+        if (!Objects.equals(updatedAt, that.updatedAt)) return false;
+        return Objects.equals(products, that.products);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, category, name, createdAt, updatedAt, products);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (products != null ? products.hashCode() : 0);
+        return result;
     }
 
     @Override

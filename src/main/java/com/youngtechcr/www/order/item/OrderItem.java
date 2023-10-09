@@ -107,13 +107,30 @@ public class OrderItem implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderItem that = (OrderItem) o;
-        return isDelivered == that.isDelivered && isCanceled == that.isCanceled && quantity == that.quantity && Objects.equals(id, that.id) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(order, that.order) && Objects.equals(product, that.product);
+
+        OrderItem item = (OrderItem) o;
+
+        if (isDelivered != item.isDelivered) return false;
+        if (isCanceled != item.isCanceled) return false;
+        if (quantity != item.quantity) return false;
+        if (!Objects.equals(id, item.id)) return false;
+        if (!Objects.equals(createdAt, item.createdAt)) return false;
+        if (!Objects.equals(updatedAt, item.updatedAt)) return false;
+        if (!Objects.equals(order, item.order)) return false;
+        return Objects.equals(product, item.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, isDelivered, isCanceled, createdAt, updatedAt, quantity, order, product);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (isDelivered ? 1 : 0);
+        result = 31 * result + (isCanceled ? 1 : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + quantity;
+        result = 31 * result + (order != null ? order.hashCode() : 0);
+        result = 31 * result + (product != null ? product.hashCode() : 0);
+        return result;
     }
 
     @Override

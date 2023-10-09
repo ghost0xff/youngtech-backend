@@ -5,8 +5,8 @@ package com.youngtechcr.www.http;
 * and complicated when naming methods
 * */
 public interface BasicCrudService<T> {
-    T findById(Integer id);
+    T find(Integer id);
     T create(T toBeCreated);
-    T updateById(Integer id, T toBeUpdated);
-    void deleteById(Integer id);
+    T update(Integer id, T toBeUpdated);
+    void delete(Integer id);
 }

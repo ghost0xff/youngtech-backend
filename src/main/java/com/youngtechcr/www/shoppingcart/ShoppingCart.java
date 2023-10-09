@@ -8,6 +8,7 @@ import com.youngtechcr.www.shoppingcart.item.ShoppingCartItem;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class ShoppingCart implements Timestamped {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "shoppingCart")
-    private Set<ShoppingCartItem> items;
+    private List<ShoppingCartItem> items;
     public ShoppingCart() {
     }
 
@@ -64,11 +65,11 @@ public class ShoppingCart implements Timestamped {
     }
 
     @JsonManagedReference(value = "cart-item")
-    public Set<ShoppingCartItem> getItems() {
+    public List<ShoppingCartItem> getItems() {
         return items;
     }
 
-    public void setItems(Set<ShoppingCartItem> items) {
+    public void setItems(List<ShoppingCartItem> items) {
         this.items = items;
     }
 
@@ -76,13 +77,26 @@ public class ShoppingCart implements Timestamped {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ShoppingCart that = (ShoppingCart) o;
-        return Objects.equals(id, that.id) && Objects.equals(customer, that.customer) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(items, that.items);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(customer, that.customer)) return false;
+        if (!Objects.equals(createdAt, that.createdAt)) return false;
+        if (!Objects.equals(updatedAt, that.updatedAt)) return false;
+        return Objects.equals(items, that.items);
     }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, customer, createdAt, updatedAt, items);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        return result;
     }
+
     @Override
     public String toString() {
         return "ShoppingCart{" +

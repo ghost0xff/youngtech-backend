@@ -399,13 +399,112 @@ public class AuthAuthorization {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         AuthAuthorization that = (AuthAuthorization) o;
-        return Objects.equals(id, that.id) && Objects.equals(registeredClientId, that.registeredClientId) && Objects.equals(principalName, that.principalName) && Objects.equals(authorizationGrantType, that.authorizationGrantType) && Objects.equals(authorizedScopes, that.authorizedScopes) && Objects.equals(attributes, that.attributes) && Objects.equals(state, that.state) && Objects.equals(authorizationCodeValue, that.authorizationCodeValue) && Objects.equals(authorizationCodeIssuedAt, that.authorizationCodeIssuedAt) && Objects.equals(authorizationCodeExpiresAt, that.authorizationCodeExpiresAt) && Objects.equals(authorizationCodeMetadata, that.authorizationCodeMetadata) && Objects.equals(accessTokenValue, that.accessTokenValue) && Objects.equals(accessTokenIssuedAt, that.accessTokenIssuedAt) && Objects.equals(accessTokenExpiresAt, that.accessTokenExpiresAt) && Objects.equals(accessTokenMetadata, that.accessTokenMetadata) && Objects.equals(accessTokenType, that.accessTokenType) && Objects.equals(accessTokenScopes, that.accessTokenScopes) && Objects.equals(refreshTokenValue, that.refreshTokenValue) && Objects.equals(refreshTokenIssuedAt, that.refreshTokenIssuedAt) && Objects.equals(refreshTokenExpiresAt, that.refreshTokenExpiresAt) && Objects.equals(refreshTokenMetadata, that.refreshTokenMetadata) && Objects.equals(oidcIdTokenValue, that.oidcIdTokenValue) && Objects.equals(oidcIdTokenIssuedAt, that.oidcIdTokenIssuedAt) && Objects.equals(oidcIdTokenExpiresAt, that.oidcIdTokenExpiresAt) && Objects.equals(oidcIdTokenMetadata, that.oidcIdTokenMetadata) && Objects.equals(oidcIdTokenClaims, that.oidcIdTokenClaims) && Objects.equals(userCodeValue, that.userCodeValue) && Objects.equals(userCodeIssuedAt, that.userCodeIssuedAt) && Objects.equals(userCodeExpiresAt, that.userCodeExpiresAt) && Objects.equals(userCodeMetadata, that.userCodeMetadata) && Objects.equals(deviceCodeValue, that.deviceCodeValue) && Objects.equals(deviceCodeIssuedAt, that.deviceCodeIssuedAt) && Objects.equals(deviceCodeExpiresAt, that.deviceCodeExpiresAt) && Objects.equals(deviceCodeMetadata, that.deviceCodeMetadata);
+
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(registeredClientId, that.registeredClientId))
+            return false;
+        if (!Objects.equals(principalName, that.principalName))
+            return false;
+        if (!Objects.equals(authorizationGrantType, that.authorizationGrantType))
+            return false;
+        if (!Objects.equals(authorizedScopes, that.authorizedScopes))
+            return false;
+        if (!Objects.equals(attributes, that.attributes)) return false;
+        if (!Objects.equals(state, that.state)) return false;
+        if (!Objects.equals(authorizationCodeValue, that.authorizationCodeValue))
+            return false;
+        if (!Objects.equals(authorizationCodeIssuedAt, that.authorizationCodeIssuedAt))
+            return false;
+        if (!Objects.equals(authorizationCodeExpiresAt, that.authorizationCodeExpiresAt))
+            return false;
+        if (!Objects.equals(authorizationCodeMetadata, that.authorizationCodeMetadata))
+            return false;
+        if (!Objects.equals(accessTokenValue, that.accessTokenValue))
+            return false;
+        if (!Objects.equals(accessTokenIssuedAt, that.accessTokenIssuedAt))
+            return false;
+        if (!Objects.equals(accessTokenExpiresAt, that.accessTokenExpiresAt))
+            return false;
+        if (!Objects.equals(accessTokenMetadata, that.accessTokenMetadata))
+            return false;
+        if (!Objects.equals(accessTokenType, that.accessTokenType))
+            return false;
+        if (!Objects.equals(accessTokenScopes, that.accessTokenScopes))
+            return false;
+        if (!Objects.equals(refreshTokenValue, that.refreshTokenValue))
+            return false;
+        if (!Objects.equals(refreshTokenIssuedAt, that.refreshTokenIssuedAt))
+            return false;
+        if (!Objects.equals(refreshTokenExpiresAt, that.refreshTokenExpiresAt))
+            return false;
+        if (!Objects.equals(refreshTokenMetadata, that.refreshTokenMetadata))
+            return false;
+        if (!Objects.equals(oidcIdTokenValue, that.oidcIdTokenValue))
+            return false;
+        if (!Objects.equals(oidcIdTokenIssuedAt, that.oidcIdTokenIssuedAt))
+            return false;
+        if (!Objects.equals(oidcIdTokenExpiresAt, that.oidcIdTokenExpiresAt))
+            return false;
+        if (!Objects.equals(oidcIdTokenMetadata, that.oidcIdTokenMetadata))
+            return false;
+        if (!Objects.equals(oidcIdTokenClaims, that.oidcIdTokenClaims))
+            return false;
+        if (!Objects.equals(userCodeValue, that.userCodeValue))
+            return false;
+        if (!Objects.equals(userCodeIssuedAt, that.userCodeIssuedAt))
+            return false;
+        if (!Objects.equals(userCodeExpiresAt, that.userCodeExpiresAt))
+            return false;
+        if (!Objects.equals(userCodeMetadata, that.userCodeMetadata))
+            return false;
+        if (!Objects.equals(deviceCodeValue, that.deviceCodeValue))
+            return false;
+        if (!Objects.equals(deviceCodeIssuedAt, that.deviceCodeIssuedAt))
+            return false;
+        if (!Objects.equals(deviceCodeExpiresAt, that.deviceCodeExpiresAt))
+            return false;
+        return Objects.equals(deviceCodeMetadata, that.deviceCodeMetadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, registeredClientId, principalName, authorizationGrantType, authorizedScopes, attributes, state, authorizationCodeValue, authorizationCodeIssuedAt, authorizationCodeExpiresAt, authorizationCodeMetadata, accessTokenValue, accessTokenIssuedAt, accessTokenExpiresAt, accessTokenMetadata, accessTokenType, accessTokenScopes, refreshTokenValue, refreshTokenIssuedAt, refreshTokenExpiresAt, refreshTokenMetadata, oidcIdTokenValue, oidcIdTokenIssuedAt, oidcIdTokenExpiresAt, oidcIdTokenMetadata, oidcIdTokenClaims, userCodeValue, userCodeIssuedAt, userCodeExpiresAt, userCodeMetadata, deviceCodeValue, deviceCodeIssuedAt, deviceCodeExpiresAt, deviceCodeMetadata);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (registeredClientId != null ? registeredClientId.hashCode() : 0);
+        result = 31 * result + (principalName != null ? principalName.hashCode() : 0);
+        result = 31 * result + (authorizationGrantType != null ? authorizationGrantType.hashCode() : 0);
+        result = 31 * result + (authorizedScopes != null ? authorizedScopes.hashCode() : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        result = 31 * result + (authorizationCodeValue != null ? authorizationCodeValue.hashCode() : 0);
+        result = 31 * result + (authorizationCodeIssuedAt != null ? authorizationCodeIssuedAt.hashCode() : 0);
+        result = 31 * result + (authorizationCodeExpiresAt != null ? authorizationCodeExpiresAt.hashCode() : 0);
+        result = 31 * result + (authorizationCodeMetadata != null ? authorizationCodeMetadata.hashCode() : 0);
+        result = 31 * result + (accessTokenValue != null ? accessTokenValue.hashCode() : 0);
+        result = 31 * result + (accessTokenIssuedAt != null ? accessTokenIssuedAt.hashCode() : 0);
+        result = 31 * result + (accessTokenExpiresAt != null ? accessTokenExpiresAt.hashCode() : 0);
+        result = 31 * result + (accessTokenMetadata != null ? accessTokenMetadata.hashCode() : 0);
+        result = 31 * result + (accessTokenType != null ? accessTokenType.hashCode() : 0);
+        result = 31 * result + (accessTokenScopes != null ? accessTokenScopes.hashCode() : 0);
+        result = 31 * result + (refreshTokenValue != null ? refreshTokenValue.hashCode() : 0);
+        result = 31 * result + (refreshTokenIssuedAt != null ? refreshTokenIssuedAt.hashCode() : 0);
+        result = 31 * result + (refreshTokenExpiresAt != null ? refreshTokenExpiresAt.hashCode() : 0);
+        result = 31 * result + (refreshTokenMetadata != null ? refreshTokenMetadata.hashCode() : 0);
+        result = 31 * result + (oidcIdTokenValue != null ? oidcIdTokenValue.hashCode() : 0);
+        result = 31 * result + (oidcIdTokenIssuedAt != null ? oidcIdTokenIssuedAt.hashCode() : 0);
+        result = 31 * result + (oidcIdTokenExpiresAt != null ? oidcIdTokenExpiresAt.hashCode() : 0);
+        result = 31 * result + (oidcIdTokenMetadata != null ? oidcIdTokenMetadata.hashCode() : 0);
+        result = 31 * result + (oidcIdTokenClaims != null ? oidcIdTokenClaims.hashCode() : 0);
+        result = 31 * result + (userCodeValue != null ? userCodeValue.hashCode() : 0);
+        result = 31 * result + (userCodeIssuedAt != null ? userCodeIssuedAt.hashCode() : 0);
+        result = 31 * result + (userCodeExpiresAt != null ? userCodeExpiresAt.hashCode() : 0);
+        result = 31 * result + (userCodeMetadata != null ? userCodeMetadata.hashCode() : 0);
+        result = 31 * result + (deviceCodeValue != null ? deviceCodeValue.hashCode() : 0);
+        result = 31 * result + (deviceCodeIssuedAt != null ? deviceCodeIssuedAt.hashCode() : 0);
+        result = 31 * result + (deviceCodeExpiresAt != null ? deviceCodeExpiresAt.hashCode() : 0);
+        result = 31 * result + (deviceCodeMetadata != null ? deviceCodeMetadata.hashCode() : 0);
+        return result;
     }
 
     @Override

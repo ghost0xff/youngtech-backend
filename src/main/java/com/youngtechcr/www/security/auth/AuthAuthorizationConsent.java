@@ -50,13 +50,22 @@ public class AuthAuthorizationConsent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         AuthAuthorizationConsent that = (AuthAuthorizationConsent) o;
-        return Objects.equals(registeredClientId, that.registeredClientId) && Objects.equals(principalName, that.principalName) && Objects.equals(authorities, that.authorities);
+
+        if (!Objects.equals(registeredClientId, that.registeredClientId))
+            return false;
+        if (!Objects.equals(principalName, that.principalName))
+            return false;
+        return Objects.equals(authorities, that.authorities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(registeredClientId, principalName, authorities);
+        int result = registeredClientId != null ? registeredClientId.hashCode() : 0;
+        result = 31 * result + (principalName != null ? principalName.hashCode() : 0);
+        result = 31 * result + (authorities != null ? authorities.hashCode() : 0);
+        return result;
     }
 
     @Override
