@@ -6,6 +6,7 @@ import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.exceptions.custom.QuantityOfElementsException;
 import com.youngtechcr.www.product.Product;
+import com.youngtechcr.www.product.ProductService;
 import com.youngtechcr.www.security.annotations.roles.CustomerRole;
 import com.youngtechcr.www.shoppingcart.item.ShoppingCartItem;
 import com.youngtechcr.www.shoppingcart.item.ShoppingCartItemsRepository;
@@ -148,4 +149,48 @@ public class ShoppingCartService {
        return;
     }
 
+    @Transactional
+    public void removeItemCompletely(Customer customer,Product product) {
+        ShoppingCart cart = findCart(customer);
+        ShoppingCartItem item = cart
+            .getItems()
+            .stream()
+            .filter(i -> {
+                return i
+                        .getProduct()
+                        .getId()
+                        .equals(product.getId());
+            })
+            .findFirst()
+            .orElseThrow(() -> {
+                throw new NoDataFoundException(
+                        HttpErrorMessages
+                                .CANT_DELETE_ITEM_IF_NOT_PRESENT
+                );
+            });
+        itemsRepo.delete(item);
+        logger.trace("Deleted item completely with product id "
+        + product.getId() + " from cart with id " + cart.getId()
+        + "from customer with id " + customer.getId());
+
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

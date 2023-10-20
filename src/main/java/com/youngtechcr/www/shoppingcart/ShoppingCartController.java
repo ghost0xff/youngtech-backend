@@ -87,4 +87,16 @@ public class ShoppingCartController {
     }
 
 
+    @DeleteMapping(path = "/items/all")
+    public ResponseEntity<ShoppingCartItem> removeAllItemsByProduct(
+            Authentication authn,
+            @RequestParam("pid") int productId
+    ) {
+        var customer = authToCustomerConvt.convert(authn);
+        var product = productService.findById(productId);
+        cartService.removeItemCompletely(customer, product);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

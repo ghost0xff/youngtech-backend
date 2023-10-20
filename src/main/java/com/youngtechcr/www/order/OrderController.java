@@ -101,4 +101,13 @@ public class OrderController {
     }
 
 
+    public ResponseEntity<?> checkoutInfo(
+            Authentication authn
+    ) {
+        Customer customer = authToCustomerConvt.convert(authn);
+        orderService.checkoutInfo(customer);
+
+
+        return ResponseEntity.ok("");
+    }
 }

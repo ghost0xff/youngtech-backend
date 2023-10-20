@@ -81,71 +81,78 @@ public class OrderService {
     @CustomerRole
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Order makeOrder(Customer customer) {
+        Order computed = computeOrderInfo(customer);
+        orderRepo.save(computed);
+        return computed;
+     }
+
+     @CustomerRole
+     @Transactional(readOnly = true)
+     public Order computeOrderInfo(Customer customer) {
          ShoppingCart cart = cartService.findCart(customer);
          List<ShoppingCartItem> cartItems =  cart.getItems();
 
          if(cartItems.isEmpty()) {
              logger.debug("Can't order from empty cart");
              throw new QuantityOfElementsException(
-                 HttpErrorMessages.CANT_ORDER_EMPTY_SHOPPING_CART
+                     HttpErrorMessages.CANT_ORDER_EMPTY_SHOPPING_CART
              );
          }
 
-        float subtotal = 0;
-        float totalDiscount = 0;
-        var order = new Order();
-        var orderItems = new ArrayList<OrderItem>();
-        for(var item : cartItems) {
-            Product product = item.getProduct();
-            int currentStock = product.getStock();
-            int quantity = item.getQuantity();
-            if(quantity > currentStock) {
-                logger.debug("Can't order requestes quantity, not enough stock");
-                throw new QuantityOfElementsException(
-                        HttpErrorMessages.INSUFFICIENT_STOCK
-                );
-            }
-            float individualPrice = product.getPrice();
-            float individualDiscount = individualPrice / 100 * product.getDiscountPercentage();
-            float itemPrice = (individualPrice - individualDiscount) * quantity;
+         float subtotal = 0;
+         float totalDiscount = 0;
+         var order = new Order();
+         var orderItems = new ArrayList<OrderItem>();
+         for(var item : cartItems) {
+             Product product = item.getProduct();
+             int currentStock = product.getStock();
+             int quantity = item.getQuantity();
+             if(quantity > currentStock) {
+                 logger.debug("Can't order requestes quantity, not enough stock");
+                 throw new QuantityOfElementsException(
+                         HttpErrorMessages.INSUFFICIENT_STOCK
+                 );
+             }
+             float individualPrice = product.getPrice();
+             float individualDiscount = individualPrice / 100 * product.getDiscountPercentage();
+             float itemPrice = (individualPrice - individualDiscount) * quantity;
 
-            subtotal += individualPrice;
-            totalDiscount += individualDiscount;
+             subtotal += individualPrice;
+             totalDiscount += individualDiscount;
 
-            var orderItem = new OrderItem();
-            orderItem.setProduct(item.getProduct());
-            orderItem.setOrder(order);
-            orderItem.setQuantity(item.getQuantity());
-            TimestampedUtils.setTimestampsToNow(orderItem);
-            orderItems.add(orderItem);
-        }
-        float total = subtotal - totalDiscount;
-        float iva = total / 100 * 13;
-        total += iva;
-        LocalDateTime orderDate = TimestampedUtils.now();
+             var orderItem = new OrderItem();
+             orderItem.setProduct(item.getProduct());
+             orderItem.setOrder(order);
+             orderItem.setQuantity(item.getQuantity());
+             TimestampedUtils.setTimestampsToNow(orderItem);
+             orderItems.add(orderItem);
+         }
+         float total = subtotal - totalDiscount;
+         float iva = total / 100 * 13;
+         total += iva;
+         LocalDateTime orderDate = TimestampedUtils.now();
 
-        order.setTotal(total);
-        order.setSubtotal(subtotal);
-        order.setIvaPercentage(13);
-        order.setOrderDate(orderDate);
-        /*
-        * SET DELIVERY DATE
-        *   - Only on fridays
-        *   - Only from 7am - 11am
-        *   - if ordered on friday => deliver same day
-        *   - if ordered anyother day => deliver next friday
-        * */
-        var adjusterNextFriday = TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY);
-        LocalDateTime from = orderDate.with(adjusterNextFriday).withHour(7); // next friday at 7am
-        LocalDateTime to = orderDate.with(adjusterNextFriday).withHour(11); // next friday at 11am
+         order.setTotal(total);
+         order.setSubtotal(subtotal);
+         order.setIvaPercentage(13);
+         order.setOrderDate(orderDate);
+         /*
+          * SET DELIVERY DATE
+          *   - Only on fridays
+          *   - Only from 7am - 11am
+          *   - if ordered on friday => deliver same day
+          *   - if ordered anyother day => deliver next friday
+          * */
+         var adjusterNextFriday = TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY);
+         LocalDateTime from = orderDate.with(adjusterNextFriday).withHour(7); // next friday at 7am
+         LocalDateTime to = orderDate.with(adjusterNextFriday).withHour(11); // next friday at 11am
 
-        order.setDeliveryTo(to);
-        order.setDeliveryFrom(from);
-        order.setCustomer(customer);
-        order.setItems(orderItems);
-        TimestampedUtils.setTimestampsToNow(order);
-        orderRepo.save(order);
-        return order;
+         order.setDeliveryTo(to);
+         order.setDeliveryFrom(from);
+         order.setCustomer(customer);
+         order.setItems(orderItems);
+         TimestampedUtils.setTimestampsToNow(order);
+         return order;
      }
 
     @CustomerRole
@@ -231,4 +238,18 @@ public class OrderService {
         return order;
     }
 
+    @Transactional
+    public void checkoutInfo(Customer customer) {
+        ShoppingCart cart = cartService.findCart(customer);
+        List<ShoppingCartItem> cartItems =  cart.getItems();
+        if(cartItems.isEmpty()) {
+            logger.debug("Can't view checkout info from empty cart");
+            throw new QuantityOfElementsException(
+                    HttpErrorMessages.CANT_ORDER_EMPTY_SHOPPING_CART
+            );
+        }
+        /*
+
+        */
+    }
 }
