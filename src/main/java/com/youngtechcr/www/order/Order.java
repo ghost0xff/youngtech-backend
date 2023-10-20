@@ -1,8 +1,6 @@
 package com.youngtechcr.www.order;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.youngtechcr.www.customer.Customer;
 import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.order.item.OrderItem;
@@ -22,6 +20,9 @@ public class Order implements Timestamped {
     private Integer id;
     private float total; // total = subtotal + iva
     private float subtotal;
+    @Column(name = "total_discount_currency")
+    private float totalDiscountCurrency;
+
     @Column(name = "iva_percentage")
     private float ivaPercentage;
     @Column(name = "is_delivered")
@@ -55,9 +56,8 @@ public class Order implements Timestamped {
                                                 }
 
     @Override
-    public LocalDateTime getCreatedAt() {
-                                              return this.createdAt;
-                                                                    }
+    @JsonIgnore
+    public LocalDateTime getCreatedAt() { return this.createdAt; }
 
     @Override
     public void setCreatedAt(LocalDateTime timestamp) {
@@ -65,9 +65,8 @@ public class Order implements Timestamped {
                                                                                        }
 
     @Override
-    public LocalDateTime getUpdatedAt() {
-                                              return this.updatedAt;
-                                                                    }
+    @JsonIgnore
+    public LocalDateTime getUpdatedAt() { return this.updatedAt; }
 
     @Override
     public void setUpdatedAt(LocalDateTime timestamp) {
@@ -126,10 +125,16 @@ public class Order implements Timestamped {
                                                             this.orderDate = orderDate;
                                                                                        }
 
+    public float getTotalDiscountCurrency() {
+        return totalDiscountCurrency;
+    }
+
+    public void setTotalDiscountCurrency(float totalDiscountCurrency) {
+        this.totalDiscountCurrency = totalDiscountCurrency;
+    }
+
     @JsonBackReference(value = "customer-order")
-    public Customer getCustomer() {
-                                        return this.customer;
-                                                             }
+    public Customer getCustomer() { return this.customer; }
 
     public void setCustomer(Customer customer) {
                                                      this.customer = customer;
@@ -169,6 +174,7 @@ public class Order implements Timestamped {
 
         if (Float.compare(total, order.total) != 0) return false;
         if (Float.compare(subtotal, order.subtotal) != 0) return false;
+        if (Float.compare(totalDiscountCurrency, order.totalDiscountCurrency) != 0) return false;
         if (Float.compare(ivaPercentage, order.ivaPercentage) != 0) return false;
         if (isDelivered != order.isDelivered) return false;
         if (isCanceled != order.isCanceled) return false;
@@ -187,6 +193,7 @@ public class Order implements Timestamped {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (total != 0.0f ? Float.floatToIntBits(total) : 0);
         result = 31 * result + (subtotal != 0.0f ? Float.floatToIntBits(subtotal) : 0);
+        result = 31 * result + (totalDiscountCurrency != 0.0f ? Float.floatToIntBits(totalDiscountCurrency) : 0);
         result = 31 * result + (ivaPercentage != 0.0f ? Float.floatToIntBits(ivaPercentage) : 0);
         result = 31 * result + (isDelivered ? 1 : 0);
         result = 31 * result + (isCanceled ? 1 : 0);
@@ -206,14 +213,15 @@ public class Order implements Timestamped {
                 "id=" + id +
                 ", total=" + total +
                 ", subtotal=" + subtotal +
+                ", totalDiscountCurrency=" + totalDiscountCurrency +
                 ", ivaPercentage=" + ivaPercentage +
                 ", isDelivered=" + isDelivered +
                 ", isCanceled=" + isCanceled +
                 ", orderDate=" + orderDate +
-                ", deliveryFrom=" + deliveryFrom +
-                ", deliveryTo=" + deliveryTo +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", deliveryFrom=" + deliveryFrom +
+                ", deliveryTo=" + deliveryTo +
                 '}';
     }
 }

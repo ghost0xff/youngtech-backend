@@ -42,6 +42,7 @@ public class OrderController {
         return ResponseEntity.ok(customer.getOrders());
     }
 
+
     @GetMapping(path = "/{id}")
     public ResponseEntity<Order> checkOrder(
             Authentication authn,
@@ -101,13 +102,12 @@ public class OrderController {
     }
 
 
-    public ResponseEntity<?> checkoutInfo(
+    @GetMapping(path = "/checkout")
+    public ResponseEntity<Order> checkoutInfo(
             Authentication authn
     ) {
         Customer customer = authToCustomerConvt.convert(authn);
-        orderService.checkoutInfo(customer);
-
-
-        return ResponseEntity.ok("");
+        var order = orderService.computeCheckoutInfo(customer);
+        return ResponseEntity.ok(order);
     }
 }
