@@ -107,7 +107,7 @@ public class OrderController {
             Authentication authn
     ) {
         Customer customer = authToCustomerConvt.convert(authn);
-        var order = orderService.computeCheckoutInfo(customer);
+        var order = orderService.computeChekoutDetails(customer);
         return ResponseEntity.ok(order);
     }
 }

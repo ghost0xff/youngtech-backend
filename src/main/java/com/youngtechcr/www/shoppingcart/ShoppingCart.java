@@ -31,6 +31,8 @@ public class ShoppingCart implements Timestamped {
 
     @OneToMany(mappedBy = "shoppingCart")
     private List<ShoppingCartItem> items;
+
+
     public ShoppingCart() {
     }
 

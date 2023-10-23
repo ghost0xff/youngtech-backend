@@ -1,14 +1,13 @@
 package com.youngtechcr.www.security.oidc;
 
+import com.youngtechcr.www.school.student.StudentService;
+import com.youngtechcr.www.school.teacher.TeacherService;
 import com.youngtechcr.www.security.CustomClaims;
 import com.youngtechcr.www.security.user.User;
 import com.youngtechcr.www.security.user.UserService;
-import com.youngtechcr.www.security.user.role.Role;
-import com.youngtechcr.www.utils.DsaUtils;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,13 +15,23 @@ import java.util.stream.Collectors;
 public class OidcUserInfoService {
 
     private final UserService userService;
+    private final StudentService studentService;
+    private final TeacherService teacherService;
 
-    public OidcUserInfoService(UserService userService) {
+    public OidcUserInfoService(
+            UserService userService,
+            StudentService studentService,
+            TeacherService teacherService
+    ) {
         this.userService = userService;
+        this.studentService = studentService;
+        this.teacherService = teacherService;
     }
 
     public OidcUserInfo loadUserById(int id) {
         User user = userService.findById(id);
+        var student = studentService.findOrNull(user);
+        var teacher = teacherService.findOrNull(user);
         Set<String> roles = user.getRoles()
                 .stream()
                 .map(role -> role.getName())
@@ -35,6 +44,8 @@ public class OidcUserInfoService {
             .familyName(user.getPerson().getLastnames()) // lastnames
             .updatedAt(user.getLastUpdateAt().toString())
 //            .claim("sid", "none")
+                .claim(CustomClaims.STUDENT, student)
+                .claim(CustomClaims.TEACHER, teacher)
             .claim(CustomClaims.ROLES, roles)
             .build();
         return info;

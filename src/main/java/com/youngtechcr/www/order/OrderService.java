@@ -82,14 +82,15 @@ public class OrderService {
     @CustomerRole
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Order makeOrder(Customer customer) {
-        Order computed = computeCheckoutInfo(customer);
+        Order computed = computeChekoutDetails(customer);
         orderRepo.save(computed);
+        // pending the EMAIL integration
         return computed;
      }
 
      @CustomerRole
      @Transactional(readOnly = true)
-     public Order computeCheckoutInfo(Customer customer) {
+     public Order computeChekoutDetails(Customer customer) {
          ShoppingCart cart = cartService.findCart(customer);
          List<ShoppingCartItem> cartItems =  cart.getItems();
 
@@ -163,9 +164,9 @@ public class OrderService {
                      .withSecond(0).withNano(0); // ^^^ this friday at 11am
          } else {
              deliveryDateAdjuster = TemporalAdjusters.next(DayOfWeek.FRIDAY);
-             from = orderDate .with(deliveryDateAdjuster).withHour(7).withMinute(0)
+             from = orderDate.with(deliveryDateAdjuster).withHour(7).withMinute(0)
                      .withSecond(0).withNano(0); // next friday at 7am
-             to = orderDate .with(deliveryDateAdjuster).withHour(11).withMinute(0)
+             to = orderDate.with(deliveryDateAdjuster).withHour(11).withMinute(0)
                      .withSecond(0).withNano(0); // next friday at 11am
          }
          //-------------------------------------------------------------------------
