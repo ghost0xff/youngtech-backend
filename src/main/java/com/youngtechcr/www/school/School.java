@@ -3,6 +3,7 @@ package com.youngtechcr.www.school;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.school.group.SchoolGroup;
+import com.youngtechcr.www.school.registration.SchoolUnspecifiedRegistration;
 import com.youngtechcr.www.school.student.Student;
 import com.youngtechcr.www.school.subject.SchoolSubject;
 import com.youngtechcr.www.school.teacher.Teacher;
@@ -10,6 +11,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tbl_school")
@@ -35,6 +37,8 @@ public class School implements Timestamped {
     private List<Teacher> teachers;
     @OneToMany(mappedBy = "school")
     private List<Student> students;
+    @OneToMany(mappedBy = "school")
+    private List<SchoolUnspecifiedRegistration> unspecifiedRegistrations;
 
     public School() {}
 
@@ -110,6 +114,15 @@ public class School implements Timestamped {
         this.updatedAt = updatedAt;
     }
 
+    @JsonManagedReference("school-unspecifiedRegistrations")
+    public List<SchoolUnspecifiedRegistration> getUnspecifiedRegistrations() {
+        return unspecifiedRegistrations;
+    }
+
+    public void setUnspecifiedRegistrations(List<SchoolUnspecifiedRegistration> unspecifiedRegistrations) {
+        this.unspecifiedRegistrations = unspecifiedRegistrations;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -117,12 +130,15 @@ public class School implements Timestamped {
 
         School school = (School) o;
 
-        if (id != null ? !id.equals(school.id) : school.id != null) return false;
-        if (name != null ? !name.equals(school.name) : school.name != null) return false;
-        if (createdAt != null ? !createdAt.equals(school.createdAt) : school.createdAt != null) return false;
-        if (updatedAt != null ? !updatedAt.equals(school.updatedAt) : school.updatedAt != null) return false;
-
-        return true;
+        if (!Objects.equals(id, school.id)) return false;
+        if (!Objects.equals(name, school.name)) return false;
+        if (!Objects.equals(createdAt, school.createdAt)) return false;
+        if (!Objects.equals(updatedAt, school.updatedAt)) return false;
+        if (!Objects.equals(subjects, school.subjects)) return false;
+        if (!Objects.equals(groups, school.groups)) return false;
+        if (!Objects.equals(teachers, school.teachers)) return false;
+        if (!Objects.equals(students, school.students)) return false;
+        return Objects.equals(unspecifiedRegistrations, school.unspecifiedRegistrations);
     }
 
     @Override
@@ -131,6 +147,11 @@ public class School implements Timestamped {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (subjects != null ? subjects.hashCode() : 0);
+        result = 31 * result + (groups != null ? groups.hashCode() : 0);
+        result = 31 * result + (teachers != null ? teachers.hashCode() : 0);
+        result = 31 * result + (students != null ? students.hashCode() : 0);
+        result = 31 * result + (unspecifiedRegistrations != null ? unspecifiedRegistrations.hashCode() : 0);
         return result;
     }
 

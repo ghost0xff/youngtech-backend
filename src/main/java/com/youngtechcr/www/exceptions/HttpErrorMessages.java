@@ -5,9 +5,13 @@ public final class HttpErrorMessages {
     //REGEX EXCEPTION
     public static final String NULL_REGEX_PATTERN_OR_TEXT_VALUE= "An internal error occurred while matching/validating element or value";
 
+    // SCHOOL REGISTRATION
+    public static final String INVALID_COMMENT_ON_UNSPECIFIED_REGISTRATION = "Comment on unspecified registration should be between 1 and 50 characters.";
+    public static final String NO_SCHOOLS_REGISTERED = "Can't proceed with operation because school entities need to be registered in DB in order to continue";
+
     // SHOPPING_CART && ORDERS
     public static final String INSUFFICIENT_STOCK = "There are not enough elements. Elements out of stock";
-    public static final String CANT_DELETE_ITEM_IF_NOT_PRESENT = "Can´t delete element from storage if it doesn´t exist.";
+    public static final String CANT_DELETE_ITEM_IF_NOT_PRESENT ="Can´t delete element from storage if it doesn´t exist.";
     public static final String CANT_DELETE_MORE_ITEMS_THAN_ARE_AVAILABLE = "Can´t delete element(s) if quantity to be deleted exceeds stored quantity of elements";
     public static final String CANT_ORDER_EMPTY_SHOPPING_CART = "Shopping Cart must contain items before placing an order.";
     public static final String CANT_REMOVE_ORDER_ITEM_AFTER_DELIVER = "Can't remove orderitem if delivery date has past";
@@ -60,7 +64,7 @@ public final class HttpErrorMessages {
     public static final String CANT_CREATE_DUPLICATE_MAIN_IMAGE = "Can't upload requested image as main because  it already exists another main image";
 
 
-    // SERVER ERRORS
+    // EXTERNAL SERVER ERRORS
     public static final String FAILED_CONNECTION_EXTERNAL_SERVER =  "Couldn't validate external id token due to failed communication with external resource server";
 
 
