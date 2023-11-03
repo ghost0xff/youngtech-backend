@@ -39,10 +39,17 @@ public class SchoolController {
     @PostMapping("/members")
     public ResponseEntity<?> registerSchoolMember(
         Authentication authn,
-        @RequestBody SchoolRegistration registration
+        @RequestParam(required = false, defaultValue = "-1") int schoolId,
+        @RequestParam(required = false, defaultValue = "-1") int groupId,
+        @RequestParam(required = false, defaultValue = "-1") int subjectId,
+        @RequestParam(required = false, defaultValue = "") String comment,
+        @RequestParam SchoolMemberType type
     ) {
         User user = authToUserCnvrtr.convert(authn);
-        schoolRegistrar.register(user, registration);
+        SchoolRegistration registration = new SchoolRegistration(
+                schoolId, groupId, subjectId, comment
+        );
+        schoolRegistrar.register(user, registration, type);
         return ResponseEntity.noContent().build();
     }
 

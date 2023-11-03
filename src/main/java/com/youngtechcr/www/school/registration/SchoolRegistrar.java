@@ -1,15 +1,16 @@
 package com.youngtechcr.www.school.registration;
 
-import com.youngtechcr.www.domain.Timestamped;
 import com.youngtechcr.www.domain.TimestampedUtils;
 import com.youngtechcr.www.exceptions.HttpErrorMessages;
 import com.youngtechcr.www.exceptions.custom.InvalidElementException;
 import com.youngtechcr.www.exceptions.custom.NoDataFoundException;
 import com.youngtechcr.www.school.*;
+import com.youngtechcr.www.school.group.SchoolGroupsMetadata;
 import com.youngtechcr.www.school.group.SchoolGroupRepository;
 import com.youngtechcr.www.school.student.Student;
 import com.youngtechcr.www.school.student.StudentRepository;
 import com.youngtechcr.www.school.subject.SchoolSubject;
+import com.youngtechcr.www.school.subject.SchoolSubjectMetadata;
 import com.youngtechcr.www.school.subject.SchoolSubjectRepository;
 import com.youngtechcr.www.school.teacher.Teacher;
 import com.youngtechcr.www.school.teacher.TeacherRepository;
@@ -50,9 +51,12 @@ public class SchoolRegistrar {
 
     @Transactional
     @CustomerRole
-    public void register(User user, SchoolRegistration registration
+    public void register(
+            User user,
+             SchoolRegistration registration,
+            SchoolMemberType type
     ) {
-        switch (registration.type()) {
+        switch (type) {
             case OTHER -> {
                 var school = schoolRepo
                         .findById(registration.schoolId())
@@ -130,7 +134,27 @@ public class SchoolRegistrar {
                 .stream()
                 .filter(subject -> !subject.isTechnical())
                 .collect(Collectors.toList());
-        return new SchoolMetadata(technicalSubjects, academicSubjects);
+
+        List<SchoolGroupsMetadata> groupsMetadata = school
+                .getGroups()
+                .stream()
+                .map((group) -> {
+                    return new SchoolGroupsMetadata(
+                            group.getId(),
+                            group.getName(),
+                            new SchoolSubjectMetadata(
+                                    group.getTechnicalSubject().getId(),
+                                    group.getTechnicalSubject().getName()
+                            )
+                    );
+                })
+                .collect(Collectors.toList());
+        return new SchoolMetadata(
+                school.getId(),
+                technicalSubjects,
+                academicSubjects,
+                groupsMetadata
+        );
     }
 
 

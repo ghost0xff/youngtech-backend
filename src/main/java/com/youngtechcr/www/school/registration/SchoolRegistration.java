@@ -6,6 +6,5 @@ public record SchoolRegistration(
         int schoolId,
         int groupId,
         int subjectId,
-        String comment,
-        SchoolMemberType type
+        String comment
 ){ }

@@ -14,8 +14,8 @@ import com.youngtechcr.www.security.crypto.CryptoProps;
 import com.youngtechcr.www.security.eidte.*;
 import com.youngtechcr.www.security.idp.IdentityProviderRepository;
 import com.youngtechcr.www.security.oidc.OidcUserInfoService;
-import com.youngtechcr.www.security.passwd.PasswdAuthenticationConverter;
-import com.youngtechcr.www.security.passwd.PasswdAuthenticationProvider;
+import com.youngtechcr.www.security.emailpasswd.EmailPasswdAuthenticationConverter;
+import com.youngtechcr.www.security.emailpasswd.EmailPasswdAuthenticationProvider;
 import com.youngtechcr.www.security.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +31,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
@@ -82,8 +82,6 @@ public class SecurityConfig {
             IdentityProviderRepository idpRepository,
             UserService userService,
             OidcUserInfoService oidcUserInfoService
-//            ,
-//            SessionRegistry sessionRegistry
     ) { this.apiProperties = apiProperties;
         this.cryptoProps = cryptoProps;
         this.idpRepository = idpRepository;
@@ -121,9 +119,9 @@ public class SecurityConfig {
                                             registeredClientRepository,
                                             this.idpRepository
                                     ));
-                                    converters.add(new PasswdAuthenticationConverter(
-                                            registeredClientRepository,
-                                            this.idpRepository
+                                    converters.add(new EmailPasswdAuthenticationConverter(
+                                            registeredClientRepository
+//                                            this.idpRepository
                                     ));
                                 })
                                 .authenticationProviders( providers -> {
@@ -132,7 +130,7 @@ public class SecurityConfig {
                                            tokenGenerator,
                                            this.userService
                                    ));
-                                    providers.add(new PasswdAuthenticationProvider(
+                                    providers.add(new EmailPasswdAuthenticationProvider(
                                             authorizationService,
                                             tokenGenerator,
                                             this.userService
@@ -306,9 +304,11 @@ public class SecurityConfig {
         client_secret with the equivalent from the RegisteredClient (which is stored probably in
         DB or Cache (altough it can be simply stored in memory)
     */
+
 //    @Bean
 //    public PasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder(12);
 //    }
+
 
 }

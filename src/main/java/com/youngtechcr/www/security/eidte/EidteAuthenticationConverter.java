@@ -66,7 +66,7 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
         // script kiddie messing around with this awesome authz server
         // NOTE: ^^^ client authentication is already done at this point
         // so checking for credentials is useless BUT I'm gonna leave it
-        // just because yes (some spring filter authenticates this :v)
+        // just because yes (a spring filter authenticates this :v)
         String cliendId = httpParams.getFirst(CommonOAuthRequestParams.CLIENT_ID);
         String clientSecret = httpParams.getFirst(CommonOAuthRequestParams.CLIENT_SECRET);
         if (cliendId == null || clientSecret == null) {
@@ -117,7 +117,7 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
         }
 
 
-        // #5 return the mf authentication instance
+        // #5 return the mf authentication instance :'v
         return new EidteAuthentication(
                 eidteToken.orElseThrow(() -> {
                     logger.debug(HttpErrorMessages.FAILED_GENERATE_TOKEN);
