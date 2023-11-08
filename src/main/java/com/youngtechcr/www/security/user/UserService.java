@@ -17,48 +17,59 @@ import com.youngtechcr.www.security.user.role.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class UserService {
 
     private final BasicUserValidator basicUserValidator;
-    private final UserRepository userRepository;
+    private final UserRepository userRepo;
     private final CustomerService customerService;
     private final ProfileService profileService;
     private final PersonService personService;
     private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
     private final static Logger logger = LoggerFactory.getLogger(UserService.class);
     public UserService(
             BasicUserValidator basicUserValidator,
-            UserRepository userRepository,
+            UserRepository userRepo,
             CustomerService customerService,
             ProfileService profileService,
-            PersonService personService, RoleService roleService
+            PersonService personService,
+            RoleService roleService
+            ,
+            PasswordEncoder passwordEncoder
     ) {
-//        this.passwordEncoder = passwordEncoder;
         this.basicUserValidator = basicUserValidator;
-        this.userRepository = userRepository;
+        this.userRepo = userRepo;
         this.customerService = customerService;
         this.profileService = profileService;
         this.personService = personService;
         this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
     public User findById(Integer userId) {
         return this
-                .userRepository
+                .userRepo
                 .findById(userId)
                 .orElseThrow(() -> new NoDataFoundException(
                         HttpErrorMessages.NO_ELEMENT_WITH_THE_REQUESTED_ID_WAS_FOUND
                 ));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> findByEmail(String email) {
+        return this.userRepo.findByEmail(email);
     }
 
     @Transactional
@@ -66,27 +77,27 @@ public class UserService {
         Set<Role> rolesToBeAdded = roleService.mapOptionsToRoles(roleOptions);
         Set<Role> currentRoles = user.getRoles();
         currentRoles.addAll(rolesToBeAdded);
-        userRepository.save(user);
+        userRepo.save(user);
         return;
     }
 
     @Transactional(readOnly = true)
-    private boolean existsByEmail(String email) {
-        return  this.userRepository
+    public boolean existsByEmail(String email) {
+        return  this.userRepo
                 .existsByEmail(email);
     }
 
     @Transactional(readOnly = true)
     public boolean existsUserById(Integer userId) {
-        return this.userRepository
+        return this.userRepo
                 .existsById(userId);
     }
 
 
     @Transactional(readOnly = true)
-    public  User toUser(Authentication authn) {
+    public User toUser(Authentication authn) {
         int id = Integer.parseInt(authn.getName());
-        return userRepository
+        return userRepo
                 .findById(id)
                 .orElseThrow(() -> {
                     logger.warn(
@@ -96,6 +107,18 @@ public class UserService {
                     return new UnkownTokenException(
                             "Heyy!! how do you have a signed token with and unvalid user id??? is this user deleted??");
                 });
+    }
+
+    @Transactional
+    public User create(String email, String passwd) {
+        User.Builder builder = User
+                .builder()
+                .email(email)
+                .signedUpAt(TimestampedUtils.now())
+                .lastUpdateAt(TimestampedUtils.now())
+//                .identityProvider()
+                ;
+        return null;
     }
 
     /*
@@ -109,10 +132,9 @@ public class UserService {
     ) {
        String externalIdentifier = token.getSubject();
        return this
-               .userRepository
+               .userRepo
                .findByIdpExternalIdentifier(externalIdentifier)
                .orElseGet( () -> {
-
                    // #1 Get some basic roles for the mf user
                    Set<Role> basicRoles = roleService.mapOptionsToRoles(
                            RoleOption.CUSTOMER
@@ -122,14 +144,14 @@ public class UserService {
                            .builder()
                            .identityProvider(provider)
                            .idpExternalIdentifier(externalIdentifier)
-                           .signedUpAt(LocalDateTime.now())
-                           .lastUpdateAt(LocalDateTime.now())
+                           .signedUpAt(TimestampedUtils.now())
+                           .lastUpdateAt(TimestampedUtils.now())
                            .email(token.getEmail())
                            .emailVerified(token.getEmailVerified())
                            .roles(basicRoles);
 
                    // #3 persist some user info
-                  User createdUser = userRepository.save(userBuilder.build());
+                  User createdUser = userRepo.save(userBuilder.build());
 
                    // #4 Build person based on claims and recently created user
                    var person = Person

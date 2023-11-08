@@ -53,7 +53,7 @@ public class SchoolRegistrar {
     @CustomerRole
     public void register(
             User user,
-             SchoolRegistration registration,
+            SchoolRegistration registration,
             SchoolMemberType type
     ) {
         switch (type) {

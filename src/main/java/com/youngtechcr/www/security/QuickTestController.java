@@ -7,6 +7,7 @@ import com.youngtechcr.www.security.user.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -32,16 +33,24 @@ public class QuickTestController {
     private final OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer;
     private final SessionRegistry sessionRegistry;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
     public QuickTestController(
             JpaRegisteredClientRepository clientRepo,
             OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer,
             SessionRegistry sessionRegistry,
-            UserService userService
+            UserService userService,
+            PasswordEncoder passwordEncoder
     ){
         this.clientRepo = clientRepo;
         this.tokenCustomizer = tokenCustomizer;
         this.sessionRegistry = sessionRegistry;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @GetMapping(path = "/encoder/{passwd}")
+    public String encodePasswd(@PathVariable String passwd){
+        return passwordEncoder.encode(passwd);
     }
 
     @GetMapping
@@ -49,7 +58,6 @@ public class QuickTestController {
     public ResponseEntity<?> viewCurrentSessionRegistery() {
         return ResponseEntity.ok(String.valueOf(sessionRegistry));
     }
-
 
     @GetMapping
     @RequestMapping(path = "/customizer")

@@ -62,4 +62,8 @@ public class EmailPasswdAuthentication implements Authentication {
     public String getName() {
         return this.email;
     }
+
+    public String getEmail() { return this.email ; }
+    public String getPasswd() { return this.passwd ; }
+
 }

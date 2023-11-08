@@ -107,7 +107,6 @@ public class EidteAuthenticationConverter implements AuthenticationConverter {
                 tries to verify tokens according to a list of
                 providede IdentityProviders and a given IDPN (identity
                 provider name)
-
        */
         Optional<OidcIdToken> eidteToken = Optional.empty();
         if (identityProvider.getName().equals("google")) {

@@ -1,5 +1,6 @@
 package com.youngtechcr.www.security.emailpasswd;
 
+import com.youngtechcr.www.security.user.User;
 import com.youngtechcr.www.security.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.util.Assert;
+
+import java.util.Optional;
 
 public class EmailPasswdAuthenticationProvider implements AuthenticationProvider {
 
@@ -36,15 +39,22 @@ public class EmailPasswdAuthenticationProvider implements AuthenticationProvider
         // #1 Retrieve objs
         EmailPasswdAuthentication emailPasswdAuthentication =
                 (EmailPasswdAuthentication) authentication;
-
+        String providedEmail = emailPasswdAuthentication.getEmail();
+        String providedPasswd = emailPasswdAuthentication.getPasswd();
         /* #2 Check if user exists
             - TRUE:
                 check if passwd has same digest with stored in DB
             - FALSE:
                 register new user
-
         */
-//        this.userService
+        Optional<User> posibleUser = userService.findByEmail(providedEmail);
+        if(!posibleUser.isEmpty()) {
+//            userService.createFromEidteExchange()
+
+        } else {
+
+        }
+
 
 
         return null;
