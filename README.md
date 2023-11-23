@@ -15,5 +15,5 @@ I'm going to take some time to learn all the things that I don't understand
 yet and maybe in the future I can rewrite this project.
 
 My idea is to be able to write every tool I use from scratch
-and not only need other's spaghetti code to glue basic and common
+and not need other's spaghetti code to glue basic and common
 functionality one needs to build software.
